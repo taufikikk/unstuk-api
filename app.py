@@ -377,6 +377,184 @@ def score_assessment(questions_with_answers):
         scores["overall"] = "B1"
     return scores
 
+# ── Mastery V2 system ──
+# 7 levels: 0=Unseen, 1=Encountered, 2=Recognized, 3=Discriminated,
+# 4=Produced, 5=Comprehended, 6=Retained, 7=Mastered
+MASTERY_V2_LEVELS = {
+    0: "unseen",
+    1: "encountered",       # seen in reading
+    2: "recognized",        # recognized in 2+ different contexts
+    3: "discriminated",     # passed discrimination + usage boundary test
+    4: "produced",          # produced in 2+ different situations
+    5: "comprehended",      # comprehended without highlight in new passage
+    6: "retained",          # passed retention check after 14-day gap
+    7: "mastered",
+}
+MASTERY_V2_EXERCISE_TYPES = {
+    1: "fill_blank",        # gate 1→2: recognition
+    2: "fill_blank",        # gate 2→3: recognition in new context
+    3: "discrimination",    # gate 3→4: discrimination/usage boundary
+    4: "situation",         # gate 4→5: production
+    5: "verification",      # gate 5→6: comprehension without highlight
+    6: "verification",      # gate 6→7: retention check
+}
+SUSPECT_RESPONSE_THRESHOLD_MS = 1500
+RETENTION_CHECK_DAYS = 14
+
+def get_card_mastery_v2(card_stats, cid_str):
+    """Get mastery_v2 data for a card from cardStats."""
+    stats = card_stats.get(cid_str, {})
+    return {
+        "mastery_v2": stats.get("mastery_v2", 0),
+        "unique_contexts": stats.get("unique_contexts", 0),
+        "retention_due": stats.get("retention_due"),
+        "suspect": stats.get("suspect", False),
+        "productions": stats.get("productions", 0),
+    }
+
+def process_mastery_v2_encounter(user, card_id, encounter_type, result, response_time_ms, passage_id, exercise_id):
+    """Process an encounter and update mastery_v2 state. Returns updated mastery_v2 level."""
+    progress_data = user.progress.data if user.progress and user.progress.data else {}
+    card_stats = progress_data.get("cardStats", {})
+    cid_str = str(card_id)
+    stats = card_stats.get(cid_str, {})
+
+    current_level = stats.get("mastery_v2", 0)
+    unique_contexts = stats.get("unique_contexts", 0)
+    productions = stats.get("productions", 0)
+    is_suspect = stats.get("suspect", False)
+    passed = result in ("correct", "pass", "true", True)
+
+    # Track unique contexts (unique passage_ids for this card)
+    if passage_id:
+        ctx_count = db.session.query(EncounterLog.passage_id).filter(
+            EncounterLog.user_id == user.id,
+            EncounterLog.card_id == card_id,
+            EncounterLog.passage_id.isnot(None)
+        ).distinct().count()
+        unique_contexts = max(unique_contexts, ctx_count)
+
+    # Suspect detection: fast response + high mastery
+    if response_time_ms and response_time_ms < SUSPECT_RESPONSE_THRESHOLD_MS and current_level >= 3 and passed:
+        is_suspect = True
+        # Demote to level 2 for re-verification in new context
+        current_level = min(current_level, 2)
+
+    # Re-verification for suspect phrases
+    if is_suspect and passed and unique_contexts >= 2:
+        is_suspect = False
+
+    new_level = current_level
+
+    if passed:
+        # Gate transitions
+        if current_level == 0:
+            # Any encounter → Encountered
+            new_level = 1
+
+        elif current_level == 1:
+            # Encountered → Recognized: need encounter in reading
+            if encounter_type in ("reading", "fill_blank", "quiz"):
+                new_level = 2
+
+        elif current_level == 2:
+            # Recognized → Discriminated: need 2+ unique contexts
+            if unique_contexts >= 2:
+                new_level = 3
+
+        elif current_level == 3:
+            # Discriminated → Produced: need discrimination/usage_boundary pass
+            if encounter_type in ("discrimination", "usage_boundary"):
+                new_level = 4
+
+        elif current_level == 4:
+            # Produced → Comprehended: need production in 2+ situations
+            if encounter_type in ("situation", "production"):
+                productions += 1
+            if productions >= 2:
+                new_level = 5
+                # Schedule retention check
+                retention_date = (datetime.datetime.utcnow() + datetime.timedelta(days=RETENTION_CHECK_DAYS)).isoformat()
+                stats["retention_due"] = retention_date
+
+        elif current_level == 5:
+            # Comprehended → Retained: need verification pass without highlight
+            if encounter_type in ("verification", "retention_check"):
+                # Check if retention_due has passed
+                retention_due = stats.get("retention_due")
+                if retention_due:
+                    try:
+                        due_dt = datetime.datetime.fromisoformat(retention_due.replace("Z", "+00:00")).replace(tzinfo=None)
+                        if datetime.datetime.utcnow() >= due_dt:
+                            new_level = 6
+                    except (ValueError, TypeError):
+                        new_level = 6
+                else:
+                    new_level = 6
+
+        elif current_level == 6:
+            # Retained → Mastered
+            new_level = 7
+
+    elif not passed and current_level >= 3:
+        # Failed at level 3+: regress to level 3 (discrimination)
+        if encounter_type == "retention_check":
+            new_level = 3
+            productions = 0
+            stats.pop("retention_due", None)
+
+    stats["mastery_v2"] = new_level
+    stats["unique_contexts"] = unique_contexts
+    stats["productions"] = productions
+    stats["suspect"] = is_suspect
+    card_stats[cid_str] = stats
+    progress_data["cardStats"] = card_stats
+
+    db.session.execute(
+        db.text("UPDATE unstuck_progress SET data = :data, updated_at = NOW() WHERE user_id = :uid"),
+        {"data": json.dumps(progress_data), "uid": user.id}
+    )
+
+    return new_level
+
+def exercise_type_for_mastery_v2(mastery_v2_level):
+    """Return the exercise type needed to pass the next mastery gate."""
+    return MASTERY_V2_EXERCISE_TYPES.get(mastery_v2_level, "verification")
+
+def get_mastery_v2_due_phrases(card_stats, now):
+    """Find phrases that need mastery v2 progression or retention checks."""
+    due = []
+    retention_due = []
+    suspect_phrases = []
+
+    for cid_str, stats in card_stats.items():
+        m2 = stats.get("mastery_v2", 0)
+        if m2 >= 7:
+            continue  # fully mastered
+
+        if stats.get("suspect", False):
+            suspect_phrases.append(int(cid_str))
+            continue
+
+        # Check retention due
+        if m2 == 5:
+            ret_due = stats.get("retention_due")
+            if ret_due:
+                try:
+                    due_dt = datetime.datetime.fromisoformat(ret_due.replace("Z", "+00:00")).replace(tzinfo=None)
+                    if now >= due_dt:
+                        retention_due.append(int(cid_str))
+                        continue
+                except (ValueError, TypeError):
+                    retention_due.append(int(cid_str))
+                    continue
+
+        # Phrases at any non-mastered level are candidates for progression
+        if 1 <= m2 <= 6:
+            due.append(int(cid_str))
+
+    return due, retention_due, suspect_phrases
+
 # ── Auth routes ──
 @app.route("/api/health")
 def health():
@@ -564,18 +742,37 @@ def log_encounter(user):
     encounter_type = body.get("encounter_type")
     if card_id is None or not encounter_type:
         return jsonify({"error": "card_id and encounter_type required"}), 400
+    result_val = body.get("result")
+    response_time_ms = body.get("response_time_ms")
+    ex_id = body.get("exercise_id")
+    pass_id = body.get("passage_id")
     entry = EncounterLog(
         user_id=user.id,
         card_id=card_id,
-        exercise_id=body.get("exercise_id"),
-        passage_id=body.get("passage_id"),
+        exercise_id=ex_id,
+        passage_id=pass_id,
         encounter_type=encounter_type,
-        result=body.get("result"),
-        response_time_ms=body.get("response_time_ms"),
+        result=result_val,
+        response_time_ms=response_time_ms,
     )
     db.session.add(entry)
+    # Process mastery v2 update
+    new_mastery_v2 = process_mastery_v2_encounter(
+        user, card_id, encounter_type, result_val, response_time_ms, pass_id, ex_id
+    )
     db.session.commit()
-    return jsonify({"ok": True, "id": entry.id}), 201
+    return jsonify({"ok": True, "id": entry.id, "mastery_v2": new_mastery_v2}), 201
+
+@app.route("/api/mastery/<int:card_id>", methods=["GET"])
+@token_required
+def get_mastery_v2(user, card_id):
+    progress_data = user.progress.data if user.progress and user.progress.data else {}
+    card_stats = progress_data.get("cardStats", {})
+    cid_str = str(card_id)
+    m2_data = get_card_mastery_v2(card_stats, cid_str)
+    m2_data["mastery_v2_label"] = MASTERY_V2_LEVELS.get(m2_data["mastery_v2"], "unknown")
+    m2_data["mastery"] = card_stats.get(cid_str, {}).get("mastery", 0)
+    return jsonify(m2_data)
 
 @app.route("/api/encounters/<int:card_id>", methods=["GET"])
 @token_required
@@ -595,7 +792,7 @@ def compose_session(user):
 
     now = datetime.datetime.utcnow()
 
-    # 1. Find phrases due for review (SRS interval expired)
+    # 1. Find phrases due for review (SRS interval expired) + mastery v2 progression
     due_phrases = []
     for cid, stats in card_stats.items():
         interval = stats.get("interval", 1)
@@ -610,24 +807,29 @@ def compose_session(user):
         elif stats.get("mastery", 0) > 0:
             due_phrases.append(int(cid))
 
-    # 2. Find suspect phrases (high mastery but few unique contexts)
+    # 1b. Mastery V2: find phrases needing progression, retention checks, suspect re-verification
+    v2_due, v2_retention, v2_suspect = get_mastery_v2_due_phrases(card_stats, now)
+
+    # 2. Find suspect phrases (high mastery but few unique contexts) — legacy + v2 suspect
     seen_passages_ids = [r[0] for r in db.session.query(EncounterLog.passage_id).filter(
         EncounterLog.user_id == user.id,
         EncounterLog.passage_id.isnot(None)
     ).distinct().all()]
 
-    suspect = []
+    suspect = list(v2_suspect)  # Start with mastery v2 suspects
     for cid, stats in card_stats.items():
         if stats.get("mastery", 0) >= 3:
-            unique_ctx = db.session.query(EncounterLog.passage_id).filter(
-                EncounterLog.user_id == user.id,
-                EncounterLog.card_id == int(cid),
-                EncounterLog.passage_id.isnot(None)
-            ).distinct().count()
-            if unique_ctx < 2:
+            unique_ctx = stats.get("unique_contexts", 0)
+            if unique_ctx == 0:
+                unique_ctx = db.session.query(EncounterLog.passage_id).filter(
+                    EncounterLog.user_id == user.id,
+                    EncounterLog.card_id == int(cid),
+                    EncounterLog.passage_id.isnot(None)
+                ).distinct().count()
+            if unique_ctx < 2 and int(cid) not in suspect:
                 suspect.append(int(cid))
 
-    # 3. Pick target phrases (due first, then suspect, max 4)
+    # 3. Pick target phrases: retention checks first, then suspects, then due, max 4
     # Prioritize cards from user's selected domains (70% from selected domains)
     selected_domains = progress_data.get("selectedDomains", [])
     domain_card_ids = set()
@@ -636,8 +838,16 @@ def compose_session(user):
         domain_card_ids = {c.card_id for c in domain_cards}
 
     targets = []
+    # Retention checks are highest priority
+    for cid in v2_retention:
+        if cid not in targets and len(targets) < 2:
+            targets.append(cid)
+    # Then suspect re-verifications
+    for cid in v2_suspect:
+        if cid not in targets and len(targets) < 3:
+            targets.append(cid)
+    # Then domain-matching due phrases
     if domain_card_ids:
-        # Add domain-matching due phrases first
         for cid in due_phrases:
             if cid in domain_card_ids and cid not in targets and len(targets) < 3:
                 targets.append(cid)
@@ -716,9 +926,21 @@ def compose_session(user):
     ).distinct().all()]
 
     exercises = []
+    retention_check_ids = set(v2_retention)
     for cid in targets:
-        mastery = card_stats.get(str(cid), {}).get("mastery", 0)
-        ex_type = exercise_type_for_mastery(mastery)
+        stats_cid = card_stats.get(str(cid), {})
+        m2 = stats_cid.get("mastery_v2", 0)
+        if m2 > 0:
+            # Use mastery v2 exercise selection
+            if cid in retention_check_ids:
+                ex_type = "verification"
+            elif stats_cid.get("suspect", False):
+                ex_type = "fill_blank"  # re-verify in new context
+            else:
+                ex_type = exercise_type_for_mastery_v2(m2)
+        else:
+            mastery = stats_cid.get("mastery", 0)
+            ex_type = exercise_type_for_mastery(mastery)
         # Try preferred type first, then any type, excluding seen exercises
         q = ExercisePool.query.filter(ExercisePool.card_id == cid, ExercisePool.exercise_type == ex_type)
         if seen_exercise_ids:
@@ -732,7 +954,14 @@ def compose_session(user):
         if not ex:
             ex = ExercisePool.query.filter_by(card_id=cid).first()
         if ex:
-            exercises.append({"exercise_id": ex.exercise_id, "card_id": ex.card_id, "exercise_type": ex.exercise_type, "data": ex.data})
+            ex_out = {"exercise_id": ex.exercise_id, "card_id": ex.card_id, "exercise_type": ex.exercise_type, "data": ex.data}
+            ex_out["mastery_v2"] = m2
+            ex_out["mastery_v2_label"] = MASTERY_V2_LEVELS.get(m2, "unknown")
+            if cid in retention_check_ids:
+                ex_out["is_retention_check"] = True
+            if stats_cid.get("suspect", False):
+                ex_out["is_suspect_reverify"] = True
+            exercises.append(ex_out)
 
     passage_out = {
         "passage_id": passage.passage_id,
@@ -817,6 +1046,13 @@ def compose_session(user):
 
     # Flag if assessment is due (every 14 days)
     result["assessment_due"] = is_assessment_due(user)
+
+    # Mastery V2 summary for session
+    result["mastery_v2_summary"] = {
+        "retention_checks_due": len(v2_retention),
+        "suspect_phrases": len(v2_suspect),
+        "phrases_in_progress": len(v2_due),
+    }
 
     return result
 

@@ -209,7 +209,7 @@ def admin_stats(user):
     return jsonify({
         "total_users": User.query.count(),
         "total_cards": Card.query.count(),
-        "active_users": UserProgress.query.filter(UserProgress.data != {}).count(),
+        "active_users": UserProgress.query.filter(db.cast(UserProgress.data, db.String) != '{}').count(),
     })
 
 @app.route("/api/admin/cards", methods=["GET"])

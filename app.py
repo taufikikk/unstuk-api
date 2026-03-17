@@ -99,6 +99,24 @@ class WritingSubmission(db.Model):
     score = db.Column(db.Integer)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
+class ConversationScenario(db.Model):
+    __tablename__ = "unstuck_scenarios"
+    id = db.Column(db.Integer, primary_key=True)
+    scenario_id = db.Column(db.String(50), unique=True, nullable=False, index=True)
+    level = db.Column(db.String(5), nullable=False, index=True)
+    title = db.Column(db.String(200))
+    data = db.Column(db.JSON, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+class ConversationLog(db.Model):
+    __tablename__ = "unstuck_conversations"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("unstuck_users.id"), nullable=False, index=True)
+    scenario_id = db.Column(db.String(50))
+    messages = db.Column(db.JSON, nullable=False, default=list)
+    analysis = db.Column(db.JSON)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
 class EncounterLog(db.Model):
     __tablename__ = "unstuck_encounter_log"
     id = db.Column(db.Integer, primary_key=True)
@@ -867,6 +885,269 @@ def writing_history(user):
         "created_at": s.created_at.isoformat() if s.created_at else None,
     } for s in submissions], "count": len(submissions)})
 
+# ── Admin: Scenarios ──
+@app.route("/api/admin/scenarios/upload", methods=["POST"])
+@admin_required
+def admin_upload_scenarios(user):
+    body = request.get_json()
+    scenarios_data = body.get("scenarios", [])
+    if not isinstance(scenarios_data, list) or not scenarios_data:
+        return jsonify({"error": "Expected non-empty 'scenarios' array"}), 400
+    required = ["scenario_id", "level"]
+    errors = []
+    for i, s in enumerate(scenarios_data):
+        missing = [f for f in required if f not in s or s[f] is None]
+        if missing:
+            errors.append(f"Scenario {i} (id={s.get('scenario_id','?')}): missing {', '.join(missing)}")
+    if errors:
+        return jsonify({"error": "Validation failed", "details": errors[:10]}), 400
+    inserted = updated = 0
+    for s in scenarios_data:
+        sid = s["scenario_id"]
+        blob = {k: v for k, v in s.items() if k not in ("scenario_id", "level", "title")}
+        existing = ConversationScenario.query.filter_by(scenario_id=sid).first()
+        if existing:
+            existing.level = s["level"]
+            existing.title = s.get("title", existing.title)
+            existing.data = blob
+            db.session.execute(
+                db.text("UPDATE unstuck_scenarios SET level = :level, title = :title, data = :data WHERE scenario_id = :sid"),
+                {"level": s["level"], "title": s.get("title", ""), "data": json.dumps(blob), "sid": sid}
+            )
+            updated += 1
+        else:
+            db.session.add(ConversationScenario(scenario_id=sid, level=s["level"], title=s.get("title"), data=blob))
+            inserted += 1
+    db.session.commit()
+    return jsonify({"ok": True, "inserted": inserted, "updated": updated, "total": ConversationScenario.query.count()})
+
+# ── Conversation: helpers ──
+CONVERSATION_DAILY_LIMIT = 30
+
+def check_conversation_rate_limit(user):
+    """Check if user has exceeded daily message limit. Returns (ok, messages_today)."""
+    progress_data = user.progress.data if user.progress and user.progress.data else {}
+    conv_tracking = progress_data.get("conversationTracking", {})
+    today = datetime.datetime.utcnow().strftime("%Y-%m-%d")
+    if conv_tracking.get("date") == today:
+        return conv_tracking.get("count", 0) < CONVERSATION_DAILY_LIMIT, conv_tracking.get("count", 0)
+    return True, 0
+
+def increment_conversation_count(user):
+    """Increment daily message count in progress data."""
+    progress_data = user.progress.data if user.progress and user.progress.data else {}
+    today = datetime.datetime.utcnow().strftime("%Y-%m-%d")
+    conv_tracking = progress_data.get("conversationTracking", {})
+    if conv_tracking.get("date") == today:
+        conv_tracking["count"] = conv_tracking.get("count", 0) + 1
+    else:
+        conv_tracking = {"date": today, "count": 1}
+    progress_data["conversationTracking"] = conv_tracking
+    db.session.execute(
+        db.text("UPDATE unstuck_progress SET data = :data, updated_at = NOW() WHERE user_id = :uid"),
+        {"data": json.dumps(progress_data), "uid": user.id}
+    )
+
+def build_conversation_system_prompt(scenario, user_level):
+    data = scenario.data or {}
+    situation = data.get("situation", "a casual conversation")
+    ai_role = data.get("ai_role", "a friendly conversation partner")
+    ai_personality = data.get("ai_personality", "warm and encouraging")
+    target_phrases = data.get("target_phrases", [])
+    phrases_hint = ""
+    if target_phrases:
+        phrases_hint = f"\n- Try to naturally use or elicit these phrases: {', '.join(target_phrases)}"
+    return (
+        f"You are a friendly English conversation partner for a {user_level} learner.\n"
+        f"Scenario: {situation}. Your role: {ai_role}. Personality: {ai_personality}.\n\n"
+        f"Rules:\n"
+        f"- Match complexity to {user_level}\n"
+        f"- If user makes a grammar error, gently correct ONCE inline:\n"
+        f"  'Great point! (small note: \"I am agree\" → \"I agree\")'\n"
+        f"- Don't correct every error — max 1 correction per response\n"
+        f"- Introduce 1 new useful phrase per 3-4 messages{phrases_hint}\n"
+        f"- Stay in character as {ai_role}\n"
+        f"- Keep responses 2-4 sentences (natural conversation length)\n"
+        f"- If user seems stuck, ask an easier follow-up question\n"
+        f"- Use contractions and natural speech patterns"
+    )
+
+# ── Conversation: user endpoints ──
+@app.route("/api/conversation/scenarios", methods=["GET"])
+@token_required
+def conversation_scenarios(user):
+    progress_data = user.progress.data if user.progress and user.progress.data else {}
+    user_level = progress_data.get("userLevel", "B1")
+    scenarios = ConversationScenario.query.filter_by(level=user_level.upper()).order_by(ConversationScenario.id).all()
+    if not scenarios:
+        scenarios = ConversationScenario.query.order_by(ConversationScenario.id).all()
+    return jsonify({"scenarios": [{
+        "scenario_id": s.scenario_id,
+        "level": s.level,
+        "title": s.title,
+        "situation": (s.data or {}).get("situation", ""),
+        "ai_role": (s.data or {}).get("ai_role", ""),
+    } for s in scenarios], "count": len(scenarios)})
+
+@app.route("/api/conversation/start", methods=["POST"])
+@token_required
+def conversation_start(user):
+    body = request.get_json() or {}
+    scenario_id = body.get("scenario_id")
+    if not scenario_id:
+        return jsonify({"error": "scenario_id required"}), 400
+    scenario = ConversationScenario.query.filter_by(scenario_id=scenario_id).first()
+    if not scenario:
+        return jsonify({"error": f"Scenario {scenario_id} not found"}), 404
+    if not ANTHROPIC_API_KEY:
+        return jsonify({"error": "Conversation not configured (missing API key)"}), 503
+    ok, count = check_conversation_rate_limit(user)
+    if not ok:
+        return jsonify({"error": "Daily message limit reached (30/day)", "messages_today": count}), 429
+    progress_data = user.progress.data if user.progress and user.progress.data else {}
+    user_level = progress_data.get("userLevel", "B1")
+    system_prompt = build_conversation_system_prompt(scenario, user_level)
+    starter = (scenario.data or {}).get("starter_message")
+    if starter:
+        first_message = starter
+    else:
+        try:
+            import anthropic
+            client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+            response = client.messages.create(
+                model="claude-sonnet-4-20250514",
+                max_tokens=256,
+                system=system_prompt,
+                messages=[{"role": "user", "content": "Please start the conversation with your opening message."}],
+            )
+            first_message = response.content[0].text
+        except Exception as e:
+            return jsonify({"error": f"AI conversation failed: {str(e)}"}), 502
+    messages = [{"role": "assistant", "content": first_message}]
+    conv = ConversationLog(user_id=user.id, scenario_id=scenario_id, messages=messages)
+    db.session.add(conv)
+    increment_conversation_count(user)
+    db.session.commit()
+    return jsonify({"conversation_id": conv.id, "first_message": first_message}), 201
+
+@app.route("/api/conversation/message", methods=["POST"])
+@token_required
+def conversation_message(user):
+    body = request.get_json() or {}
+    conversation_id = body.get("conversation_id")
+    user_message = (body.get("message") or "").strip()
+    if not conversation_id or not user_message:
+        return jsonify({"error": "conversation_id and message required"}), 400
+    conv = ConversationLog.query.filter_by(id=conversation_id, user_id=user.id).first()
+    if not conv:
+        return jsonify({"error": "Conversation not found"}), 404
+    if conv.analysis:
+        return jsonify({"error": "Conversation has ended"}), 400
+    if not ANTHROPIC_API_KEY:
+        return jsonify({"error": "Conversation not configured (missing API key)"}), 503
+    ok, count = check_conversation_rate_limit(user)
+    if not ok:
+        return jsonify({"error": "Daily message limit reached (30/day)", "messages_today": count}), 429
+    scenario = ConversationScenario.query.filter_by(scenario_id=conv.scenario_id).first()
+    if not scenario:
+        return jsonify({"error": "Scenario not found"}), 404
+    progress_data = user.progress.data if user.progress and user.progress.data else {}
+    user_level = progress_data.get("userLevel", "B1")
+    system_prompt = build_conversation_system_prompt(scenario, user_level)
+    messages = list(conv.messages or [])
+    messages.append({"role": "user", "content": user_message})
+    try:
+        import anthropic
+        client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+        response = client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=512,
+            system=system_prompt,
+            messages=messages,
+        )
+        ai_response = response.content[0].text
+    except Exception as e:
+        return jsonify({"error": f"AI conversation failed: {str(e)}"}), 502
+    messages.append({"role": "assistant", "content": ai_response})
+    db.session.execute(
+        db.text("UPDATE unstuck_conversations SET messages = :msgs WHERE id = :cid"),
+        {"msgs": json.dumps(messages), "cid": conv.id}
+    )
+    increment_conversation_count(user)
+    db.session.commit()
+    return jsonify({"response": ai_response, "message_count": len(messages)})
+
+@app.route("/api/conversation/end", methods=["POST"])
+@token_required
+def conversation_end(user):
+    body = request.get_json() or {}
+    conversation_id = body.get("conversation_id")
+    if not conversation_id:
+        return jsonify({"error": "conversation_id required"}), 400
+    conv = ConversationLog.query.filter_by(id=conversation_id, user_id=user.id).first()
+    if not conv:
+        return jsonify({"error": "Conversation not found"}), 404
+    if conv.analysis:
+        return jsonify({"analysis": conv.analysis})
+    if not ANTHROPIC_API_KEY:
+        return jsonify({"error": "Conversation not configured (missing API key)"}), 503
+    messages = conv.messages or []
+    user_messages = [m["content"] for m in messages if m["role"] == "user"]
+    if not user_messages:
+        return jsonify({"error": "No user messages to analyze"}), 400
+    scenario = ConversationScenario.query.filter_by(scenario_id=conv.scenario_id).first()
+    target_phrases = (scenario.data or {}).get("target_phrases", []) if scenario else []
+    analysis_prompt = (
+        "Analyze this English conversation by a language learner. "
+        "The full conversation:\n\n"
+        + "\n".join([f"{m['role'].upper()}: {m['content']}" for m in messages])
+        + "\n\n"
+    )
+    if target_phrases:
+        analysis_prompt += f"Target phrases the learner should try to use: {', '.join(target_phrases)}\n\n"
+    analysis_prompt += (
+        "Respond in JSON only: {\n"
+        '  "fluency_score": 1-10,\n'
+        '  "vocabulary_used": ["list", "of", "notable", "words/phrases"],\n'
+        '  "grammar_errors": [{"error": "...", "correction": "...", "explanation": "..."}],\n'
+        '  "phrases_from_app": ["phrases from target list that were used"],\n'
+        '  "strengths": "one sentence about what they did well",\n'
+        '  "improvement": "one sentence about what to work on"\n'
+        "}"
+    )
+    try:
+        import anthropic
+        client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+        response = client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=1024,
+            messages=[{"role": "user", "content": analysis_prompt}],
+        )
+        raw = response.content[0].text
+        analysis = json.loads(raw)
+    except json.JSONDecodeError:
+        analysis = {"raw_response": raw, "error": "Failed to parse AI analysis as JSON"}
+    except Exception as e:
+        return jsonify({"error": f"AI analysis failed: {str(e)}"}), 502
+    db.session.execute(
+        db.text("UPDATE unstuck_conversations SET analysis = :analysis WHERE id = :cid"),
+        {"analysis": json.dumps(analysis), "cid": conv.id}
+    )
+    db.session.commit()
+    return jsonify({"analysis": analysis})
+
+@app.route("/api/conversation/history", methods=["GET"])
+@token_required
+def conversation_history(user):
+    convs = ConversationLog.query.filter_by(user_id=user.id).order_by(ConversationLog.created_at.desc()).all()
+    return jsonify({"conversations": [{
+        "id": c.id,
+        "scenario_id": c.scenario_id,
+        "message_count": len(c.messages or []),
+        "analysis": c.analysis,
+        "created_at": c.created_at.isoformat() if c.created_at else None,
+    } for c in convs], "count": len(convs)})
+
 # ── Admin: Content Stats ──
 @app.route("/api/admin/content-stats", methods=["GET"])
 @admin_required
@@ -877,10 +1158,13 @@ def admin_content_stats(user):
         "total_listening": ListeningExercise.query.count(),
         "total_writing_prompts": WritingPrompt.query.count(),
         "total_writing_submissions": WritingSubmission.query.count(),
+        "total_scenarios": ConversationScenario.query.count(),
+        "total_conversations": ConversationLog.query.count(),
         "total_encounters": EncounterLog.query.count(),
         "passages_by_level": {level: count for level, count in db.session.query(Passage.level, db.func.count(Passage.id)).group_by(Passage.level).all()},
         "listening_by_level": {level: count for level, count in db.session.query(ListeningExercise.level, db.func.count(ListeningExercise.id)).group_by(ListeningExercise.level).all()},
         "writing_by_level": {level: count for level, count in db.session.query(WritingPrompt.level, db.func.count(WritingPrompt.id)).group_by(WritingPrompt.level).all()},
+        "scenarios_by_level": {level: count for level, count in db.session.query(ConversationScenario.level, db.func.count(ConversationScenario.id)).group_by(ConversationScenario.level).all()},
     })
 
 # ── Seed ──

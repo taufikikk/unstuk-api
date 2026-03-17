@@ -546,6 +546,15 @@ def admin_upload_exercises(user):
     db.session.commit()
     return jsonify({"ok": True, "inserted": inserted, "updated": updated, "total": ExercisePool.query.count()})
 
+@app.route("/api/admin/exercises", methods=["GET"])
+@admin_required
+def admin_list_exercises(user):
+    exercises = ExercisePool.query.order_by(ExercisePool.card_id).all()
+    return jsonify({
+        "exercises": [{"exercise_id": e.exercise_id, "card_id": e.card_id, "exercise_type": e.exercise_type} for e in exercises],
+        "count": len(exercises)
+    })
+
 # ── Admin: Content Stats ──
 @app.route("/api/admin/content-stats", methods=["GET"])
 @admin_required

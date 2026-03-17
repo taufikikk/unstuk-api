@@ -1,355 +1,324 @@
-# CLAUDE.md — Unstuck App Implementation Spec
+
+# CLAUDE.md — Unstuck App Complete Implementation Spec
 
 ## Project Overview
 
-Unstuck is an English learning app deployed as:
-- **Frontend**: Vercel (static HTML + React via Babel Standalone)
-- **Backend**: Railway (Flask + SQLAlchemy + PostgreSQL on Neon)
-- **Repo structure**: `backend/` and `frontend/` folders
+Unstuck is an English learning app that makes users "immersion-ready" — able to watch Netflix, join meetings, read articles, and hold conversations in English without freezing.
 
-## Current Architecture
-
-### Backend (`backend/app.py`)
-
-Flask app with these models:
-- `unstuck_users` (id, username, password_hash, is_admin, created_at)
-- `unstuck_progress` (id, user_id FK, data JSONB, updated_at)
-- `unstuck_cards` (id, card_id UNIQUE, data JSONB, created_at)
-
-Card data JSONB contains: phrase, context, meaning, meaningEn, usage, wrongOptions, fillBlank, fillAnswer, rearrange
-
-Auth: JWT tokens (90-day), bcrypt passwords. Admin auto-assigned if username matches ADMIN_USER env var.
-
-Existing endpoints:
-- POST /api/auth/register, /api/auth/login
-- GET/POST /api/progress, POST /api/reset
-- GET /api/cards (public - returns all cards)
-- GET /api/admin/cards, POST /api/admin/cards/upload, DELETE /api/admin/cards/:id
-- POST /api/admin/cards/delete-all
-- GET /api/admin/stats, GET /api/health
-
-DB URL fix: `postgres://` auto-replaced to `postgresql://` for Neon compatibility.
-CORS: FRONTEND_URL env var.
-
-### Frontend (`frontend/public/index.html`)
-
-Single HTML file with inline React (Babel Standalone). No build step. **367 lines.**
-
-**IMPORTANT: The frontend is an OLDER version that does NOT have:**
-- Admin panel (no AdminPanel component)
-- API-based card loading (cards load from static `/cards.js` file via `window.CARDS`)
-- `isAdmin` state or localStorage helpers (`getIsAdmin`, `setIsAdmin`)
-- Admin button on any screen
-- `apiLoadCards`, `apiUploadCards`, `apiAdminStats`, `apiDeleteCard` functions
-- `cards` prop on LessonScreen (it uses `window.CARDS` directly)
-
-**The backend HAS admin endpoints — the frontend just doesn't use them yet.**
-
-What the frontend DOES have:
-- Fonts: Fraunces (display, variable `Fd`) + DM Sans (body, variable `Fb`)
-- Theme object `T` with colors (bg, card, text, muted, accent, accentSoft, ok, okSoft, hi, hiSoft, navy, navySoft, purple, purpleSoft, teal, tealSoft, border, shadow)
-- Inline SVG icon components: Icon, ChevronRight, ArrowRight, Check, Zap, BookOpen, Trophy, Heart, RotateCcw, Flame, RefreshCw, HelpCircle, Shuffle, Sparkles, Brain, Shield
-- Shared components: FadeIn, Bar, Btn, Badge, Confetti, HelpOverlay, FrustrationBanner
-- Auth: `getToken/setToken/clearToken/getUsername/setUsername` using localStorage keys `eng_token`, `eng_user`
-- API helpers: `apiLoad()`, `apiSave(data)`, `apiReset()`, `apiRegister(username,password)`, `apiLogin(username,password)` — all use `window.API_URL` from `/config.js`
-- Cards: loaded from `/cards.js` as `window.CARDS` (static file, NOT from API)
-- SRS: `newCardStats()`, `updateSRS(stats, wasCorrect)`, `buildLesson(allCards, statsMap)`, `exerciseForMastery(mastery)`
-- LPP: 4 archetypes (scorekeeper, explorer, witness, pragmatist) with `getLPP(profile)` returning per-archetype messaging
-- Exercise components: RearrangeEx, RecallEx (standalone components with card.id-based useEffect reset)
-- Screens: AuthScreen, WelcomeScreen, WelcomeBackScreen, GoalScreen, PlacementScreen, LevelRevealScreen, LessonScreen, CelebrationScreen, TomorrowScreen
-
-Screen flow (state machine in App component):
-- New user: welcome → goal → placement → level-reveal → lesson → celebration → tomorrow
-- Returning: welcome-back → lesson → celebration → tomorrow
-- NO admin screen exists
-
-LessonScreen details:
-- `buildLesson(window.CARDS, allStats)` called in `useState(() => ...)` lazy initializer
-- 8 cards per session, 70% review + 30% new
-- 5 exercise types selected by mastery: learn(0), quiz(1), fill(2), rearrange(3), recall(4+)
-- `next()` sets all state synchronously (step, phase, sel, isOk, fillIn, etc.) to avoid flash
-- `useEffect(()=>{...},[])` for initial card setup only
-
-App component state:
-- `loading`, `authed` — auth flow
-- `screen` — current screen name
-- `lpp` — learner psychology profile (scorekeeper/explorer/witness/pragmatist)
-- `level` — CEFR level (A2/B1/B2/C1)
-- `lScore` — last lesson score {s, t}
-- `streak`, `lessons`, `lessonCards`, `cardStats` — progress data
-- NO `allCards` state (uses window.CARDS)
-- NO `isAdmin` state
-
-**When building Sprint 1, Claude Code needs to ALSO add:**
-1. Admin panel (AdminPanel component with tabs for Cards, Passages, Exercises)
-2. Switch cards from `window.CARDS` static file to `GET /api/cards` API
-3. `isAdmin` tracking in localStorage
-4. Admin button on WelcomeScreen and WelcomeBackScreen
-5. All missing API helper functions (apiLoadCards, apiUploadCards, apiAdminStats, apiDeleteCard)
-6. Pass `cards` as prop to LessonScreen instead of using window.CARDS
-
-These are PREREQUISITES before adding the Reading module.
+**Deployed as:**
+- **Frontend**: Vercel (repo: `unstuck-web`) — static HTML + React via Babel Standalone
+- **Backend**: Railway (repo: `unstuck-api`) — Flask + SQLAlchemy + PostgreSQL on Neon
+- **Two separate repos, two separate codespaces.**
 
 ---
 
-## What to Build: Sprint 1 — Admin Panel + Card API + Reading Module + New Session Flow
+## Current Architecture (WHAT EXISTS NOW)
 
-### Step 0: PREREQUISITES (admin panel + API-based cards)
+### Backend (`app.py`)
 
-The deployed frontend is missing admin panel and API-based card loading.
-Build these FIRST before adding reading module:
+Flask app. Single file. All tables prefixed `unstuck_`.
 
-**0a. Add missing API helper functions to frontend:**
-```javascript
-// Add after existing apiReset function:
-function getIsAdmin(){return localStorage.getItem("eng_admin")==="true"}
-function setIsAdmin(v){localStorage.setItem("eng_admin",v?"true":"false")}
+**Existing Models:**
+- `unstuck_users` (id, username, password_hash, is_admin, created_at)
+- `unstuck_progress` (id, user_id FK, data JSONB, updated_at)
+- `unstuck_cards` (id, card_id UNIQUE, data JSONB, created_at)
+- `unstuck_passages` (id, passage_id UNIQUE, level, topic, title, data JSONB, created_at)
+- `unstuck_exercise_pool` (id, card_id, exercise_type, exercise_id UNIQUE, data JSONB, created_at)
+- `unstuck_encounter_log` (id, user_id FK, card_id, exercise_id, passage_id, encounter_type, result, response_time_ms, created_at)
 
-async function apiLoadCards(){
-  try{const r=await fetch(window.API_URL+"/api/cards");const j=await r.json();return j.cards||[]}catch{return[]}
-}
-async function apiUploadCards(cards){
-  const t=getToken();if(!t)throw new Error("Not authenticated");
-  const r=await fetch(window.API_URL+"/api/admin/cards/upload",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+t},body:JSON.stringify({cards})});
-  const j=await r.json();if(!r.ok)throw new Error(j.error||"Upload failed");return j;
-}
-async function apiAdminStats(){
-  const t=getToken();if(!t)return null;
-  const r=await fetch(window.API_URL+"/api/admin/stats",{headers:{"Authorization":"Bearer "+t}});
-  return r.ok?await r.json():null;
-}
-async function apiDeleteCard(cardId){
-  const t=getToken();
-  const r=await fetch(window.API_URL+"/api/admin/cards/"+cardId,{method:"DELETE",headers:{"Authorization":"Bearer "+t}});
-  return r.ok;
-}
-```
+**Card data JSONB:** phrase, context, meaning, meaningEn, usage, wrongOptions, fillBlank, fillAnswer, rearrange
 
-**0b. Update apiRegister and apiLogin to save is_admin:**
-The backend already returns `is_admin` in the response — frontend needs to store it.
+**Passage data JSONB:** text, word_count, target_phrases [{phrase, card_id, sentence_index}], bonus_phrases, comprehension [{question, options, correct, type}], vocabulary
 
-**0c. Build AdminPanel component:**
-Tabs: Cards (upload JSON + list + delete), Passages (same), Exercises (same), Stats dashboard.
-Same visual style as rest of app.
+**Existing Endpoints:**
+- POST /api/auth/register, /api/auth/login
+- GET/POST /api/progress, POST /api/reset
+- GET /api/cards (public)
+- GET /api/passages?level= (public)
+- GET /api/session/compose (auth — returns mixed or flashcard_only session)
+- POST /api/encounter (auth — logs encounter)
+- GET /api/admin/cards, POST /api/admin/cards/upload, DELETE /api/admin/cards/:id
+- POST /api/admin/cards/delete-all
+- GET /api/admin/passages, POST /api/admin/passages/upload, DELETE /api/admin/passages/:id
+- POST /api/admin/exercises/upload, GET /api/admin/exercises
+- GET /api/admin/stats, GET /api/admin/content-stats
+- GET /api/health
 
-**0d. Switch cards from window.CARDS to API:**
-- Remove `<script src="/cards.js"></script>` from HTML
-- Add `allCards` state to App component
-- Fetch cards via `apiLoadCards()` on auth
-- Pass `cards` prop to LessonScreen instead of using window.CARDS
-- LessonScreen: change `buildLesson(window.CARDS, allStats)` to `buildLesson(cards, allStats)`
+**Auth:** JWT (90-day), bcrypt. Admin auto-assigned if username matches ADMIN_USER env var.
 
-**0e. Add admin button to WelcomeScreen and WelcomeBackScreen:**
-- WelcomeScreen: add `isAdmin` and `onAdmin` props, show "Admin Panel" button top-right if admin
-- WelcomeBackScreen: add `isAdmin` and `onAdmin` props, show "Admin" button next to "Sign out"
-- App: add `screen==="admin"` rendering AdminPanel
+**DB URL fix:** `postgres://` auto-replaced to `postgresql://` for Neon.
 
-**0f. Add `screen==="admin"` to App's screen rendering.**
+**Environment Variables:**
+- DATABASE_URL — Neon connection string
+- SECRET_KEY — JWT signing key
+- ADMIN_USER — username that gets auto-admin on register
+- FRONTEND_URL — Vercel URL for CORS
+- ANTHROPIC_API_KEY — needed for Phase 3+ (writing evaluation, conversation)
 
-### Step 1: New Database Tables (AFTER prerequisites)
+### Frontend (`public/index.html`)
 
+Single HTML file with inline React (Babel Standalone). No build step.
+
+**Libraries:** React 18 (CDN), no external component libraries.
+
+**Styling:** All inline `style={{}}`. Font variables: `Fd` (Fraunces display), `Fb` (DM Sans body). Theme object `T` with: bg (#FBF7F0), card (#FFFFFF), text (#1A1A2E), muted (#6B6B80), accent (#D4613E), accentSoft, ok (#4A8B6F), okSoft, hi (#F2CC8F), hiSoft, navy (#3D405B), navySoft, purple (#7B68A8), purpleSoft, teal (#4A90A4), tealSoft, border (#E8E4DC), shadow.
+
+**Icons:** Inline SVG components (Icon, ChevronRight, ArrowRight, Check, Zap, BookOpen, Trophy, Heart, RotateCcw, Flame, RefreshCw, HelpCircle, Shuffle, Sparkles, Brain, Shield).
+
+**Shared Components:** FadeIn, Bar, Btn, Badge, Confetti, HelpOverlay, FrustrationBanner.
+
+**Auth:** localStorage keys: eng_token, eng_user, eng_admin. API calls use `window.API_URL` from `/config.js`.
+
+**Existing Screens:** AuthScreen, WelcomeScreen, WelcomeBackScreen, GoalScreen, PlacementScreen, LevelRevealScreen, LessonScreen (flashcard), ReadingScreen, CelebrationScreen, TomorrowScreen, AdminPanel.
+
+**Current Session Flow:**
+- New user: welcome → goal → placement → level-reveal → lesson → celebration → tomorrow
+- Returning (with passages): welcome-back → reading session (passage → comprehension → highlight → exercises → recall check → celebration) → tomorrow
+- Returning (no passages): welcome-back → flashcard lesson → celebration → tomorrow
+- Admin: admin panel accessible from welcome/welcome-back screens
+
+**SRS:** Modified SM-2 with mastery 0-5, stored in progress.data.cardStats.
+
+**LPP:** 4 archetypes (scorekeeper, explorer, witness, pragmatist) with per-archetype messaging.
+
+**Exercise Types:** learn, quiz, fill, rearrange, recall — selected by exerciseForMastery(mastery).
+
+---
+
+## ALL NEW FEATURES TO BUILD (Phases 2-8)
+
+Each phase adds new models, endpoints, and frontend components. Everything is ADDITIVE — never remove or break existing features.
+
+---
+
+### PHASE 2: LISTENING
+
+**New Model: ListeningExercise**
 ```sql
--- Reading passages with embedded target phrases
-CREATE TABLE unstuck_passages (
+CREATE TABLE unstuck_listening (
     id SERIAL PRIMARY KEY,
-    passage_id VARCHAR(50) UNIQUE NOT NULL,
-    level VARCHAR(5) NOT NULL,  -- B1, B2, C1, C2
-    topic VARCHAR(100),
+    exercise_id VARCHAR(50) UNIQUE NOT NULL,
+    level VARCHAR(5) NOT NULL,
+    exercise_type VARCHAR(30) NOT NULL,
+    data JSONB NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+```
+exercise_type values: "dictation", "listen_comprehension", "connected_speech", "speed_drill"
+
+dictation data: { text, word_count }
+listen_comprehension data: { text, questions: [{question, options, correct}], target_phrases }
+connected_speech data: { reduced, full, sentence, options, correct, example, difficulty }
+speed_drill data: { text, speeds: [0.75, 1.0, 1.25], questions }
+
+**New Endpoints:**
+- POST /api/admin/listening/upload — admin bulk upload
+- GET /api/admin/listening — admin list all
+- DELETE /api/admin/listening/<exercise_id> — admin delete
+- GET /api/listening/next — auth, returns next unseen listening exercise
+
+**Session Composer Update:** After 3+ reading sessions, mix in 1 listening exercise per session. New session type: "mixed_with_listening".
+
+**Frontend:** ListeningScreen using Web Speech API (window.speechSynthesis) for TTS. Exercise types: dictation (type what you hear), listen-comprehension (listen → questions → reveal text), connected-speech (identify reduced forms), speed-drill (increasing speeds). Optional "Real World Mode" with background noise via Web Audio API.
+
+---
+
+### PHASE 3: WRITING
+
+**New Models:**
+```sql
+CREATE TABLE unstuck_writing_prompts (
+    id SERIAL PRIMARY KEY,
+    prompt_id VARCHAR(50) UNIQUE NOT NULL,
+    level VARCHAR(5) NOT NULL,
+    prompt_type VARCHAR(30) NOT NULL,
+    data JSONB NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE unstuck_writing_submissions (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES unstuck_users(id),
+    prompt_id VARCHAR(50) NOT NULL,
+    user_text TEXT NOT NULL,
+    ai_feedback JSONB,
+    score INTEGER,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+```
+prompt_type: "email_completion", "rewrite", "free_write", "summary", "argument"
+
+**New Endpoints:**
+- POST /api/admin/writing/upload — admin bulk upload prompts
+- GET /api/admin/writing — admin list
+- GET /api/writing/next — auth, next unseen prompt for user
+- POST /api/writing/submit — auth, user text → Claude API evaluation → store + return feedback
+- GET /api/writing/history — auth, past submissions
+
+**Claude API Integration:** Uses `anthropic` Python package (add to requirements.txt). Calls claude-sonnet-4-20250514 for evaluation. System prompt evaluates: grammar, naturalness, vocabulary_range, coherence (1-10 each). Returns: scores, errors with corrections, positive comment, suggestion. Needs ANTHROPIC_API_KEY env var.
+
+**Frontend:** WritingScreen with email_completion (situation + starter + textarea), rewrite (awkward sentence → rewrite), free_write (topic + textarea). WritingFeedback shows score circle, inline error highlights (red = grammar, yellow = unnatural), positive comment, suggestion.
+
+---
+
+### PHASE 4: CONVERSATION
+
+**New Models:**
+```sql
+CREATE TABLE unstuck_scenarios (
+    id SERIAL PRIMARY KEY,
+    scenario_id VARCHAR(50) UNIQUE NOT NULL,
+    level VARCHAR(5) NOT NULL,
     title VARCHAR(200),
     data JSONB NOT NULL,
     created_at TIMESTAMP DEFAULT NOW()
 );
--- data JSONB: { text, word_count, target_phrases: [{phrase, card_id, sentence_index}], 
---   bonus_phrases, comprehension: [{question, options, correct, type}], vocabulary }
 
--- Exercise variation pool (multiple exercises per phrase)
-CREATE TABLE unstuck_exercise_pool (
+CREATE TABLE unstuck_conversations (
     id SERIAL PRIMARY KEY,
-    card_id INTEGER NOT NULL,
-    exercise_type VARCHAR(30) NOT NULL,
-    exercise_id VARCHAR(50) UNIQUE NOT NULL,
+    user_id INTEGER NOT NULL REFERENCES unstuck_users(id),
+    scenario_id VARCHAR(50),
+    messages JSONB NOT NULL DEFAULT '[]',
+    analysis JSONB,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+```
+scenario data: { situation, ai_role, ai_personality, starter_message, target_phrases, success_criteria, curveball }
+
+**New Endpoints:**
+- POST /api/admin/scenarios/upload — admin bulk upload
+- GET /api/conversation/scenarios — auth, list for user level
+- POST /api/conversation/start — auth, start with scenario_id → returns conversation_id + first message
+- POST /api/conversation/message — auth, send message → Claude API → return response
+- POST /api/conversation/end — auth, end → Claude API analysis → return report
+- GET /api/conversation/history — auth, past conversations
+
+**Rate Limiting:** 30 messages/day per user. Track in progress data.
+
+**Frontend:** ConversationScreen with scenario picker, chat interface (bubbles, typing indicator, correction highlights in #FFF3CD bg), post-conversation analysis (fluency score, vocabulary, grammar errors, phrases used). Access via button on WelcomeBackScreen.
+
+---
+
+### PHASE 5: GRAMMAR + REAL-WORLD
+
+**New Model:**
+```sql
+CREATE TABLE unstuck_grammar (
+    id SERIAL PRIMARY KEY,
+    lesson_id VARCHAR(50) UNIQUE NOT NULL,
+    level VARCHAR(5) NOT NULL,
+    title VARCHAR(200),
+    grammar_point VARCHAR(100),
     data JSONB NOT NULL,
     created_at TIMESTAMP DEFAULT NOW()
 );
--- exercise_type: fill_blank, discrimination, usage_boundary, situation, verification
--- data varies by type (see generation plan doc)
+```
+data: { examples[10], pattern_question, pattern_explanation, exercises[5], production[2], exceptions[3], auto_cards[3] }
 
--- Track which exercises/passages each user has seen
-CREATE TABLE unstuck_encounter_log (
+**New Endpoints:**
+- POST /api/admin/grammar/upload
+- GET /api/grammar/next — auth, based on user error patterns
+- POST /api/grammar/complete — auth, mark complete
+
+**Grammar Trigger:** Track error categories from writing + conversation. If same error 3+ times → schedule lesson. Categories: articles, prepositions, verb_tense, word_order, subject_verb_agreement, conditionals, passive_voice, reported_speech.
+
+**Frontend:** GrammarLessonScreen (5-step: Notice → Spot Pattern → Practice → Produce → Exceptions), SubtextExercise ("what they say vs mean"), RegisterExercise (same message, 3 formality levels), SarcasmExercise (sincere or sarcastic detection).
+
+---
+
+### PHASE 6: ASSESSMENT + DASHBOARD
+
+**New Models:**
+```sql
+CREATE TABLE unstuck_assessments (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL REFERENCES unstuck_users(id),
-    card_id INTEGER NOT NULL,
-    exercise_id VARCHAR(50),
-    passage_id VARCHAR(50),
-    encounter_type VARCHAR(30) NOT NULL,
-    result VARCHAR(20),
-    response_time_ms INTEGER,
+    question_id VARCHAR(50) UNIQUE NOT NULL,
+    skill VARCHAR(30) NOT NULL,
+    level VARCHAR(5) NOT NULL,
+    data JSONB NOT NULL,
     created_at TIMESTAMP DEFAULT NOW()
 );
-CREATE INDEX idx_encounter_user_card ON unstuck_encounter_log(user_id, card_id);
-CREATE INDEX idx_encounter_user_passage ON unstuck_encounter_log(user_id, passage_id);
+
+CREATE TABLE unstuck_assessment_results (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES unstuck_users(id),
+    assessment_type VARCHAR(30),
+    scores JSONB NOT NULL,
+    overall_level VARCHAR(5),
+    created_at TIMESTAMP DEFAULT NOW()
+);
 ```
 
-### New Backend Endpoints
+**New Endpoints:**
+- POST /api/admin/assessments/upload
+- GET /api/assessment/start — auth, adaptive 20 questions
+- POST /api/assessment/submit — auth, return scored results
+- GET /api/assessment/history — auth, trends
 
-```
-# Public
-GET /api/passages?level={level}     → list passages by level (id, title, level only)
+**Frontend:** ProgressScreen (radar chart SVG, CEFR cards, immersion readiness, streak calendar, stats). AssessmentScreen (adaptive questions, timed, per-skill results).
 
-# Auth required
-GET /api/session/compose            → returns a composed session for the user
-POST /api/encounter                 → log an encounter (user saw/answered an exercise)
-GET /api/encounters/:card_id        → get user's encounter history for a card
+---
 
-# Admin
-POST /api/admin/passages/upload     → bulk upload passages (same pattern as cards)
-GET  /api/admin/passages            → list all passages with metadata
-DELETE /api/admin/passages/:id      → delete a passage
-POST /api/admin/exercises/upload    → bulk upload exercise variations
-GET  /api/admin/content-stats       → counts of passages, exercises, encounters
-```
+### PHASE 7: ADVANCED FEATURES
 
-### Session Composer Logic (Backend)
+**Card Model Update:** Add optional `domain` VARCHAR(50) to unstuck_cards.
 
-```python
-def compose_session(user):
-    """Compose a mixed session: reading + exercises"""
-    user_level = user.progress.data.get("userLevel", "B1")
-    card_stats = user.progress.data.get("cardStats", {})
-    
-    # 1. Find phrases due for review (SRS)
-    due_phrases = get_due_phrases(card_stats)  # returns card_ids
-    
-    # 2. Find phrases with suspect mastery (high mastery but few unique contexts)
-    suspect = get_suspect_phrases(card_stats, user.id)
-    
-    # 3. Pick target phrases for this session (3-5)
-    targets = pick_targets(due_phrases, suspect, max=4)
-    
-    # 4. Find a passage containing some of these phrases that user hasn't read
-    seen_passages = get_seen_passage_ids(user.id)
-    passage = find_passage(targets, user_level, exclude=seen_passages)
-    
-    # 5. For each target phrase, pick an exercise variation user hasn't seen
-    exercises = []
-    for card_id in targets:
-        seen_exercises = get_seen_exercise_ids(user.id, card_id)
-        mastery = get_mastery_level(card_stats, card_id)
-        ex_type = exercise_type_for_mastery(mastery)
-        exercise = pick_exercise(card_id, ex_type, exclude=seen_exercises)
-        if exercise:
-            exercises.append(exercise)
-    
-    # 6. If no passage found with these phrases, pick any unseen passage at user's level
-    #    and use its embedded phrases as targets instead
-    if not passage:
-        passage = find_any_unseen_passage(user_level, seen_passages)
-        if passage:
-            targets = passage.data["target_phrases"]
-            exercises = [pick_any_exercise(t["card_id"]) for t in targets]
-    
-    # 7. Fallback: if no passages at all, serve classic flashcard session
-    if not passage:
-        return {"type": "flashcard_only", "cards": build_classic_lesson(cards, card_stats)}
-    
-    return {
-        "type": "mixed",
-        "passage": passage,
-        "exercises": exercises,
-        "target_phrases": targets
-    }
+**New Endpoints:**
+- GET /api/cards/domains — list with counts
+- POST /api/user/domains — auth, save selected domains
+
+**Frontend:** Domain selection in onboarding, SlangExercise, ConnectedSpeechScreen (TTS reduced forms, speed ladder).
+
+---
+
+### PHASE 8: TOEFL + MASTERY V2 + POLISH
+
+**New Model:**
+```sql
+CREATE TABLE unstuck_toefl (
+    id SERIAL PRIMARY KEY,
+    section_id VARCHAR(50) UNIQUE NOT NULL,
+    section_type VARCHAR(30) NOT NULL,
+    data JSONB NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
 ```
 
-### Frontend Changes
+**New Endpoints:**
+- POST /api/admin/toefl/upload
+- GET /api/toefl/sections, POST /api/toefl/start/:id, POST /api/toefl/submit/:id, GET /api/toefl/history
 
-#### New Screen: ReadingScreen
+**Mastery V2:** 7 levels (Unseen → Encountered → Recognized → Discriminated → Produced → Comprehended → Retained → Mastered). Track unique_contexts. Suspect detection (response_time < 1500ms). 14-day retention check. Store mastery_v2 alongside existing mastery.
 
-```
-Flow:
-1. Show passage title + estimated reading time
-2. User reads passage (plain text, no highlights)
-3. "Done reading" button
-4. Comprehension questions (one at a time, like quiz)
-5. After all questions answered:
-   - Show passage again WITH target phrases highlighted
-   - Brief explanation for each phrase
-6. Transition to exercise screens for target phrases
-7. Celebration / session summary
-```
+**Smart Session Composer:** Session preview, multi-skill mixing, weakness targeting, length options (Quick/Standard/Deep).
 
-#### Modified App Flow
+**Frontend:** TOEFLScreen (timed sections), mastery visualization (7-step bars), session preview, ImmersionScreen (readiness recommendations).
 
-```
-OLD: welcome-back → lesson (8 flashcards) → celebration → tomorrow
+---
 
-NEW: welcome-back → session (composed by backend):
-  If mixed: reading → comprehension → phrase notice → exercises → summary
-  If flashcard_only (no passages yet): classic 8-card lesson (existing code)
-  
-Button text: "Today's Session" (not "Today's lesson")
-```
+## KEY CONSTRAINTS (ALL PHASES)
 
-#### Admin Panel: New Tabs
+- Frontend: single HTML, inline React + Babel, no build step, no npm
+- Styling: inline `style={{}}`, use Fd/Fb/T
+- Backend: single `app.py`, keep simple
+- Tables: prefix `unstuck_`
+- Everything ADDITIVE — never break existing
+- Fallback: if content missing, degrade gracefully
+- Claude API: `anthropic` package, model `claude-sonnet-4-20250514`
+- New pip packages: add to requirements.txt
 
-Add "Passages" tab in AdminPanel:
-- Upload JSON (same UX as card upload)
-- List passages with title, level, phrase count
-- Delete per passage
+---
 
-Add "Exercises" tab:
-- Upload exercise variations JSON
-- List by card_id with count of variations
+## ENVIRONMENT VARIABLES (Railway)
 
-Add "Content Stats" card on admin dashboard:
-- Total passages, exercises, encounters logged
+| Variable | Phase | Description |
+|----------|-------|-------------|
+| DATABASE_URL | All | Neon PostgreSQL |
+| SECRET_KEY | All | JWT signing |
+| ADMIN_USER | All | Auto-admin username |
+| FRONTEND_URL | All | Vercel URL for CORS |
+| ANTHROPIC_API_KEY | 3+ | Writing eval + conversation |
 
-### Mastery V2 (stored alongside V1)
+---
 
-For now, ADD mastery_v2 to cardStats WITHOUT removing old mastery. This allows:
-- Old flashcard flow still works (fallback)
-- New reading flow uses mastery_v2
-- Gradual migration
-
-```javascript
-// In cardStats[card_id]:
-{
-  // V1 (keep for backward compat)
-  mastery: 3,
-  interval: 7,
-  ease: 2.5,
-  // ... existing SRS fields
-  
-  // V2 (new)
-  mastery_v2: 2,  // 0-7 scale
-  unique_contexts: 3,  // how many different contexts encountered
-  last_reading: "2026-03-20",
-  last_production: null,
-  retention_due: null,
-  suspect: false
-}
-```
-
-Mastery V2 levels:
-- 0: Unseen
-- 1: Encountered (seen in reading)
-- 2: Recognized (correct in new context, 2x)
-- 3: Discriminated (passed discrimination + usage boundary)
-- 4: Produced (wrote correctly in 2 new situations)
-- 5: Comprehended naturally (understood in passage without highlight)
-- 6: Retained (passed check after 14-day gap)
-- 7: Mastered (final)
-
-### Key Constraints
-
-- Frontend is single HTML file with inline React + Babel Standalone (currently 367 lines)
-- No npm, no build step, no webpack
-- Libraries available: React 18 (CDN), no external component libraries
-- All styling is inline `style={{}}` objects
-- Keep existing visual design: Fraunces headings, DM Sans body, warm cream bg (#FBF7F0), accent #D4613E
-- Backend is single `app.py` file (currently 258 lines, keep it that way for simplicity)
-- Tables prefixed with `unstuck_` (shared Neon database)
-- All new features should degrade gracefully: if no passages uploaded, app works like before
-- **CRITICAL: Cards currently load from static `/cards.js` file. Step 0d MUST migrate this to API before building reading module.**
-- **CRITICAL: Frontend currently has NO admin panel. Step 0c MUST build this before passages can be uploaded.**
-- Font variables: `Fd` = Fraunces (display/headings), `Fb` = DM Sans (body text)
-- Theme object: `T` with properties: bg, card, text, muted, accent, accentSoft, ok, okSoft, hi, hiSoft, navy, navySoft, purple, purpleSoft, teal, tealSoft, border, shadow
+*Unstuck CLAUDE.md v2.0 — Complete Spec — March 2026*

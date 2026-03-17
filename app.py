@@ -69,6 +69,15 @@ class ExercisePool(db.Model):
     data = db.Column(db.JSON, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
+class ListeningExercise(db.Model):
+    __tablename__ = "unstuck_listening"
+    id = db.Column(db.Integer, primary_key=True)
+    exercise_id = db.Column(db.String(50), unique=True, nullable=False, index=True)
+    level = db.Column(db.String(5), nullable=False, index=True)
+    exercise_type = db.Column(db.String(30), nullable=False)
+    data = db.Column(db.JSON, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
 class EncounterLog(db.Model):
     __tablename__ = "unstuck_encounter_log"
     id = db.Column(db.Integer, primary_key=True)
@@ -429,6 +438,40 @@ def compose_session(user):
         "data": passage.data,
     }
 
+    # Check if user qualifies for listening (3+ reading sessions completed)
+    reading_session_count = db.session.query(EncounterLog.passage_id).filter(
+        EncounterLog.user_id == user.id,
+        EncounterLog.passage_id.isnot(None)
+    ).distinct().count()
+
+    if reading_session_count >= 3 and ListeningExercise.query.count() > 0:
+        seen_listening_ids = [r[0] for r in db.session.query(EncounterLog.exercise_id).filter(
+            EncounterLog.user_id == user.id,
+            EncounterLog.encounter_type == "listening",
+            EncounterLog.exercise_id.isnot(None)
+        ).distinct().all()]
+        q = ListeningExercise.query.filter_by(level=user_level.upper())
+        if seen_listening_ids:
+            q = q.filter(~ListeningExercise.exercise_id.in_(seen_listening_ids))
+        listening_ex = q.order_by(ListeningExercise.id).first()
+        if not listening_ex:
+            listening_ex = ListeningExercise.query.filter(
+                ~ListeningExercise.exercise_id.in_(seen_listening_ids) if seen_listening_ids else db.true()
+            ).order_by(ListeningExercise.id).first()
+        if listening_ex:
+            return {
+                "type": "mixed_with_listening",
+                "passage": passage_out,
+                "exercises": exercises,
+                "target_phrases": targets,
+                "listening_exercise": {
+                    "exercise_id": listening_ex.exercise_id,
+                    "level": listening_ex.level,
+                    "exercise_type": listening_ex.exercise_type,
+                    "data": listening_ex.data,
+                },
+            }
+
     return {
         "type": "mixed",
         "passage": passage_out,
@@ -555,6 +598,85 @@ def admin_list_exercises(user):
         "count": len(exercises)
     })
 
+# ── Admin: Listening ──
+@app.route("/api/admin/listening/upload", methods=["POST"])
+@admin_required
+def admin_upload_listening(user):
+    body = request.get_json()
+    exercises_data = body.get("exercises", [])
+    if not isinstance(exercises_data, list) or not exercises_data:
+        return jsonify({"error": "Expected non-empty 'exercises' array"}), 400
+    valid_types = {"dictation", "listen_comprehension", "connected_speech", "speed_drill"}
+    required = ["exercise_id", "level", "exercise_type"]
+    errors = []
+    for i, ex in enumerate(exercises_data):
+        missing = [f for f in required if f not in ex or ex[f] is None]
+        if missing:
+            errors.append(f"Exercise {i} (id={ex.get('exercise_id','?')}): missing {', '.join(missing)}")
+        elif ex.get("exercise_type") not in valid_types:
+            errors.append(f"Exercise {i} (id={ex.get('exercise_id','?')}): invalid exercise_type '{ex.get('exercise_type')}'")
+    if errors:
+        return jsonify({"error": "Validation failed", "details": errors[:10]}), 400
+    inserted = updated = 0
+    for ex in exercises_data:
+        eid = ex["exercise_id"]
+        blob = {k: v for k, v in ex.items() if k not in ("exercise_id", "level", "exercise_type")}
+        existing = ListeningExercise.query.filter_by(exercise_id=eid).first()
+        if existing:
+            existing.level = ex["level"]
+            existing.exercise_type = ex["exercise_type"]
+            existing.data = blob
+            db.session.execute(
+                db.text("UPDATE unstuck_listening SET level = :level, exercise_type = :etype, data = :data WHERE exercise_id = :eid"),
+                {"level": ex["level"], "etype": ex["exercise_type"], "data": json.dumps(blob), "eid": eid}
+            )
+            updated += 1
+        else:
+            db.session.add(ListeningExercise(exercise_id=eid, level=ex["level"], exercise_type=ex["exercise_type"], data=blob))
+            inserted += 1
+    db.session.commit()
+    return jsonify({"ok": True, "inserted": inserted, "updated": updated, "total": ListeningExercise.query.count()})
+
+@app.route("/api/admin/listening", methods=["GET"])
+@admin_required
+def admin_list_listening(user):
+    exercises = ListeningExercise.query.order_by(ListeningExercise.id).all()
+    return jsonify({
+        "exercises": [{"exercise_id": e.exercise_id, "level": e.level, "exercise_type": e.exercise_type, "created_at": e.created_at.isoformat() if e.created_at else None} for e in exercises],
+        "count": len(exercises)
+    })
+
+@app.route("/api/admin/listening/<exercise_id>", methods=["DELETE"])
+@admin_required
+def admin_delete_listening(user, exercise_id):
+    ex = ListeningExercise.query.filter_by(exercise_id=exercise_id).first()
+    if not ex:
+        return jsonify({"error": f"Listening exercise {exercise_id} not found"}), 404
+    db.session.delete(ex)
+    db.session.commit()
+    return jsonify({"ok": True, "deleted": exercise_id})
+
+# ── Listening: next unseen ──
+@app.route("/api/listening/next", methods=["GET"])
+@token_required
+def listening_next(user):
+    progress_data = user.progress.data if user.progress and user.progress.data else {}
+    user_level = progress_data.get("userLevel", "B1")
+    seen_ids = [r[0] for r in db.session.query(EncounterLog.exercise_id).filter(
+        EncounterLog.user_id == user.id,
+        EncounterLog.encounter_type == "listening",
+        EncounterLog.exercise_id.isnot(None)
+    ).distinct().all()]
+    q = ListeningExercise.query.filter_by(level=user_level.upper())
+    if seen_ids:
+        q = q.filter(~ListeningExercise.exercise_id.in_(seen_ids))
+    ex = q.order_by(ListeningExercise.id).first()
+    if not ex:
+        ex = ListeningExercise.query.filter(~ListeningExercise.exercise_id.in_(seen_ids) if seen_ids else db.true()).order_by(ListeningExercise.id).first()
+    if not ex:
+        return jsonify({"exercise": None})
+    return jsonify({"exercise": {"exercise_id": ex.exercise_id, "level": ex.level, "exercise_type": ex.exercise_type, "data": ex.data}})
+
 # ── Admin: Content Stats ──
 @app.route("/api/admin/content-stats", methods=["GET"])
 @admin_required
@@ -562,8 +684,10 @@ def admin_content_stats(user):
     return jsonify({
         "total_passages": Passage.query.count(),
         "total_exercises": ExercisePool.query.count(),
+        "total_listening": ListeningExercise.query.count(),
         "total_encounters": EncounterLog.query.count(),
         "passages_by_level": {level: count for level, count in db.session.query(Passage.level, db.func.count(Passage.id)).group_by(Passage.level).all()},
+        "listening_by_level": {level: count for level, count in db.session.query(ListeningExercise.level, db.func.count(ListeningExercise.id)).group_by(ListeningExercise.level).all()},
     })
 
 # ── Seed ──

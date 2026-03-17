@@ -45,10 +45,13 @@ class UserProgress(db.Model):
     data = db.Column(db.JSON, nullable=False, default=dict)
     updated_at = db.Column(db.DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
+CARD_DOMAINS = ["tech", "finance", "business", "medical", "legal", "academic", "daily"]
+
 class Card(db.Model):
     __tablename__ = "unstuck_cards"
     id = db.Column(db.Integer, primary_key=True)
     card_id = db.Column(db.Integer, unique=True, nullable=False, index=True)
+    domain = db.Column(db.String(50), nullable=True, index=True)
     data = db.Column(db.JSON, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
@@ -424,7 +427,32 @@ def reset_progress(user):
 @app.route("/api/cards", methods=["GET"])
 def get_cards():
     cards = Card.query.order_by(Card.card_id).all()
-    return jsonify({"cards": [{**c.data, "id": c.card_id} for c in cards], "count": len(cards)})
+    return jsonify({"cards": [{**c.data, "id": c.card_id, "domain": c.domain} for c in cards], "count": len(cards)})
+
+@app.route("/api/cards/domains", methods=["GET"])
+def get_card_domains():
+    results = db.session.query(Card.domain, db.func.count(Card.id)).group_by(Card.domain).all()
+    domains = [{"domain": domain or "general", "count": count} for domain, count in results]
+    return jsonify({"domains": domains})
+
+@app.route("/api/user/domains", methods=["POST"])
+@token_required
+def save_user_domains(user):
+    body = request.get_json() or {}
+    selected = body.get("domains", [])
+    if not isinstance(selected, list):
+        return jsonify({"error": "Expected 'domains' array"}), 400
+    invalid = [d for d in selected if d not in CARD_DOMAINS]
+    if invalid:
+        return jsonify({"error": f"Invalid domains: {', '.join(invalid)}. Valid: {', '.join(CARD_DOMAINS)}"}), 400
+    progress_data = user.progress.data if user.progress and user.progress.data else {}
+    progress_data["selectedDomains"] = selected
+    db.session.execute(
+        db.text("UPDATE unstuck_progress SET data = :data, updated_at = NOW() WHERE user_id = :uid"),
+        {"data": json.dumps(progress_data), "uid": user.id}
+    )
+    db.session.commit()
+    return jsonify({"ok": True, "selectedDomains": selected})
 
 # ── Admin routes ──
 @app.route("/api/admin/stats", methods=["GET"])
@@ -440,7 +468,7 @@ def admin_stats(user):
 @admin_required
 def admin_list_cards(user):
     cards = Card.query.order_by(Card.card_id).all()
-    return jsonify({"cards": [{"card_id": c.card_id, "phrase": c.data.get("phrase", ""), "created_at": c.created_at.isoformat() if c.created_at else None} for c in cards], "count": len(cards)})
+    return jsonify({"cards": [{"card_id": c.card_id, "domain": c.domain, "phrase": c.data.get("phrase", ""), "created_at": c.created_at.isoformat() if c.created_at else None} for c in cards], "count": len(cards)})
 
 @app.route("/api/admin/cards/upload", methods=["POST"])
 @admin_required
@@ -460,18 +488,19 @@ def admin_upload_cards(user):
     inserted = updated = 0
     for c in cards_data:
         cid = c["id"]
-        blob = {k: v for k, v in c.items() if k != "id"}
+        card_domain = c.get("domain")
+        blob = {k: v for k, v in c.items() if k not in ("id", "domain")}
         existing = Card.query.filter_by(card_id=cid).first()
         if existing:
             existing.data = blob
-            # Force JSON update detection
+            existing.domain = card_domain
             db.session.execute(
-                db.text("UPDATE unstuck_cards SET data = :data WHERE card_id = :cid"),
-                {"data": json.dumps(blob), "cid": cid}
+                db.text("UPDATE unstuck_cards SET data = :data, domain = :domain WHERE card_id = :cid"),
+                {"data": json.dumps(blob), "domain": card_domain, "cid": cid}
             )
             updated += 1
         else:
-            db.session.add(Card(card_id=cid, data=blob))
+            db.session.add(Card(card_id=cid, domain=card_domain, data=blob))
             inserted += 1
     db.session.commit()
     return jsonify({"ok": True, "inserted": inserted, "updated": updated, "total": Card.query.count()})
@@ -576,7 +605,23 @@ def compose_session(user):
                 suspect.append(int(cid))
 
     # 3. Pick target phrases (due first, then suspect, max 4)
+    # Prioritize cards from user's selected domains (70% from selected domains)
+    selected_domains = progress_data.get("selectedDomains", [])
+    domain_card_ids = set()
+    if selected_domains:
+        domain_cards = Card.query.filter(Card.domain.in_(selected_domains)).all()
+        domain_card_ids = {c.card_id for c in domain_cards}
+
     targets = []
+    if domain_card_ids:
+        # Add domain-matching due phrases first
+        for cid in due_phrases:
+            if cid in domain_card_ids and cid not in targets and len(targets) < 3:
+                targets.append(cid)
+        for cid in suspect:
+            if cid in domain_card_ids and cid not in targets and len(targets) < 3:
+                targets.append(cid)
+    # Fill remaining slots with any due/suspect phrases
     for cid in due_phrases:
         if cid not in targets and len(targets) < 4:
             targets.append(cid)
@@ -585,27 +630,48 @@ def compose_session(user):
             targets.append(cid)
 
     # 4. Find a passage at user's level containing target phrases, not yet read
+    # Prefer passages whose target phrases overlap with user's selected domains
     passage = None
     if targets:
         all_passages = Passage.query.filter_by(level=user_level.upper()).all()
+        best_passage = None
+        best_score = -1
         for p in all_passages:
             if p.passage_id in seen_passages_ids:
                 continue
             phrase_card_ids = [tp["card_id"] for tp in (p.data.get("target_phrases") or [])]
             overlap = [cid for cid in targets if cid in phrase_card_ids]
             if overlap:
-                passage = p
-                targets = phrase_card_ids
-                break
+                domain_overlap = len([cid for cid in phrase_card_ids if cid in domain_card_ids]) if domain_card_ids else 0
+                score = len(overlap) + domain_overlap
+                if score > best_score:
+                    best_score = score
+                    best_passage = p
+        if best_passage:
+            passage = best_passage
+            targets = [tp["card_id"] for tp in (passage.data.get("target_phrases") or [])]
 
     # 5. If no passage matches targets, pick any unseen passage at user's level
+    # Prefer passages with domain-matching cards
     if not passage:
         all_passages = Passage.query.filter_by(level=user_level.upper()).all()
+        best_passage = None
+        best_domain_score = -1
         for p in all_passages:
-            if p.passage_id not in seen_passages_ids:
+            if p.passage_id in seen_passages_ids:
+                continue
+            if not domain_card_ids:
                 passage = p
                 targets = [tp["card_id"] for tp in (p.data.get("target_phrases") or [])]
                 break
+            phrase_card_ids = [tp["card_id"] for tp in (p.data.get("target_phrases") or [])]
+            domain_score = len([cid for cid in phrase_card_ids if cid in domain_card_ids])
+            if domain_score > best_domain_score:
+                best_domain_score = domain_score
+                best_passage = p
+        if not passage and best_passage:
+            passage = best_passage
+            targets = [tp["card_id"] for tp in (passage.data.get("target_phrases") or [])]
 
     # 6. If still no passage (all read or none at level), try any level
     if not passage:

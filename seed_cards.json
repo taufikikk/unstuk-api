@@ -1,0 +1,4159 @@
+[
+  {
+    "id": 1,
+    "phrase": "I was wondering if...",
+    "context": "I was wondering if you could help me with this report.",
+    "meaning": "Cara sopan meminta sesuatu",
+    "meaningEn": "A polite way to ask for something",
+    "usage": "Use instead of 'Can you...' to sound more professional.",
+    "wrongOptions": [
+      "I was thinking about...",
+      "I was hoping that...",
+      "I was worrying if..."
+    ],
+    "fillBlank": "_____ you could send me the file by Friday?",
+    "fillAnswer": "I was wondering if",
+    "rearrange": {
+      "sentence": "I was wondering if you could help me",
+      "words": [
+        "help",
+        "if",
+        "I",
+        "me",
+        "could",
+        "wondering",
+        "you",
+        "was"
+      ]
+    }
+  },
+  {
+    "id": 2,
+    "phrase": "It turns out...",
+    "context": "It turns out the meeting was cancelled yesterday.",
+    "meaning": "Ternyata...",
+    "meaningEn": "Used to share surprising information",
+    "usage": "Perfect for unexpected discoveries.",
+    "wrongOptions": [
+      "It goes out...",
+      "It comes out...",
+      "It finds out..."
+    ],
+    "fillBlank": "_____ she already knew about the problem.",
+    "fillAnswer": "It turns out",
+    "rearrange": {
+      "sentence": "It turns out the meeting was cancelled",
+      "words": [
+        "cancelled",
+        "turns",
+        "the",
+        "It",
+        "was",
+        "out",
+        "meeting"
+      ]
+    }
+  },
+  {
+    "id": 3,
+    "phrase": "I'm looking forward to",
+    "context": "I'm looking forward to working with your team.",
+    "meaning": "Saya menantikan...",
+    "meaningEn": "Excitement about something future",
+    "usage": "Always followed by -ing or noun. Never 'to + verb'.",
+    "wrongOptions": [
+      "I'm looking ahead to",
+      "I'm looking up to",
+      "I'm looking into"
+    ],
+    "fillBlank": "_____ meeting you at the conference.",
+    "fillAnswer": "I'm looking forward to",
+    "rearrange": {
+      "sentence": "I'm looking forward to working with your team",
+      "words": [
+        "team",
+        "forward",
+        "with",
+        "looking",
+        "I'm",
+        "to",
+        "your",
+        "working"
+      ]
+    }
+  },
+  {
+    "id": 4,
+    "phrase": "To be honest,",
+    "context": "To be honest, I don't think this plan will work.",
+    "meaning": "Sejujurnya...",
+    "meaningEn": "Softens an unwelcome opinion",
+    "usage": "Signals a genuine, possibly uncomfortable opinion.",
+    "wrongOptions": [
+      "To be fair,",
+      "To be clear,",
+      "To be sure,"
+    ],
+    "fillBlank": "_____ I think we should consider a different approach.",
+    "fillAnswer": "To be honest,",
+    "rearrange": {
+      "sentence": "To be honest I don't think this will work",
+      "words": [
+        "this",
+        "honest",
+        "think",
+        "To",
+        "will",
+        "I",
+        "be",
+        "work",
+        "don't"
+      ]
+    }
+  },
+  {
+    "id": 5,
+    "phrase": "It depends on",
+    "context": "It depends on how much time we have.",
+    "meaning": "Tergantung pada...",
+    "meaningEn": "Answer changes based on conditions",
+    "usage": "Great for avoiding yes/no when answer is 'maybe'.",
+    "wrongOptions": [
+      "It relies on",
+      "It counts on",
+      "It bases on"
+    ],
+    "fillBlank": "Whether I can come _____ my schedule this week.",
+    "fillAnswer": "depends on",
+    "rearrange": {
+      "sentence": "It depends on how much time we have",
+      "words": [
+        "time",
+        "on",
+        "have",
+        "depends",
+        "how",
+        "It",
+        "we",
+        "much"
+      ]
+    }
+  },
+  {
+    "id": 6,
+    "phrase": "Would you mind",
+    "context": "Would you mind closing the door?",
+    "meaning": "Apakah kamu keberatan...",
+    "meaningEn": "An extremely polite request",
+    "usage": "Followed by -ing. 'No, not at all' = YES I'll do it!",
+    "wrongOptions": [
+      "Would you like",
+      "Would you care",
+      "Would you please"
+    ],
+    "fillBlank": "_____ sending me that document again?",
+    "fillAnswer": "Would you mind",
+    "rearrange": {
+      "sentence": "Would you mind closing the door",
+      "words": [
+        "closing",
+        "you",
+        "the",
+        "Would",
+        "door",
+        "mind"
+      ]
+    }
+  },
+  {
+    "id": 7,
+    "phrase": "The thing is,",
+    "context": "The thing is, we don't have enough budget for that.",
+    "meaning": "Masalahnya adalah...",
+    "meaningEn": "Introduces a problem",
+    "usage": "Used to explain why something can't happen.",
+    "wrongOptions": [
+      "The point is,",
+      "The fact is,",
+      "The problem is,"
+    ],
+    "fillBlank": "I'd love to help, but _____ I'm already behind.",
+    "fillAnswer": "the thing is,",
+    "rearrange": {
+      "sentence": "The thing is we don't have enough budget",
+      "words": [
+        "budget",
+        "thing",
+        "don't",
+        "The",
+        "enough",
+        "is",
+        "have",
+        "we"
+      ]
+    }
+  },
+  {
+    "id": 8,
+    "phrase": "As far as I know,",
+    "context": "As far as I know, the deadline hasn't changed.",
+    "meaning": "Sejauh yang saya tahu...",
+    "meaningEn": "Your information might be incomplete",
+    "usage": "Shows honesty — sharing what you know, not claiming certainty.",
+    "wrongOptions": [
+      "As long as I know,",
+      "As much as I know,",
+      "As well as I know,"
+    ],
+    "fillBlank": "_____ the office will be closed next Monday.",
+    "fillAnswer": "As far as I know,",
+    "rearrange": {
+      "sentence": "As far as I know the deadline hasn't changed",
+      "words": [
+        "changed",
+        "as",
+        "the",
+        "As",
+        "know",
+        "I",
+        "far",
+        "hasn't",
+        "deadline"
+      ]
+    }
+  },
+  {
+    "id": 9,
+    "phrase": "I can't help but",
+    "context": "I can't help but notice you seem stressed today.",
+    "meaning": "Tidak bisa menahan diri...",
+    "meaningEn": "Something you do involuntarily",
+    "usage": "Followed by base verb. Action beyond your control.",
+    "wrongOptions": [
+      "I can't stop to",
+      "I can't avoid to",
+      "I can't resist to"
+    ],
+    "fillBlank": "_____ feel excited about the trip.",
+    "fillAnswer": "I can't help but",
+    "rearrange": {
+      "sentence": "I can't help but notice you seem stressed",
+      "words": [
+        "notice",
+        "help",
+        "seem",
+        "I",
+        "stressed",
+        "but",
+        "can't",
+        "you"
+      ]
+    }
+  },
+  {
+    "id": 10,
+    "phrase": "I'm used to",
+    "context": "I'm used to working late — it doesn't bother me.",
+    "meaning": "Sudah terbiasa dengan...",
+    "meaningEn": "Something once strange, now normal",
+    "usage": "Followed by -ing. Different from 'I used to' (past habit)!",
+    "wrongOptions": [
+      "I'm accustomed with",
+      "I'm familiar of",
+      "I'm comfortable of"
+    ],
+    "fillBlank": "After 3 years in Jakarta, _____ the traffic.",
+    "fillAnswer": "I'm used to",
+    "rearrange": {
+      "sentence": "I'm used to working late every night",
+      "words": [
+        "night",
+        "to",
+        "late",
+        "I'm",
+        "every",
+        "used",
+        "working"
+      ]
+    }
+  },
+  {
+    "id": 11,
+    "phrase": "It's worth",
+    "context": "It's worth trying the new restaurant on Jalan Sudirman.",
+    "meaning": "Layak/pantas untuk...",
+    "meaningEn": "Effort justified by result",
+    "usage": "Followed by -ing or noun.",
+    "wrongOptions": [
+      "It's worthy",
+      "It's value",
+      "It's deserved"
+    ],
+    "fillBlank": "The course is expensive, but _____ taking.",
+    "fillAnswer": "it's worth",
+    "rearrange": {
+      "sentence": "It's worth trying the new restaurant",
+      "words": [
+        "the",
+        "worth",
+        "trying",
+        "It's",
+        "restaurant",
+        "new"
+      ]
+    }
+  },
+  {
+    "id": 12,
+    "phrase": "I ended up",
+    "context": "I ended up staying at the office until midnight.",
+    "meaning": "Akhirnya saya...",
+    "meaningEn": "Final result, usually unplanned",
+    "usage": "Followed by -ing. Outcome wasn't your intention.",
+    "wrongOptions": [
+      "I finished up",
+      "I resulted in",
+      "I concluded to"
+    ],
+    "fillBlank": "We planned a quick lunch, but _____ talking for three hours.",
+    "fillAnswer": "ended up",
+    "rearrange": {
+      "sentence": "I ended up staying at the office until midnight",
+      "words": [
+        "midnight",
+        "up",
+        "the",
+        "I",
+        "until",
+        "ended",
+        "at",
+        "staying",
+        "office"
+      ]
+    }
+  },
+  {
+    "id": 13,
+    "phrase": "There's no point in",
+    "context": "There's no point in arguing — the decision is final.",
+    "meaning": "Tidak ada gunanya...",
+    "meaningEn": "The action is useless",
+    "usage": "Followed by -ing.",
+    "wrongOptions": [
+      "There's no use of",
+      "There's no meaning in",
+      "There's no reason of"
+    ],
+    "fillBlank": "_____ worrying about things you can't control.",
+    "fillAnswer": "There's no point in",
+    "rearrange": {
+      "sentence": "There's no point in arguing about it",
+      "words": [
+        "about",
+        "point",
+        "arguing",
+        "There's",
+        "it",
+        "no",
+        "in"
+      ]
+    }
+  },
+  {
+    "id": 14,
+    "phrase": "I'm about to",
+    "context": "I'm about to leave — do you need anything?",
+    "meaning": "Akan segera...",
+    "meaningEn": "Something happening very soon",
+    "usage": "Implies seconds or minutes, not hours.",
+    "wrongOptions": [
+      "I'm going to",
+      "I'm ready to",
+      "I'm close to"
+    ],
+    "fillBlank": "Don't call at 9 PM — _____ go to sleep.",
+    "fillAnswer": "I'm about to",
+    "rearrange": {
+      "sentence": "I'm about to leave do you need anything",
+      "words": [
+        "anything",
+        "about",
+        "you",
+        "I'm",
+        "need",
+        "to",
+        "leave",
+        "do"
+      ]
+    }
+  },
+  {
+    "id": 15,
+    "phrase": "I could use",
+    "context": "I could use some help with this presentation.",
+    "meaning": "Saya butuh...",
+    "meaningEn": "Understated way to say you need something",
+    "usage": "Softer than 'I need'. Very common.",
+    "wrongOptions": [
+      "I could have",
+      "I could take",
+      "I could get"
+    ],
+    "fillBlank": "After that long meeting, I _____ a cup of coffee.",
+    "fillAnswer": "could use",
+    "rearrange": {
+      "sentence": "I could use some help with this",
+      "words": [
+        "this",
+        "use",
+        "help",
+        "I",
+        "could",
+        "some",
+        "with"
+      ]
+    }
+  },
+  {
+    "id": 16,
+    "phrase": "It's not that... it's just that",
+    "context": "It's not that I don't like the idea — it's just that the timing isn't right.",
+    "meaning": "Bukan berarti... hanya saja...",
+    "meaningEn": "Diplomatic way to disagree",
+    "usage": "Acknowledges the positive before the 'but'.",
+    "wrongOptions": [
+      "It's not because... it's only that",
+      "It's not like... it's just like",
+      "It's not about... it's more that"
+    ],
+    "fillBlank": "_____ I don't want to come — _____ I have a deadline.",
+    "fillAnswer": "It's not that|it's just that",
+    "rearrange": {
+      "sentence": "It's not that I disagree it's just that we need time",
+      "words": [
+        "time",
+        "that",
+        "just",
+        "not",
+        "It's",
+        "disagree",
+        "it's",
+        "I",
+        "we",
+        "need",
+        "that"
+      ]
+    }
+  },
+  {
+    "id": 17,
+    "phrase": "Speaking of which,",
+    "context": "Speaking of which, have you seen the new schedule?",
+    "meaning": "Ngomong-ngomong soal itu...",
+    "meaningEn": "Connects to what was just said",
+    "usage": "Smooth transition to a related topic.",
+    "wrongOptions": [
+      "Talking of that,",
+      "Saying of which,",
+      "Mentioning of that,"
+    ],
+    "fillBlank": "We were discussing budgets. _____ did you approve the vendor?",
+    "fillAnswer": "Speaking of which,",
+    "rearrange": {
+      "sentence": "Speaking of which have you seen the schedule",
+      "words": [
+        "the",
+        "of",
+        "have",
+        "Speaking",
+        "schedule",
+        "you",
+        "which",
+        "seen"
+      ]
+    }
+  },
+  {
+    "id": 18,
+    "phrase": "Come to think of it,",
+    "context": "Come to think of it, I did see an email about that.",
+    "meaning": "Kalau dipikir-pikir...",
+    "meaningEn": "Realizing something you hadn't considered",
+    "usage": "Shows you're thinking in real time.",
+    "wrongOptions": [
+      "Come to know of it,",
+      "Come to mind of it,",
+      "Come to recall of it,"
+    ],
+    "fillBlank": "_____ she did mention leaving early today.",
+    "fillAnswer": "Come to think of it,",
+    "rearrange": {
+      "sentence": "Come to think of it I did see an email",
+      "words": [
+        "email",
+        "think",
+        "I",
+        "Come",
+        "an",
+        "of",
+        "to",
+        "did",
+        "it",
+        "see"
+      ]
+    }
+  },
+  {
+    "id": 19,
+    "phrase": "That reminds me,",
+    "context": "That reminds me, I need to call the client today.",
+    "meaning": "Oh iya, jadi ingat...",
+    "meaningEn": "Something triggered a related thought",
+    "usage": "Bring up something you almost forgot.",
+    "wrongOptions": [
+      "That recalls me,",
+      "That memories me,",
+      "That tells me,"
+    ],
+    "fillBlank": "_____ did you send the invoice yesterday?",
+    "fillAnswer": "That reminds me,",
+    "rearrange": {
+      "sentence": "That reminds me I need to call the client",
+      "words": [
+        "the",
+        "reminds",
+        "I",
+        "That",
+        "client",
+        "need",
+        "me",
+        "to",
+        "call"
+      ]
+    }
+  },
+  {
+    "id": 20,
+    "phrase": "If I were you,",
+    "context": "If I were you, I'd ask for a deadline extension.",
+    "meaning": "Kalau aku jadi kamu...",
+    "meaningEn": "Giving advice diplomatically",
+    "usage": "Uses 'were' not 'was' — subjunctive mood.",
+    "wrongOptions": [
+      "If I was you,",
+      "If I am you,",
+      "If I become you,"
+    ],
+    "fillBlank": "_____ I'd start with the executive summary first.",
+    "fillAnswer": "If I were you,",
+    "rearrange": {
+      "sentence": "If I were you I'd ask for an extension",
+      "words": [
+        "an",
+        "were",
+        "I'd",
+        "If",
+        "extension",
+        "I",
+        "ask",
+        "you",
+        "for"
+      ]
+    }
+  },
+  {
+    "id": 21,
+    "phrase": "You might want to",
+    "context": "You might want to double-check those numbers.",
+    "meaning": "Mungkin sebaiknya kamu...",
+    "meaningEn": "Gentle suggestion without being bossy",
+    "usage": "Much softer than 'You should'.",
+    "wrongOptions": [
+      "You might need to",
+      "You might have to",
+      "You might like to"
+    ],
+    "fillBlank": "_____ leave early — traffic is terrible today.",
+    "fillAnswer": "You might want to",
+    "rearrange": {
+      "sentence": "You might want to double-check those numbers",
+      "words": [
+        "those",
+        "want",
+        "double-check",
+        "You",
+        "numbers",
+        "might",
+        "to"
+      ]
+    }
+  },
+  {
+    "id": 22,
+    "phrase": "It's up to you",
+    "context": "We can meet Monday or Tuesday — it's up to you.",
+    "meaning": "Terserah kamu",
+    "meaningEn": "Leaving the decision to someone else",
+    "usage": "Shows flexibility without seeming indifferent.",
+    "wrongOptions": [
+      "It's on to you",
+      "It's for to you",
+      "It's down to you"
+    ],
+    "fillBlank": "I'm fine with either option — _____.",
+    "fillAnswer": "it's up to you",
+    "rearrange": {
+      "sentence": "It's up to you we can meet Monday or Tuesday",
+      "words": [
+        "to",
+        "can",
+        "or",
+        "it's",
+        "you",
+        "meet",
+        "up",
+        "Monday",
+        "We",
+        "Tuesday"
+      ]
+    }
+  },
+  {
+    "id": 23,
+    "phrase": "I'll get back to you",
+    "context": "Good question — let me check and I'll get back to you.",
+    "meaning": "Saya akan kabari nanti",
+    "meaningEn": "Promise to respond later",
+    "usage": "Professional way to buy time.",
+    "wrongOptions": [
+      "I'll come back to you",
+      "I'll return to you",
+      "I'll go back to you"
+    ],
+    "fillBlank": "I'm not sure about pricing. _____ by end of day.",
+    "fillAnswer": "I'll get back to you",
+    "rearrange": {
+      "sentence": "Let me check and I'll get back to you",
+      "words": [
+        "to",
+        "check",
+        "I'll",
+        "Let",
+        "you",
+        "and",
+        "me",
+        "get",
+        "back"
+      ]
+    }
+  },
+  {
+    "id": 24,
+    "phrase": "For what it's worth,",
+    "context": "For what it's worth, I think you made the right call.",
+    "meaning": "Kalau pendapatku ada artinya...",
+    "meaningEn": "Offering opinion humbly",
+    "usage": "Humble way to share your take.",
+    "wrongOptions": [
+      "For what it's value,",
+      "For what it's count,",
+      "For what it's good,"
+    ],
+    "fillBlank": "_____ the old system was actually more reliable.",
+    "fillAnswer": "For what it's worth,",
+    "rearrange": {
+      "sentence": "For what it's worth I think you made the right call",
+      "words": [
+        "the",
+        "it's",
+        "think",
+        "For",
+        "call",
+        "I",
+        "worth",
+        "right",
+        "what",
+        "you",
+        "made"
+      ]
+    }
+  },
+  {
+    "id": 25,
+    "phrase": "Let me get straight to the point",
+    "context": "Let me get straight to the point — we need to cut costs.",
+    "meaning": "Langsung ke intinya",
+    "meaningEn": "Skipping pleasantries, being direct",
+    "usage": "Good opener for serious conversations.",
+    "wrongOptions": [
+      "Let me get right to the case",
+      "Let me get direct to the matter",
+      "Let me get fast to the topic"
+    ],
+    "fillBlank": "We don't have much time, so _____.",
+    "fillAnswer": "let me get straight to the point",
+    "rearrange": {
+      "sentence": "Let me get straight to the point",
+      "words": [
+        "to",
+        "get",
+        "the",
+        "Let",
+        "straight",
+        "me",
+        "point"
+      ]
+    }
+  },
+  {
+    "id": 26,
+    "phrase": "From my perspective,",
+    "context": "From my perspective, the timeline is too aggressive.",
+    "meaning": "Dari sudut pandang saya...",
+    "meaningEn": "Sharing your viewpoint respectfully",
+    "usage": "Non-confrontational way to disagree.",
+    "wrongOptions": [
+      "From my side,",
+      "From my view,",
+      "From my opinion,"
+    ],
+    "fillBlank": "_____ the risk outweighs the potential benefit.",
+    "fillAnswer": "From my perspective,",
+    "rearrange": {
+      "sentence": "From my perspective the timeline is too aggressive",
+      "words": [
+        "too",
+        "my",
+        "the",
+        "From",
+        "aggressive",
+        "perspective",
+        "timeline",
+        "is"
+      ]
+    }
+  },
+  {
+    "id": 27,
+    "phrase": "I'll take care of it",
+    "context": "Don't worry about the report — I'll take care of it.",
+    "meaning": "Biar saya yang urus",
+    "meaningEn": "Taking responsibility for a task",
+    "usage": "Shows initiative. Stronger than 'I'll do it'.",
+    "wrongOptions": [
+      "I'll take hold of it",
+      "I'll take charge of it",
+      "I'll take handle of it"
+    ],
+    "fillBlank": "The printer is jammed? _____.",
+    "fillAnswer": "I'll take care of it",
+    "rearrange": {
+      "sentence": "Don't worry I'll take care of it",
+      "words": [
+        "of",
+        "worry",
+        "it",
+        "Don't",
+        "I'll",
+        "take",
+        "care"
+      ]
+    }
+  },
+  {
+    "id": 28,
+    "phrase": "Just to clarify,",
+    "context": "Just to clarify, are we talking about Q3 or Q4?",
+    "meaning": "Untuk memperjelas...",
+    "meaningEn": "Checking understanding politely",
+    "usage": "Prevents misunderstanding in meetings.",
+    "wrongOptions": [
+      "Just to clear,",
+      "Just to explain,",
+      "Just to verify,"
+    ],
+    "fillBlank": "_____ is the deadline this Friday or next?",
+    "fillAnswer": "Just to clarify,",
+    "rearrange": {
+      "sentence": "Just to clarify are we talking about Q3",
+      "words": [
+        "Q3",
+        "to",
+        "are",
+        "Just",
+        "clarify",
+        "we",
+        "talking",
+        "about"
+      ]
+    }
+  },
+  {
+    "id": 29,
+    "phrase": "That makes sense",
+    "context": "That makes sense — let's go with your plan.",
+    "meaning": "Itu masuk akal",
+    "meaningEn": "Showing you understand and agree",
+    "usage": "Better than just 'OK' or 'I see'.",
+    "wrongOptions": [
+      "That gives sense",
+      "That has sense",
+      "That does sense"
+    ],
+    "fillBlank": "Oh, so the API handles both cases? _____.",
+    "fillAnswer": "That makes sense",
+    "rearrange": {
+      "sentence": "That makes sense let's go with your plan",
+      "words": [
+        "your",
+        "makes",
+        "let's",
+        "That",
+        "plan",
+        "sense",
+        "go",
+        "with"
+      ]
+    }
+  },
+  {
+    "id": 30,
+    "phrase": "I'm not entirely sure, but",
+    "context": "I'm not entirely sure, but I think the server is in Singapore.",
+    "meaning": "Saya tidak sepenuhnya yakin, tapi...",
+    "meaningEn": "Honest uncertainty before a guess",
+    "usage": "Better than guessing confidently.",
+    "wrongOptions": [
+      "I'm not very sure, but",
+      "I'm not fully sure, but",
+      "I'm not totally sure, but"
+    ],
+    "fillBlank": "_____ the meeting was moved to Thursday.",
+    "fillAnswer": "I'm not entirely sure, but",
+    "rearrange": {
+      "sentence": "I'm not entirely sure but I think it's in Singapore",
+      "words": [
+        "in",
+        "not",
+        "sure",
+        "I'm",
+        "Singapore",
+        "entirely",
+        "but",
+        "I",
+        "think",
+        "it's"
+      ]
+    }
+  },
+  {
+    "id": 31,
+    "phrase": "It slipped my mind",
+    "context": "Sorry — the deadline completely slipped my mind.",
+    "meaning": "Saya lupa (tak sengaja)",
+    "meaningEn": "You forgot unintentionally",
+    "usage": "Softer than 'I forgot'.",
+    "wrongOptions": [
+      "It dropped my mind",
+      "It fell my mind",
+      "It escaped my mind"
+    ],
+    "fillBlank": "I was supposed to email him, but _____.",
+    "fillAnswer": "it slipped my mind",
+    "rearrange": {
+      "sentence": "Sorry the deadline slipped my mind",
+      "words": [
+        "my",
+        "the",
+        "Sorry",
+        "mind",
+        "deadline",
+        "slipped"
+      ]
+    }
+  },
+  {
+    "id": 32,
+    "phrase": "Bear with me",
+    "context": "Bear with me — I'm trying to find the right file.",
+    "meaning": "Tolong sabar sebentar",
+    "meaningEn": "Ask someone to be patient",
+    "usage": "Professional way to buy seconds in meetings.",
+    "wrongOptions": [
+      "Hold with me",
+      "Stay with me",
+      "Wait with me"
+    ],
+    "fillBlank": "_____ while I pull up the data.",
+    "fillAnswer": "Bear with me",
+    "rearrange": {
+      "sentence": "Bear with me I'm trying to find the file",
+      "words": [
+        "the",
+        "with",
+        "I'm",
+        "Bear",
+        "file",
+        "me",
+        "trying",
+        "to",
+        "find"
+      ]
+    }
+  },
+  {
+    "id": 33,
+    "phrase": "I didn't mean to",
+    "context": "I didn't mean to interrupt — please continue.",
+    "meaning": "Saya tidak bermaksud...",
+    "meaningEn": "Apologizing for unintentional action",
+    "usage": "Shows action was accidental.",
+    "wrongOptions": [
+      "I didn't want to",
+      "I didn't try to",
+      "I didn't plan to"
+    ],
+    "fillBlank": "Sorry, _____ upset you.",
+    "fillAnswer": "I didn't mean to",
+    "rearrange": {
+      "sentence": "I didn't mean to interrupt please continue",
+      "words": [
+        "continue",
+        "mean",
+        "interrupt",
+        "I",
+        "please",
+        "to",
+        "didn't"
+      ]
+    }
+  },
+  {
+    "id": 34,
+    "phrase": "I appreciate it",
+    "context": "Thanks for staying late — I really appreciate it.",
+    "meaning": "Saya menghargainya",
+    "meaningEn": "Sincere gratitude, stronger than 'thanks'",
+    "usage": "More heartfelt than 'thank you'.",
+    "wrongOptions": [
+      "I value it",
+      "I treasure it",
+      "I respect it"
+    ],
+    "fillBlank": "You covered my shift? _____.",
+    "fillAnswer": "I appreciate it",
+    "rearrange": {
+      "sentence": "Thanks for staying late I appreciate it",
+      "words": [
+        "it",
+        "for",
+        "late",
+        "Thanks",
+        "appreciate",
+        "staying",
+        "I"
+      ]
+    }
+  },
+  {
+    "id": 35,
+    "phrase": "It's no big deal",
+    "context": "You forgot to CC me? It's no big deal.",
+    "meaning": "Bukan masalah besar",
+    "meaningEn": "Minimizing a problem to reassure",
+    "usage": "Shows you're not upset.",
+    "wrongOptions": [
+      "It's no big thing",
+      "It's no big matter",
+      "It's no big issue"
+    ],
+    "fillBlank": "I had to redo the formatting, but _____.",
+    "fillAnswer": "it's no big deal",
+    "rearrange": {
+      "sentence": "It's no big deal don't worry about it",
+      "words": [
+        "big",
+        "worry",
+        "it",
+        "It's",
+        "deal",
+        "don't",
+        "no",
+        "about"
+      ]
+    }
+  },
+  {
+    "id": 36,
+    "phrase": "I feel like",
+    "context": "I feel like we're going in circles.",
+    "meaning": "Saya merasa...",
+    "meaningEn": "Expressing a feeling softly",
+    "usage": "Softer than 'I think'. Good for subjective views.",
+    "wrongOptions": [
+      "I feel that",
+      "I feel as",
+      "I feel about"
+    ],
+    "fillBlank": "_____ we should take a different approach.",
+    "fillAnswer": "I feel like",
+    "rearrange": {
+      "sentence": "I feel like we're going in circles",
+      "words": [
+        "in",
+        "feel",
+        "we're",
+        "I",
+        "circles",
+        "like",
+        "going"
+      ]
+    }
+  },
+  {
+    "id": 37,
+    "phrase": "No worries",
+    "context": "No worries — I'll handle it myself.",
+    "meaning": "Tidak apa-apa",
+    "meaningEn": "Casual reassurance",
+    "usage": "Very common in informal professional settings.",
+    "wrongOptions": [
+      "No problems",
+      "No troubles",
+      "No concerns"
+    ],
+    "fillBlank": "You can't make the meeting? _____.",
+    "fillAnswer": "No worries",
+    "rearrange": {
+      "sentence": "No worries I'll handle it myself",
+      "words": [
+        "it",
+        "worries",
+        "I'll",
+        "No",
+        "myself",
+        "handle"
+      ]
+    }
+  },
+  {
+    "id": 38,
+    "phrase": "I'm glad you brought that up",
+    "context": "I'm glad you brought that up — I wanted to discuss it too.",
+    "meaning": "Bagus kamu menyebutkan itu",
+    "meaningEn": "Validating someone's contribution",
+    "usage": "Makes colleagues feel heard.",
+    "wrongOptions": [
+      "I'm happy you said that up",
+      "I'm glad you raised that up",
+      "I'm pleased you took that up"
+    ],
+    "fillBlank": "_____ — it's related to my next point.",
+    "fillAnswer": "I'm glad you brought that up",
+    "rearrange": {
+      "sentence": "I'm glad you brought that up",
+      "words": [
+        "glad",
+        "brought",
+        "I'm",
+        "that",
+        "you",
+        "up"
+      ]
+    }
+  },
+  {
+    "id": 39,
+    "phrase": "That's a good point",
+    "context": "That's a good point — I hadn't considered that.",
+    "meaning": "Poin yang bagus",
+    "meaningEn": "Acknowledging a valid argument",
+    "usage": "Shows you're listening.",
+    "wrongOptions": [
+      "That's a good part",
+      "That's a good piece",
+      "That's a good side"
+    ],
+    "fillBlank": "_____ — let me factor that into the estimate.",
+    "fillAnswer": "That's a good point",
+    "rearrange": {
+      "sentence": "That's a good point I hadn't considered that",
+      "words": [
+        "that",
+        "a",
+        "I",
+        "That's",
+        "considered",
+        "good",
+        "hadn't",
+        "point"
+      ]
+    }
+  },
+  {
+    "id": 40,
+    "phrase": "Let's not get ahead of ourselves",
+    "context": "Let's not get ahead of ourselves — we still need approval.",
+    "meaning": "Jangan terburu-buru",
+    "meaningEn": "Slowing down premature excitement",
+    "usage": "Diplomatic way to pump the brakes.",
+    "wrongOptions": [
+      "Let's not get before ourselves",
+      "Let's not get past ourselves",
+      "Let's not get above ourselves"
+    ],
+    "fillBlank": "The demo went well, but _____ — we need testing.",
+    "fillAnswer": "let's not get ahead of ourselves",
+    "rearrange": {
+      "sentence": "Let's not get ahead of ourselves",
+      "words": [
+        "ahead",
+        "not",
+        "ourselves",
+        "Let's",
+        "get",
+        "of"
+      ]
+    }
+  },
+  {
+    "id": 41,
+    "phrase": "At the end of the day,",
+    "context": "At the end of the day, it's about what the user needs.",
+    "meaning": "Pada akhirnya...",
+    "meaningEn": "What ultimately matters most",
+    "usage": "Refocuses on the most important thing.",
+    "wrongOptions": [
+      "At the end of time,",
+      "At the end of all,",
+      "At the final of the day,"
+    ],
+    "fillBlank": "_____ the numbers speak for themselves.",
+    "fillAnswer": "at the end of the day,",
+    "rearrange": {
+      "sentence": "At the end of the day it's about the user",
+      "words": [
+        "the",
+        "end",
+        "it's",
+        "At",
+        "user",
+        "of",
+        "about",
+        "the",
+        "day"
+      ]
+    }
+  },
+  {
+    "id": 42,
+    "phrase": "I'm in two minds about",
+    "context": "I'm in two minds about accepting the offer.",
+    "meaning": "Saya bimbang tentang...",
+    "meaningEn": "Genuinely torn between options",
+    "usage": "Honest way to express indecision.",
+    "wrongOptions": [
+      "I'm in two thoughts about",
+      "I'm in two heads about",
+      "I'm in two ways about"
+    ],
+    "fillBlank": "_____ taking the promotion — the hours are brutal.",
+    "fillAnswer": "I'm in two minds about",
+    "rearrange": {
+      "sentence": "I'm in two minds about accepting the offer",
+      "words": [
+        "the",
+        "in",
+        "minds",
+        "I'm",
+        "offer",
+        "two",
+        "about",
+        "accepting"
+      ]
+    }
+  },
+  {
+    "id": 43,
+    "phrase": "I have a feeling that",
+    "context": "I have a feeling that they'll reject the proposal.",
+    "meaning": "Saya punya firasat...",
+    "meaningEn": "Intuition about what will happen",
+    "usage": "Based on gut feeling, not facts.",
+    "wrongOptions": [
+      "I have a sense that",
+      "I have a thought that",
+      "I have a guess that"
+    ],
+    "fillBlank": "_____ the client isn't happy with the timeline.",
+    "fillAnswer": "I have a feeling that",
+    "rearrange": {
+      "sentence": "I have a feeling that they'll reject it",
+      "words": [
+        "it",
+        "a",
+        "that",
+        "I",
+        "reject",
+        "have",
+        "they'll",
+        "feeling"
+      ]
+    }
+  },
+  {
+    "id": 44,
+    "phrase": "For the time being,",
+    "context": "For the time being, let's use the existing system.",
+    "meaning": "Untuk sementara ini...",
+    "meaningEn": "Temporary solution",
+    "usage": "Signals a placeholder decision.",
+    "wrongOptions": [
+      "For the moment being,",
+      "For the now being,",
+      "For the present being,"
+    ],
+    "fillBlank": "_____ let's focus on critical bugs first.",
+    "fillAnswer": "For the time being,",
+    "rearrange": {
+      "sentence": "For the time being let's use the existing system",
+      "words": [
+        "the",
+        "being",
+        "For",
+        "system",
+        "time",
+        "let's",
+        "use",
+        "existing"
+      ]
+    }
+  },
+  {
+    "id": 45,
+    "phrase": "I'm not going to lie,",
+    "context": "I'm not going to lie, that presentation was impressive.",
+    "meaning": "Jujur ya...",
+    "meaningEn": "Being candid before praise or criticism",
+    "usage": "Informal honesty marker.",
+    "wrongOptions": [
+      "I'm not going to fake,",
+      "I'm not going to hide,",
+      "I'm not going to pretend,"
+    ],
+    "fillBlank": "_____ the first draft needs a lot of work.",
+    "fillAnswer": "I'm not going to lie,",
+    "rearrange": {
+      "sentence": "I'm not going to lie that was impressive",
+      "words": [
+        "was",
+        "not",
+        "to",
+        "I'm",
+        "impressive",
+        "going",
+        "lie",
+        "that"
+      ]
+    }
+  },
+  {
+    "id": 46,
+    "phrase": "On second thought,",
+    "context": "On second thought, let's go with the original plan.",
+    "meaning": "Pikir-pikir lagi...",
+    "meaningEn": "Changing your mind after reconsideration",
+    "usage": "Reverse a decision gracefully.",
+    "wrongOptions": [
+      "On next thought,",
+      "On other thought,",
+      "On new thought,"
+    ],
+    "fillBlank": "I was going to say yes, but _____ I need more details.",
+    "fillAnswer": "on second thought,",
+    "rearrange": {
+      "sentence": "On second thought let's go with the original plan",
+      "words": [
+        "the",
+        "second",
+        "let's",
+        "On",
+        "plan",
+        "thought",
+        "go",
+        "with",
+        "original"
+      ]
+    }
+  },
+  {
+    "id": 47,
+    "phrase": "I was under the impression that",
+    "context": "I was under the impression that the deadline was next week.",
+    "meaning": "Saya kira bahwa...",
+    "meaningEn": "Politely pointing out a misunderstanding",
+    "usage": "Non-accusatory way to say 'I thought differently'.",
+    "wrongOptions": [
+      "I was in the impression that",
+      "I was on the impression that",
+      "I was at the impression that"
+    ],
+    "fillBlank": "_____ we had agreed on the budget already.",
+    "fillAnswer": "I was under the impression that",
+    "rearrange": {
+      "sentence": "I was under the impression that the deadline was next week",
+      "words": [
+        "was",
+        "under",
+        "the",
+        "I",
+        "week",
+        "impression",
+        "that",
+        "deadline",
+        "next",
+        "was"
+      ]
+    }
+  },
+  {
+    "id": 48,
+    "phrase": "Long story short,",
+    "context": "Long story short, we missed the flight and had to rebook.",
+    "meaning": "Singkat cerita...",
+    "meaningEn": "Summarizing quickly",
+    "usage": "Skips details. Listener gets the conclusion fast.",
+    "wrongOptions": [
+      "Short story long,",
+      "Long tale short,",
+      "Quick story short,"
+    ],
+    "fillBlank": "_____ the server crashed and we lost two hours.",
+    "fillAnswer": "Long story short,",
+    "rearrange": {
+      "sentence": "Long story short we missed the flight",
+      "words": [
+        "the",
+        "story",
+        "we",
+        "Long",
+        "flight",
+        "short",
+        "missed"
+      ]
+    }
+  },
+  {
+    "id": 49,
+    "phrase": "Just a heads up,",
+    "context": "Just a heads up, the client meeting got moved to 3 PM.",
+    "meaning": "Sekadar info / kasih tahu ya",
+    "meaningEn": "Giving someone advance notice",
+    "usage": "Casual, friendly warning. Great for Slack or quick chats.",
+    "wrongOptions": [
+      "Just a notice,",
+      "Just a warning,",
+      "Just a tip,"
+    ],
+    "fillBlank": "_____ the server will be down for maintenance tonight.",
+    "fillAnswer": "Just a heads up,",
+    "rearrange": {
+      "sentence": "Just a heads up the meeting got moved",
+      "words": [
+        "got",
+        "a",
+        "the",
+        "Just",
+        "moved",
+        "heads",
+        "up",
+        "meeting"
+      ]
+    }
+  },
+  {
+    "id": 50,
+    "phrase": "I wanted to follow up on",
+    "context": "I wanted to follow up on the email I sent last week.",
+    "meaning": "Saya ingin menindaklanjuti",
+    "meaningEn": "Checking back on something previously discussed",
+    "usage": "Professional and polite. Not pushy.",
+    "wrongOptions": [
+      "I wanted to check up on",
+      "I wanted to catch up on",
+      "I wanted to come up on"
+    ],
+    "fillBlank": "_____ our conversation from yesterday.",
+    "fillAnswer": "I wanted to follow up on",
+    "rearrange": {
+      "sentence": "I wanted to follow up on the email",
+      "words": [
+        "the",
+        "wanted",
+        "follow",
+        "I",
+        "email",
+        "to",
+        "up",
+        "on"
+      ]
+    }
+  },
+  {
+    "id": 51,
+    "phrase": "Sorry for the late reply",
+    "context": "Sorry for the late reply — I was out of the office.",
+    "meaning": "Maaf baru balas",
+    "meaningEn": "Apologizing for delayed response",
+    "usage": "Standard email opener. Don't overthink it.",
+    "wrongOptions": [
+      "Sorry for the slow reply",
+      "Sorry for the delayed reply",
+      "Sorry for the long reply"
+    ],
+    "fillBlank": "_____ — things have been hectic this week.",
+    "fillAnswer": "Sorry for the late reply",
+    "rearrange": {
+      "sentence": "Sorry for the late reply I was out",
+      "words": [
+        "was",
+        "for",
+        "late",
+        "Sorry",
+        "out",
+        "the",
+        "reply",
+        "I"
+      ]
+    }
+  },
+  {
+    "id": 52,
+    "phrase": "Please find attached",
+    "context": "Please find attached the Q3 report for your review.",
+    "meaning": "Terlampir / silakan lihat lampiran",
+    "meaningEn": "Directing attention to an email attachment",
+    "usage": "Formal email standard. 'I've attached...' is more natural.",
+    "wrongOptions": [
+      "Please see enclosed",
+      "Please check included",
+      "Please view joined"
+    ],
+    "fillBlank": "_____ the updated spreadsheet.",
+    "fillAnswer": "Please find attached",
+    "rearrange": {
+      "sentence": "Please find attached the report for your review",
+      "words": [
+        "your",
+        "find",
+        "the",
+        "Please",
+        "review",
+        "attached",
+        "report",
+        "for"
+      ]
+    }
+  },
+  {
+    "id": 53,
+    "phrase": "I'll loop you in",
+    "context": "I'll loop you in on the email thread.",
+    "meaning": "Saya akan ikutsertakan kamu",
+    "meaningEn": "Including someone in a conversation",
+    "usage": "Common in workplace. Can also say 'I'll CC you'.",
+    "wrongOptions": [
+      "I'll ring you in",
+      "I'll bring you in",
+      "I'll pull you in"
+    ],
+    "fillBlank": "Let me talk to the team first, then _____.",
+    "fillAnswer": "I'll loop you in",
+    "rearrange": {
+      "sentence": "I'll loop you in on the email thread",
+      "words": [
+        "the",
+        "loop",
+        "you",
+        "I'll",
+        "thread",
+        "in",
+        "on",
+        "email"
+      ]
+    }
+  },
+  {
+    "id": 54,
+    "phrase": "Per our discussion,",
+    "context": "Per our discussion, I've updated the timeline.",
+    "meaning": "Sesuai pembicaraan kita,",
+    "meaningEn": "Referencing a previous conversation",
+    "usage": "Formal/professional. Creates a paper trail.",
+    "wrongOptions": [
+      "From our discussion,",
+      "After our discussion,",
+      "Based our discussion,"
+    ],
+    "fillBlank": "_____ the budget has been approved.",
+    "fillAnswer": "Per our discussion,",
+    "rearrange": {
+      "sentence": "Per our discussion I've updated the timeline",
+      "words": [
+        "the",
+        "our",
+        "I've",
+        "Per",
+        "timeline",
+        "discussion",
+        "updated"
+      ]
+    }
+  },
+  {
+    "id": 55,
+    "phrase": "I'm CC'ing",
+    "context": "I'm CC'ing my manager so she's in the loop.",
+    "meaning": "Saya CC-kan / saya sertakan",
+    "meaningEn": "Adding someone to an email for visibility",
+    "usage": "Transparent. Shows you're not hiding the conversation.",
+    "wrongOptions": [
+      "I'm copying",
+      "I'm adding",
+      "I'm including"
+    ],
+    "fillBlank": "_____ the finance team for their reference.",
+    "fillAnswer": "I'm CC'ing",
+    "rearrange": {
+      "sentence": "I'm CC'ing my manager so she's in the loop",
+      "words": [
+        "the",
+        "CC'ing",
+        "so",
+        "I'm",
+        "loop",
+        "my",
+        "she's",
+        "manager",
+        "in"
+      ]
+    }
+  },
+  {
+    "id": 56,
+    "phrase": "Friendly reminder",
+    "context": "Friendly reminder — the report is due by Friday.",
+    "meaning": "Sekadar mengingatkan",
+    "meaningEn": "Politely nudging someone about a deadline",
+    "usage": "Softens what could feel like nagging. Very common.",
+    "wrongOptions": [
+      "Nice reminder",
+      "Kind reminder",
+      "Soft reminder"
+    ],
+    "fillBlank": "_____ that the meeting starts in 30 minutes.",
+    "fillAnswer": "Friendly reminder",
+    "rearrange": {
+      "sentence": "Friendly reminder the report is due by Friday",
+      "words": [
+        "by",
+        "reminder",
+        "the",
+        "Friendly",
+        "Friday",
+        "report",
+        "is",
+        "due"
+      ]
+    }
+  },
+  {
+    "id": 57,
+    "phrase": "Hope this helps",
+    "context": "I've put together some notes. Hope this helps!",
+    "meaning": "Semoga membantu",
+    "meaningEn": "Humble closing after providing assistance",
+    "usage": "Great email/chat closer. Warm without being formal.",
+    "wrongOptions": [
+      "Wish this helps",
+      "Trust this helps",
+      "Think this helps"
+    ],
+    "fillBlank": "Here's the documentation you asked for. _____.",
+    "fillAnswer": "Hope this helps",
+    "rearrange": {
+      "sentence": "I've put together some notes hope this helps",
+      "words": [
+        "this",
+        "put",
+        "some",
+        "I've",
+        "helps",
+        "together",
+        "hope",
+        "notes"
+      ]
+    }
+  },
+  {
+    "id": 58,
+    "phrase": "Let me know if you have any questions",
+    "context": "I've shared the proposal. Let me know if you have any questions.",
+    "meaning": "Kabari kalau ada pertanyaan",
+    "meaningEn": "Open invitation for follow-up",
+    "usage": "Standard professional closing. Shows you're approachable.",
+    "wrongOptions": [
+      "Tell me if you have any questions",
+      "Say me if you have any questions",
+      "Inform me if you have any questions"
+    ],
+    "fillBlank": "The instructions are in the doc. _____.",
+    "fillAnswer": "Let me know if you have any questions",
+    "rearrange": {
+      "sentence": "Let me know if you have any questions",
+      "words": [
+        "any",
+        "me",
+        "if",
+        "Let",
+        "questions",
+        "know",
+        "you",
+        "have"
+      ]
+    }
+  },
+  {
+    "id": 59,
+    "phrase": "Can we take a step back",
+    "context": "Can we take a step back and look at the bigger picture?",
+    "meaning": "Bisakah kita mundur sebentar (untuk lihat gambaran besar)",
+    "meaningEn": "Suggesting to reconsider from a higher level",
+    "usage": "Great for refocusing a meeting that went off track.",
+    "wrongOptions": [
+      "Can we take a look back",
+      "Can we take a move back",
+      "Can we take a turn back"
+    ],
+    "fillBlank": "Before we decide, _____ and review the requirements?",
+    "fillAnswer": "can we take a step back",
+    "rearrange": {
+      "sentence": "Can we take a step back and look at the bigger picture",
+      "words": [
+        "the",
+        "take",
+        "a",
+        "Can",
+        "picture",
+        "we",
+        "step",
+        "back",
+        "bigger",
+        "and",
+        "look",
+        "at"
+      ]
+    }
+  },
+  {
+    "id": 60,
+    "phrase": "I'd like to piggyback on",
+    "context": "I'd like to piggyback on what Sarah said about deadlines.",
+    "meaning": "Saya ingin menambahkan (dari apa yang tadi dikatakan)",
+    "meaningEn": "Building on someone else's point",
+    "usage": "Shows you're listening AND adding value. Meeting gold.",
+    "wrongOptions": [
+      "I'd like to jump on",
+      "I'd like to stack on",
+      "I'd like to ride on"
+    ],
+    "fillBlank": "_____ that point — I think we also need to consider costs.",
+    "fillAnswer": "I'd like to piggyback on",
+    "rearrange": {
+      "sentence": "I'd like to piggyback on what Sarah said",
+      "words": [
+        "what",
+        "like",
+        "piggyback",
+        "I'd",
+        "said",
+        "to",
+        "on",
+        "Sarah"
+      ]
+    }
+  },
+  {
+    "id": 61,
+    "phrase": "Let's circle back to this",
+    "context": "Good point, but let's circle back to this after the break.",
+    "meaning": "Mari kita bahas lagi nanti",
+    "meaningEn": "Postponing a topic to return to it later",
+    "usage": "Polite way to park a discussion without dismissing it.",
+    "wrongOptions": [
+      "Let's come back to this",
+      "Let's return back to this",
+      "Let's go back to this"
+    ],
+    "fillBlank": "That's an important issue, but _____ tomorrow.",
+    "fillAnswer": "let's circle back to this",
+    "rearrange": {
+      "sentence": "Let's circle back to this after the break",
+      "words": [
+        "the",
+        "circle",
+        "to",
+        "Let's",
+        "break",
+        "back",
+        "this",
+        "after"
+      ]
+    }
+  },
+  {
+    "id": 62,
+    "phrase": "To summarize,",
+    "context": "To summarize, we're launching in March with a soft rollout.",
+    "meaning": "Untuk merangkum,",
+    "meaningEn": "Wrapping up key points",
+    "usage": "Essential for closing meetings. Shows leadership.",
+    "wrongOptions": [
+      "To conclude,",
+      "To gather,",
+      "To combine,"
+    ],
+    "fillBlank": "_____ we agreed on three action items.",
+    "fillAnswer": "To summarize,",
+    "rearrange": {
+      "sentence": "To summarize we're launching in March",
+      "words": [
+        "in",
+        "summarize",
+        "we're",
+        "To",
+        "March",
+        "launching"
+      ]
+    }
+  },
+  {
+    "id": 63,
+    "phrase": "What are your thoughts on",
+    "context": "What are your thoughts on the new pricing model?",
+    "meaning": "Bagaimana pendapatmu tentang",
+    "meaningEn": "Inviting someone's opinion respectfully",
+    "usage": "Much better than 'What do you think about'. More professional.",
+    "wrongOptions": [
+      "What are your ideas on",
+      "What are your views on",
+      "What are your feelings on"
+    ],
+    "fillBlank": "_____ pushing the deadline back by a week?",
+    "fillAnswer": "What are your thoughts on",
+    "rearrange": {
+      "sentence": "What are your thoughts on the new pricing model",
+      "words": [
+        "the",
+        "are",
+        "thoughts",
+        "What",
+        "model",
+        "your",
+        "on",
+        "new",
+        "pricing"
+      ]
+    }
+  },
+  {
+    "id": 64,
+    "phrase": "I'm on the same page",
+    "context": "I agree completely — I'm on the same page.",
+    "meaning": "Saya sependapat / sepemikiran",
+    "meaningEn": "Showing full agreement",
+    "usage": "Stronger than 'I agree'. Shows alignment.",
+    "wrongOptions": [
+      "I'm on the same line",
+      "I'm on the same side",
+      "I'm on the same track"
+    ],
+    "fillBlank": "After that discussion, I think we're all _____.",
+    "fillAnswer": "on the same page",
+    "rearrange": {
+      "sentence": "I'm on the same page as you",
+      "words": [
+        "the",
+        "on",
+        "same",
+        "I'm",
+        "you",
+        "page",
+        "as"
+      ]
+    }
+  },
+  {
+    "id": 65,
+    "phrase": "Let's table that for now",
+    "context": "Interesting idea, but let's table that for now and focus on priorities.",
+    "meaning": "Mari kita tunda dulu untuk saat ini",
+    "meaningEn": "Shelving a topic temporarily",
+    "usage": "Diplomatic way to say 'not now' without saying 'no'.",
+    "wrongOptions": [
+      "Let's shelf that for now",
+      "Let's hold that for now",
+      "Let's pause that for now"
+    ],
+    "fillBlank": "We don't have time for that today. _____.",
+    "fillAnswer": "Let's table that for now",
+    "rearrange": {
+      "sentence": "Let's table that for now and focus on priorities",
+      "words": [
+        "on",
+        "table",
+        "for",
+        "Let's",
+        "priorities",
+        "that",
+        "now",
+        "and",
+        "focus"
+      ]
+    }
+  },
+  {
+    "id": 66,
+    "phrase": "I'll take the lead on",
+    "context": "I'll take the lead on the client presentation this week.",
+    "meaning": "Saya yang akan memimpin / mengurus",
+    "meaningEn": "Volunteering to be responsible",
+    "usage": "Shows initiative. Managers love hearing this.",
+    "wrongOptions": [
+      "I'll take the front on",
+      "I'll take the head on",
+      "I'll take the first on"
+    ],
+    "fillBlank": "_____ coordinating with the design team.",
+    "fillAnswer": "I'll take the lead on",
+    "rearrange": {
+      "sentence": "I'll take the lead on the presentation",
+      "words": [
+        "the",
+        "take",
+        "lead",
+        "I'll",
+        "presentation",
+        "the",
+        "on"
+      ]
+    }
+  },
+  {
+    "id": 67,
+    "phrase": "How's everything going?",
+    "context": "Hey, how's everything going? Haven't caught up in a while.",
+    "meaning": "Gimana kabarnya? / Apa kabar?",
+    "meaningEn": "Casual greeting, warmer than 'how are you'",
+    "usage": "Great opener for small talk. Shows genuine interest.",
+    "wrongOptions": [
+      "How's everything doing?",
+      "How's everything running?",
+      "How's everything being?"
+    ],
+    "fillBlank": "_____ I heard you started a new project.",
+    "fillAnswer": "How's everything going?",
+    "rearrange": {
+      "sentence": "How's everything going haven't caught up in a while",
+      "words": [
+        "in",
+        "everything",
+        "haven't",
+        "How's",
+        "while",
+        "going",
+        "caught",
+        "up",
+        "a"
+      ]
+    }
+  },
+  {
+    "id": 68,
+    "phrase": "I've been meaning to",
+    "context": "I've been meaning to ask you about the Tokyo trip.",
+    "meaning": "Saya sudah bermaksud untuk",
+    "meaningEn": "Something you intended to do but haven't yet",
+    "usage": "Shows the thought was there even if the action wasn't.",
+    "wrongOptions": [
+      "I've been wanting to",
+      "I've been planning to",
+      "I've been trying to"
+    ],
+    "fillBlank": "_____ tell you — your presentation was really impressive.",
+    "fillAnswer": "I've been meaning to",
+    "rearrange": {
+      "sentence": "I've been meaning to ask you about that",
+      "words": [
+        "about",
+        "been",
+        "to",
+        "I've",
+        "that",
+        "meaning",
+        "ask",
+        "you"
+      ]
+    }
+  },
+  {
+    "id": 69,
+    "phrase": "It's been ages",
+    "context": "It's been ages since we last caught up!",
+    "meaning": "Sudah lama banget",
+    "meaningEn": "A long time has passed",
+    "usage": "Casual, warm. Great for reconnecting.",
+    "wrongOptions": [
+      "It's been years",
+      "It's been forever",
+      "It's been long"
+    ],
+    "fillBlank": "_____ since I had Indonesian food. I miss it.",
+    "fillAnswer": "It's been ages",
+    "rearrange": {
+      "sentence": "It's been ages since we last caught up",
+      "words": [
+        "we",
+        "been",
+        "since",
+        "It's",
+        "up",
+        "ages",
+        "last",
+        "caught"
+      ]
+    }
+  },
+  {
+    "id": 70,
+    "phrase": "What have you been up to?",
+    "context": "Long time no see! What have you been up to?",
+    "meaning": "Ngapain aja belakangan?",
+    "meaningEn": "Asking what someone has been doing lately",
+    "usage": "Natural follow-up to a greeting. Shows interest.",
+    "wrongOptions": [
+      "What have you been doing to?",
+      "What have you been going to?",
+      "What have you been coming to?"
+    ],
+    "fillBlank": "I saw your post about moving to Bali. _____",
+    "fillAnswer": "What have you been up to?",
+    "rearrange": {
+      "sentence": "What have you been up to lately",
+      "words": [
+        "you",
+        "have",
+        "been",
+        "What",
+        "lately",
+        "up",
+        "to"
+      ]
+    }
+  },
+  {
+    "id": 71,
+    "phrase": "Tell me about it",
+    "context": "Work has been crazy. — Tell me about it. Same here.",
+    "meaning": "Aku juga! / Aku paham banget",
+    "meaningEn": "Expressing strong agreement through shared experience",
+    "usage": "Not literally asking for info — it means 'I know exactly what you mean'.",
+    "wrongOptions": [
+      "Say me about it",
+      "Speak me about it",
+      "Talk me about it"
+    ],
+    "fillBlank": "The traffic this morning was brutal. — _____.",
+    "fillAnswer": "Tell me about it",
+    "rearrange": {
+      "sentence": "Tell me about it same here",
+      "words": [
+        "about",
+        "me",
+        "same",
+        "Tell",
+        "here",
+        "it"
+      ]
+    }
+  },
+  {
+    "id": 72,
+    "phrase": "By the way,",
+    "context": "By the way, did you hear about the new policy?",
+    "meaning": "Ngomong-ngomong,",
+    "meaningEn": "Introducing a new topic casually",
+    "usage": "One of the most common transition phrases in English.",
+    "wrongOptions": [
+      "On the way,",
+      "In the way,",
+      "At the way,"
+    ],
+    "fillBlank": "Great work on the report. _____ are you free for lunch?",
+    "fillAnswer": "By the way,",
+    "rearrange": {
+      "sentence": "By the way did you hear about the new policy",
+      "words": [
+        "the",
+        "the",
+        "did",
+        "By",
+        "policy",
+        "way",
+        "you",
+        "hear",
+        "about",
+        "new"
+      ]
+    }
+  },
+  {
+    "id": 73,
+    "phrase": "I can relate",
+    "context": "I failed my first driving test too. I can relate.",
+    "meaning": "Saya bisa merasakan hal yang sama",
+    "meaningEn": "Showing empathy through shared experience",
+    "usage": "More personal than 'I understand'. Shows connection.",
+    "wrongOptions": [
+      "I can connect",
+      "I can associate",
+      "I can compare"
+    ],
+    "fillBlank": "Starting a new job is scary. _____.",
+    "fillAnswer": "I can relate",
+    "rearrange": {
+      "sentence": "I can relate I went through the same thing",
+      "words": [
+        "the",
+        "can",
+        "went",
+        "I",
+        "thing",
+        "relate",
+        "I",
+        "through",
+        "same"
+      ]
+    }
+  },
+  {
+    "id": 74,
+    "phrase": "Not gonna lie,",
+    "context": "Not gonna lie, that movie was way better than I expected.",
+    "meaning": "Jujur sih, / Nggak bohong,",
+    "meaningEn": "Casual honesty marker, usually before praise or surprise",
+    "usage": "Informal version of 'I'm not going to lie'. Very Gen Z/millennial.",
+    "wrongOptions": [
+      "Not going fake,",
+      "Not gonna pretend,",
+      "Not gonna joke,"
+    ],
+    "fillBlank": "_____ the food at that new place was amazing.",
+    "fillAnswer": "Not gonna lie,",
+    "rearrange": {
+      "sentence": "Not gonna lie that was way better than expected",
+      "words": [
+        "than",
+        "gonna",
+        "that",
+        "Not",
+        "expected",
+        "lie",
+        "was",
+        "way",
+        "better"
+      ]
+    }
+  },
+  {
+    "id": 75,
+    "phrase": "I really appreciate your input",
+    "context": "I really appreciate your input on this project.",
+    "meaning": "Saya sangat menghargai masukan Anda",
+    "meaningEn": "Thanking someone for their contribution",
+    "usage": "Specific gratitude. Better than generic 'thanks'.",
+    "wrongOptions": [
+      "I really appreciate your output",
+      "I really appreciate your insight",
+      "I really appreciate your comment"
+    ],
+    "fillBlank": "_____ — it helped me see the problem differently.",
+    "fillAnswer": "I really appreciate your input",
+    "rearrange": {
+      "sentence": "I really appreciate your input on this project",
+      "words": [
+        "this",
+        "really",
+        "your",
+        "I",
+        "project",
+        "appreciate",
+        "input",
+        "on"
+      ]
+    }
+  },
+  {
+    "id": 76,
+    "phrase": "I see where you're coming from",
+    "context": "I see where you're coming from, but I think we should wait.",
+    "meaning": "Saya paham sudut pandang kamu",
+    "meaningEn": "Acknowledging someone's perspective before disagreeing",
+    "usage": "Essential for respectful disagreement. Validates first.",
+    "wrongOptions": [
+      "I see what you're coming from",
+      "I see where you're going from",
+      "I see how you're coming from"
+    ],
+    "fillBlank": "_____, but the data suggests otherwise.",
+    "fillAnswer": "I see where you're coming from",
+    "rearrange": {
+      "sentence": "I see where you're coming from but I disagree",
+      "words": [
+        "you're",
+        "see",
+        "where",
+        "I",
+        "disagree",
+        "coming",
+        "from",
+        "but",
+        "I"
+      ]
+    }
+  },
+  {
+    "id": 77,
+    "phrase": "Fair enough",
+    "context": "I don't think it's the right time. — Fair enough.",
+    "meaning": "Cukup adil / Masuk akal",
+    "meaningEn": "Accepting someone's point even if you don't fully agree",
+    "usage": "Graceful concession. Shows maturity.",
+    "wrongOptions": [
+      "Good enough",
+      "Fine enough",
+      "Right enough"
+    ],
+    "fillBlank": "You'd rather wait until Monday? _____.",
+    "fillAnswer": "Fair enough",
+    "rearrange": {
+      "sentence": "Fair enough I can see your point",
+      "words": [
+        "your",
+        "enough",
+        "can",
+        "Fair",
+        "point",
+        "I",
+        "see"
+      ]
+    }
+  },
+  {
+    "id": 78,
+    "phrase": "I take your point",
+    "context": "I take your point about the budget, but we need to invest.",
+    "meaning": "Saya terima poinmu",
+    "meaningEn": "Acknowledging validity of someone's argument",
+    "usage": "More formal than 'fair enough'. Good for meetings.",
+    "wrongOptions": [
+      "I get your point",
+      "I have your point",
+      "I hold your point"
+    ],
+    "fillBlank": "_____, however the timeline is non-negotiable.",
+    "fillAnswer": "I take your point",
+    "rearrange": {
+      "sentence": "I take your point but we need to invest",
+      "words": [
+        "to",
+        "take",
+        "but",
+        "I",
+        "invest",
+        "your",
+        "point",
+        "we",
+        "need"
+      ]
+    }
+  },
+  {
+    "id": 79,
+    "phrase": "That's one way to look at it",
+    "context": "That's one way to look at it, but consider the customer's perspective.",
+    "meaning": "Itu salah satu cara melihatnya",
+    "meaningEn": "Politely suggesting there are other viewpoints",
+    "usage": "Diplomatic disagreement without directly saying 'you're wrong'.",
+    "wrongOptions": [
+      "That's one way to see it",
+      "That's one way to view it",
+      "That's one way to think it"
+    ],
+    "fillBlank": "_____, but what if we approach it from the technical side?",
+    "fillAnswer": "That's one way to look at it",
+    "rearrange": {
+      "sentence": "That's one way to look at it",
+      "words": [
+        "to",
+        "one",
+        "look",
+        "That's",
+        "it",
+        "way",
+        "at"
+      ]
+    }
+  },
+  {
+    "id": 80,
+    "phrase": "Let me push back on that",
+    "context": "Let me push back on that — I don't think the data supports it.",
+    "meaning": "Izinkan saya menentang itu",
+    "meaningEn": "Politely but firmly disagreeing",
+    "usage": "Direct but professional. Common in senior-level discussions.",
+    "wrongOptions": [
+      "Let me fight back on that",
+      "Let me pull back on that",
+      "Let me hold back on that"
+    ],
+    "fillBlank": "_____ — the user research shows the opposite trend.",
+    "fillAnswer": "Let me push back on that",
+    "rearrange": {
+      "sentence": "Let me push back on that I don't think it works",
+      "words": [
+        "it",
+        "me",
+        "back",
+        "Let",
+        "works",
+        "push",
+        "on",
+        "that",
+        "I",
+        "don't",
+        "think"
+      ]
+    }
+  },
+  {
+    "id": 81,
+    "phrase": "I couldn't agree more",
+    "context": "The UX needs a complete overhaul. — I couldn't agree more.",
+    "meaning": "Saya sangat setuju",
+    "meaningEn": "The strongest way to express agreement",
+    "usage": "Emphatic agreement. Use when you truly feel strongly.",
+    "wrongOptions": [
+      "I couldn't agree better",
+      "I couldn't agree further",
+      "I couldn't agree higher"
+    ],
+    "fillBlank": "We need to prioritize mobile users. — _____.",
+    "fillAnswer": "I couldn't agree more",
+    "rearrange": {
+      "sentence": "I couldn't agree more this is long overdue",
+      "words": [
+        "is",
+        "couldn't",
+        "more",
+        "I",
+        "overdue",
+        "agree",
+        "this",
+        "long"
+      ]
+    }
+  },
+  {
+    "id": 82,
+    "phrase": "I'm torn between",
+    "context": "I'm torn between accepting the offer and waiting for something better.",
+    "meaning": "Saya bimbang antara",
+    "meaningEn": "Genuinely split between two options",
+    "usage": "More emotional than 'I can't decide'. Shows real conflict.",
+    "wrongOptions": [
+      "I'm split between",
+      "I'm divided between",
+      "I'm stuck between"
+    ],
+    "fillBlank": "_____ the safe option and the ambitious one.",
+    "fillAnswer": "I'm torn between",
+    "rearrange": {
+      "sentence": "I'm torn between accepting and waiting",
+      "words": [
+        "and",
+        "torn",
+        "accepting",
+        "I'm",
+        "waiting",
+        "between"
+      ]
+    }
+  },
+  {
+    "id": 83,
+    "phrase": "I'm running behind",
+    "context": "Sorry, I'm running behind — I'll be there in 10 minutes.",
+    "meaning": "Saya terlambat / sedang tertinggal jadwal",
+    "meaningEn": "Politely saying you're late",
+    "usage": "Softer than 'I'm late'. Implies you're still moving.",
+    "wrongOptions": [
+      "I'm going behind",
+      "I'm falling behind",
+      "I'm coming behind"
+    ],
+    "fillBlank": "Traffic is terrible. _____ by about 15 minutes.",
+    "fillAnswer": "I'm running behind",
+    "rearrange": {
+      "sentence": "Sorry I'm running behind I'll be there soon",
+      "words": [
+        "be",
+        "running",
+        "sorry",
+        "I'm",
+        "soon",
+        "behind",
+        "I'll",
+        "there"
+      ]
+    }
+  },
+  {
+    "id": 84,
+    "phrase": "Something came up",
+    "context": "I can't make it tonight — something came up at work.",
+    "meaning": "Ada sesuatu yang muncul / ada halangan mendadak",
+    "meaningEn": "Vague excuse for unexpected change of plans",
+    "usage": "Universally accepted. No one will press for details.",
+    "wrongOptions": [
+      "Something went up",
+      "Something got up",
+      "Something showed up"
+    ],
+    "fillBlank": "I was planning to join, but _____.",
+    "fillAnswer": "something came up",
+    "rearrange": {
+      "sentence": "I can't make it tonight something came up",
+      "words": [
+        "it",
+        "can't",
+        "tonight",
+        "I",
+        "up",
+        "make",
+        "something",
+        "came"
+      ]
+    }
+  },
+  {
+    "id": 85,
+    "phrase": "I'll make it up to you",
+    "context": "Sorry I missed your birthday. I'll make it up to you.",
+    "meaning": "Saya akan ganti / menebus nanti",
+    "meaningEn": "Promising to compensate for a mistake",
+    "usage": "Shows accountability. Follow through is important.",
+    "wrongOptions": [
+      "I'll fix it up to you",
+      "I'll pay it up to you",
+      "I'll give it up to you"
+    ],
+    "fillBlank": "I know I let you down. _____ — dinner's on me.",
+    "fillAnswer": "I'll make it up to you",
+    "rearrange": {
+      "sentence": "I'll make it up to you I promise",
+      "words": [
+        "it",
+        "make",
+        "up",
+        "I'll",
+        "promise",
+        "to",
+        "you",
+        "I"
+      ]
+    }
+  },
+  {
+    "id": 86,
+    "phrase": "Let's play it by ear",
+    "context": "I'm not sure if I can come. Let's play it by ear.",
+    "meaning": "Lihat situasinya nanti",
+    "meaningEn": "Deciding later based on how things develop",
+    "usage": "Casual. Avoids commitment without saying 'no'.",
+    "wrongOptions": [
+      "Let's play it by eye",
+      "Let's play it by hand",
+      "Let's play it by feel"
+    ],
+    "fillBlank": "The weather looks uncertain. _____ on the picnic.",
+    "fillAnswer": "Let's play it by ear",
+    "rearrange": {
+      "sentence": "Let's play it by ear and decide later",
+      "words": [
+        "and",
+        "play",
+        "by",
+        "Let's",
+        "later",
+        "it",
+        "ear",
+        "decide"
+      ]
+    }
+  },
+  {
+    "id": 87,
+    "phrase": "I'm swamped",
+    "context": "I'd love to help, but I'm swamped this week.",
+    "meaning": "Saya sibuk banget",
+    "meaningEn": "Extremely busy, overwhelmed with work",
+    "usage": "Vivid. Stronger than 'I'm busy'. Creates empathy.",
+    "wrongOptions": [
+      "I'm flooded",
+      "I'm drowned",
+      "I'm buried"
+    ],
+    "fillBlank": "Can we reschedule? _____ with deadlines.",
+    "fillAnswer": "I'm swamped",
+    "rearrange": {
+      "sentence": "I'm swamped this week with deadlines",
+      "words": [
+        "this",
+        "swamped",
+        "with",
+        "I'm",
+        "deadlines",
+        "week"
+      ]
+    }
+  },
+  {
+    "id": 88,
+    "phrase": "Rain check?",
+    "context": "I can't do coffee today. Rain check?",
+    "meaning": "Bisa diganti lain kali?",
+    "meaningEn": "Asking to postpone plans to another time",
+    "usage": "Very casual. Implies you DO want to — just not now.",
+    "wrongOptions": [
+      "Sun check?",
+      "Wind check?",
+      "Storm check?"
+    ],
+    "fillBlank": "Tonight won't work for me. _____",
+    "fillAnswer": "Rain check?",
+    "rearrange": {
+      "sentence": "I can't do coffee today rain check",
+      "words": [
+        "today",
+        "can't",
+        "coffee",
+        "I",
+        "check",
+        "do",
+        "rain"
+      ]
+    }
+  },
+  {
+    "id": 89,
+    "phrase": "I can see why",
+    "context": "I can see why you'd think that, but there's more to it.",
+    "meaning": "Saya bisa mengerti kenapa",
+    "meaningEn": "Validating someone's reasoning before adding nuance",
+    "usage": "Empathetic + diplomatic. Great for difficult conversations.",
+    "wrongOptions": [
+      "I can know why",
+      "I can tell why",
+      "I can feel why"
+    ],
+    "fillBlank": "_____ they're frustrated — the process is confusing.",
+    "fillAnswer": "I can see why",
+    "rearrange": {
+      "sentence": "I can see why you'd think that",
+      "words": [
+        "you'd",
+        "can",
+        "why",
+        "I",
+        "that",
+        "see",
+        "think"
+      ]
+    }
+  },
+  {
+    "id": 90,
+    "phrase": "The bottom line is",
+    "context": "The bottom line is we need more revenue this quarter.",
+    "meaning": "Intinya adalah",
+    "meaningEn": "The most important fact, cutting through noise",
+    "usage": "Direct. Used when you want to end debate and focus.",
+    "wrongOptions": [
+      "The base line is",
+      "The end line is",
+      "The last line is"
+    ],
+    "fillBlank": "We can discuss all day, but _____ we're over budget.",
+    "fillAnswer": "the bottom line is",
+    "rearrange": {
+      "sentence": "The bottom line is we need more revenue",
+      "words": [
+        "more",
+        "bottom",
+        "is",
+        "The",
+        "revenue",
+        "line",
+        "we",
+        "need"
+      ]
+    }
+  },
+  {
+    "id": 91,
+    "phrase": "To put it simply,",
+    "context": "To put it simply, the algorithm finds the shortest path.",
+    "meaning": "Sederhananya,",
+    "meaningEn": "Simplifying something complex",
+    "usage": "Signals you're about to explain clearly. Audience appreciates it.",
+    "wrongOptions": [
+      "To say it simply,",
+      "To make it simply,",
+      "To do it simply,"
+    ],
+    "fillBlank": "_____ the new system saves us 3 hours per day.",
+    "fillAnswer": "To put it simply,",
+    "rearrange": {
+      "sentence": "To put it simply the algorithm finds the shortest path",
+      "words": [
+        "the",
+        "put",
+        "simply",
+        "To",
+        "path",
+        "it",
+        "shortest",
+        "algorithm",
+        "finds"
+      ]
+    }
+  },
+  {
+    "id": 92,
+    "phrase": "Here's the thing,",
+    "context": "Here's the thing — we don't have the budget for both.",
+    "meaning": "Begini masalahnya,",
+    "meaningEn": "Introducing the key issue or complication",
+    "usage": "Conversational. Creates a 'lean in' moment.",
+    "wrongOptions": [
+      "Here's the point,",
+      "Here's the matter,",
+      "Here's the case,"
+    ],
+    "fillBlank": "_____ the API works fine, but the latency is too high.",
+    "fillAnswer": "Here's the thing,",
+    "rearrange": {
+      "sentence": "Here's the thing we don't have the budget",
+      "words": [
+        "the",
+        "the",
+        "thing",
+        "Here's",
+        "budget",
+        "we",
+        "don't",
+        "have"
+      ]
+    }
+  },
+  {
+    "id": 93,
+    "phrase": "In other words,",
+    "context": "The conversion rate dropped. In other words, fewer people are buying.",
+    "meaning": "Dengan kata lain,",
+    "meaningEn": "Rephrasing for clarity",
+    "usage": "Essential for making sure your audience understands.",
+    "wrongOptions": [
+      "In different words,",
+      "In another words,",
+      "In more words,"
+    ],
+    "fillBlank": "The server was overloaded. _____ it crashed.",
+    "fillAnswer": "In other words,",
+    "rearrange": {
+      "sentence": "In other words fewer people are buying",
+      "words": [
+        "are",
+        "other",
+        "fewer",
+        "In",
+        "buying",
+        "words",
+        "people"
+      ]
+    }
+  },
+  {
+    "id": 94,
+    "phrase": "What I mean is,",
+    "context": "What I mean is, we shouldn't rush into a decision.",
+    "meaning": "Maksud saya adalah,",
+    "meaningEn": "Clarifying what you actually intended to say",
+    "usage": "Great for correcting a miscommunication mid-conversation.",
+    "wrongOptions": [
+      "What I say is,",
+      "What I think is,",
+      "What I want is,"
+    ],
+    "fillBlank": "I'm not saying it's bad. _____ it needs more testing.",
+    "fillAnswer": "What I mean is,",
+    "rearrange": {
+      "sentence": "What I mean is we shouldn't rush into this",
+      "words": [
+        "this",
+        "I",
+        "is",
+        "What",
+        "into",
+        "mean",
+        "we",
+        "shouldn't",
+        "rush"
+      ]
+    }
+  },
+  {
+    "id": 95,
+    "phrase": "That being said,",
+    "context": "The results look good. That being said, we need more data.",
+    "meaning": "Meskipun demikian,",
+    "meaningEn": "Introducing a contrasting point after a positive one",
+    "usage": "Sophisticated transition. Shows balanced thinking.",
+    "wrongOptions": [
+      "That being told,",
+      "That being spoken,",
+      "That being noted,"
+    ],
+    "fillBlank": "I love the design. _____ the colors need adjustment.",
+    "fillAnswer": "That being said,",
+    "rearrange": {
+      "sentence": "That being said we need more data",
+      "words": [
+        "more",
+        "being",
+        "we",
+        "That",
+        "data",
+        "said",
+        "need"
+      ]
+    }
+  },
+  {
+    "id": 96,
+    "phrase": "For instance,",
+    "context": "Some features are broken. For instance, the search bar doesn't work.",
+    "meaning": "Misalnya / contohnya,",
+    "meaningEn": "Introducing a specific example",
+    "usage": "More formal than 'like'. Good for professional settings.",
+    "wrongOptions": [
+      "For example,",
+      "For case,",
+      "For sample,"
+    ],
+    "fillBlank": "The UI has several issues. _____ the buttons are misaligned.",
+    "fillAnswer": "For instance,",
+    "rearrange": {
+      "sentence": "For instance the search bar doesn't work",
+      "words": [
+        "the",
+        "instance",
+        "doesn't",
+        "For",
+        "work",
+        "search",
+        "bar"
+      ]
+    }
+  },
+  {
+    "id": 97,
+    "phrase": "I'll see what I can do",
+    "context": "That's a tight deadline, but I'll see what I can do.",
+    "meaning": "Saya akan lihat apa yang bisa saya lakukan",
+    "meaningEn": "Promising to try without guaranteeing success",
+    "usage": "Sets realistic expectations. Honest but willing.",
+    "wrongOptions": [
+      "I'll check what I can do",
+      "I'll look what I can do",
+      "I'll find what I can do"
+    ],
+    "fillBlank": "Getting approval by Monday is tough, but _____.",
+    "fillAnswer": "I'll see what I can do",
+    "rearrange": {
+      "sentence": "I'll see what I can do no promises though",
+      "words": [
+        "though",
+        "see",
+        "I",
+        "I'll",
+        "promises",
+        "what",
+        "can",
+        "do",
+        "no"
+      ]
+    }
+  },
+  {
+    "id": 98,
+    "phrase": "We might want to consider",
+    "context": "We might want to consider hiring a contractor for this.",
+    "meaning": "Mungkin kita perlu mempertimbangkan",
+    "meaningEn": "Suggesting an option gently",
+    "usage": "Non-threatening suggestion. Invites discussion, not argument.",
+    "wrongOptions": [
+      "We might want to think",
+      "We might want to look",
+      "We might want to check"
+    ],
+    "fillBlank": "_____ delaying the launch until the bugs are fixed.",
+    "fillAnswer": "We might want to consider",
+    "rearrange": {
+      "sentence": "We might want to consider hiring a contractor",
+      "words": [
+        "a",
+        "might",
+        "to",
+        "We",
+        "contractor",
+        "want",
+        "consider",
+        "hiring"
+      ]
+    }
+  },
+  {
+    "id": 99,
+    "phrase": "What if we",
+    "context": "What if we tried a different approach to the problem?",
+    "meaning": "Bagaimana kalau kita",
+    "meaningEn": "Proposing an idea as a question",
+    "usage": "Less threatening than 'We should'. Invites collaboration.",
+    "wrongOptions": [
+      "How if we",
+      "Why if we",
+      "When if we"
+    ],
+    "fillBlank": "_____ split the work into two sprints instead?",
+    "fillAnswer": "What if we",
+    "rearrange": {
+      "sentence": "What if we tried a different approach",
+      "words": [
+        "a",
+        "if",
+        "tried",
+        "What",
+        "approach",
+        "we",
+        "different"
+      ]
+    }
+  },
+  {
+    "id": 100,
+    "phrase": "That's not going to fly",
+    "context": "Telling the client we need 3 more months? That's not going to fly.",
+    "meaning": "Itu nggak akan berhasil / nggak akan diterima",
+    "meaningEn": "Something won't be accepted or approved",
+    "usage": "Informal but powerful. Common in meetings.",
+    "wrongOptions": [
+      "That's not going to work",
+      "That's not going to pass",
+      "That's not going to stand"
+    ],
+    "fillBlank": "A 50% price increase? _____ with customers.",
+    "fillAnswer": "That's not going to fly",
+    "rearrange": {
+      "sentence": "That's not going to fly with the client",
+      "words": [
+        "the",
+        "not",
+        "to",
+        "That's",
+        "client",
+        "going",
+        "fly",
+        "with"
+      ]
+    }
+  },
+  {
+    "id": 101,
+    "phrase": "Let's give it a shot",
+    "context": "I'm not sure it'll work, but let's give it a shot.",
+    "meaning": "Ayo kita coba",
+    "meaningEn": "Agreeing to try something uncertain",
+    "usage": "Optimistic. Shows willingness to experiment.",
+    "wrongOptions": [
+      "Let's give it a try",
+      "Let's give it a chance",
+      "Let's give it a go"
+    ],
+    "fillBlank": "The idea sounds risky, but _____. What's the worst that can happen?",
+    "fillAnswer": "let's give it a shot",
+    "rearrange": {
+      "sentence": "Let's give it a shot and see what happens",
+      "words": [
+        "and",
+        "give",
+        "a",
+        "Let's",
+        "happens",
+        "it",
+        "shot",
+        "see",
+        "what"
+      ]
+    }
+  },
+  {
+    "id": 102,
+    "phrase": "We're on a tight deadline",
+    "context": "We're on a tight deadline, so let's prioritize.",
+    "meaning": "Deadline kita sangat ketat",
+    "meaningEn": "Time pressure is high",
+    "usage": "Sets urgency without panicking.",
+    "wrongOptions": [
+      "We're on a close deadline",
+      "We're on a short deadline",
+      "We're on a hard deadline"
+    ],
+    "fillBlank": "_____ — can we skip the nice-to-haves for now?",
+    "fillAnswer": "We're on a tight deadline",
+    "rearrange": {
+      "sentence": "We're on a tight deadline so let's prioritize",
+      "words": [
+        "a",
+        "on",
+        "tight",
+        "We're",
+        "prioritize",
+        "deadline",
+        "so",
+        "let's"
+      ]
+    }
+  },
+  {
+    "id": 103,
+    "phrase": "That's a fair point",
+    "context": "That's a fair point — I hadn't thought about the security implications.",
+    "meaning": "Itu poin yang adil / masuk akal",
+    "meaningEn": "Validating someone's argument sincerely",
+    "usage": "Similar to 'That's a good point' but implies fairness/balance.",
+    "wrongOptions": [
+      "That's a right point",
+      "That's a true point",
+      "That's a valid point"
+    ],
+    "fillBlank": "_____ — we should factor in the maintenance cost too.",
+    "fillAnswer": "That's a fair point",
+    "rearrange": {
+      "sentence": "That's a fair point I hadn't thought about that",
+      "words": [
+        "that",
+        "a",
+        "I",
+        "That's",
+        "about",
+        "fair",
+        "point",
+        "hadn't",
+        "thought"
+      ]
+    }
+  },
+  {
+    "id": 104,
+    "phrase": "I'm not a fan of",
+    "context": "I'm not a fan of the new layout — it feels cluttered.",
+    "meaning": "Saya kurang suka",
+    "meaningEn": "Expressing dislike mildly",
+    "usage": "Softer than 'I don't like'. Less confrontational.",
+    "wrongOptions": [
+      "I'm not a friend of",
+      "I'm not a lover of",
+      "I'm not a supporter of"
+    ],
+    "fillBlank": "_____ meetings that could've been emails.",
+    "fillAnswer": "I'm not a fan of",
+    "rearrange": {
+      "sentence": "I'm not a fan of the new layout",
+      "words": [
+        "the",
+        "not",
+        "a",
+        "I'm",
+        "layout",
+        "fan",
+        "of",
+        "new"
+      ]
+    }
+  },
+  {
+    "id": 105,
+    "phrase": "I'm all for it",
+    "context": "Flexible work hours? I'm all for it.",
+    "meaning": "Saya sangat mendukung",
+    "meaningEn": "Enthusiastic support for an idea",
+    "usage": "Casual but strong agreement. Very positive.",
+    "wrongOptions": [
+      "I'm all about it",
+      "I'm all with it",
+      "I'm all on it"
+    ],
+    "fillBlank": "More team lunches? _____.",
+    "fillAnswer": "I'm all for it",
+    "rearrange": {
+      "sentence": "I'm all for it sounds like a great idea",
+      "words": [
+        "a",
+        "all",
+        "it",
+        "I'm",
+        "idea",
+        "for",
+        "sounds",
+        "like",
+        "great"
+      ]
+    }
+  },
+  {
+    "id": 106,
+    "phrase": "To be fair,",
+    "context": "To be fair, they did warn us about the risks.",
+    "meaning": "Untuk adilnya / sejujurnya,",
+    "meaningEn": "Presenting the other side of an argument",
+    "usage": "Shows balanced thinking. Good for nuanced discussions.",
+    "wrongOptions": [
+      "To be right,",
+      "To be just,",
+      "To be equal,"
+    ],
+    "fillBlank": "_____ the project scope changed three times.",
+    "fillAnswer": "To be fair,",
+    "rearrange": {
+      "sentence": "To be fair they did warn us about the risks",
+      "words": [
+        "the",
+        "be",
+        "they",
+        "To",
+        "risks",
+        "fair",
+        "did",
+        "warn",
+        "us",
+        "about"
+      ]
+    }
+  },
+  {
+    "id": 107,
+    "phrase": "Easier said than done",
+    "context": "Just fix the bug? Easier said than done.",
+    "meaning": "Lebih mudah diucapkan daripada dilakukan",
+    "meaningEn": "Something sounds simple but is actually difficult",
+    "usage": "Reality check. Not dismissive — just honest.",
+    "wrongOptions": [
+      "Easier told than done",
+      "Easier spoken than done",
+      "Easier said than made"
+    ],
+    "fillBlank": "Migrating the whole database in a week? _____.",
+    "fillAnswer": "Easier said than done",
+    "rearrange": {
+      "sentence": "Easier said than done but we'll try",
+      "words": [
+        "than",
+        "said",
+        "but",
+        "Easier",
+        "try",
+        "done",
+        "we'll"
+      ]
+    }
+  },
+  {
+    "id": 108,
+    "phrase": "Sounds good to me",
+    "context": "Meeting at 2? Sounds good to me.",
+    "meaning": "Kedengarannya oke buat saya",
+    "meaningEn": "Casual agreement or approval",
+    "usage": "Everyday confirmation. Easy, natural, no formality.",
+    "wrongOptions": [
+      "Sounds nice to me",
+      "Sounds fine to me",
+      "Sounds great to me"
+    ],
+    "fillBlank": "Thai food for lunch? _____.",
+    "fillAnswer": "Sounds good to me",
+    "rearrange": {
+      "sentence": "Sounds good to me I'll be there",
+      "words": [
+        "be",
+        "good",
+        "me",
+        "Sounds",
+        "there",
+        "to",
+        "I'll"
+      ]
+    }
+  },
+  {
+    "id": 109,
+    "phrase": "I'll keep you posted",
+    "context": "We're still waiting for approval. I'll keep you posted.",
+    "meaning": "Saya akan beri kabar terus",
+    "meaningEn": "Promising ongoing updates",
+    "usage": "Professional. Shows you won't leave them hanging.",
+    "wrongOptions": [
+      "I'll keep you updated",
+      "I'll keep you informed",
+      "I'll keep you told"
+    ],
+    "fillBlank": "The results aren't in yet. _____.",
+    "fillAnswer": "I'll keep you posted",
+    "rearrange": {
+      "sentence": "I'll keep you posted as soon as I hear back",
+      "words": [
+        "as",
+        "keep",
+        "posted",
+        "I'll",
+        "back",
+        "you",
+        "as",
+        "soon",
+        "I",
+        "hear"
+      ]
+    }
+  },
+  {
+    "id": 110,
+    "phrase": "No rush",
+    "context": "Can you review this when you get a chance? No rush.",
+    "meaning": "Nggak buru-buru",
+    "meaningEn": "Removing time pressure from a request",
+    "usage": "Kind and considerate. Shows respect for their time.",
+    "wrongOptions": [
+      "No hurry",
+      "No pressure",
+      "No speed"
+    ],
+    "fillBlank": "I'd appreciate your feedback on this. _____.",
+    "fillAnswer": "No rush",
+    "rearrange": {
+      "sentence": "Can you review this when you get a chance no rush",
+      "words": [
+        "a",
+        "you",
+        "this",
+        "Can",
+        "rush",
+        "review",
+        "when",
+        "you",
+        "get",
+        "chance",
+        "no"
+      ]
+    }
+  },
+  {
+    "id": 111,
+    "phrase": "Keep me in the loop",
+    "context": "I won't be in the meeting, but keep me in the loop.",
+    "meaning": "Beri saya info terus / jangan sampai saya ketinggalan",
+    "meaningEn": "Asking to be kept informed",
+    "usage": "Very common workplace phrase. Shows you care but trust the team.",
+    "wrongOptions": [
+      "Keep me in the circle",
+      "Keep me in the chain",
+      "Keep me in the ring"
+    ],
+    "fillBlank": "I'm taking Friday off. _____ if anything changes.",
+    "fillAnswer": "Keep me in the loop",
+    "rearrange": {
+      "sentence": "Keep me in the loop if anything changes",
+      "words": [
+        "the",
+        "me",
+        "in",
+        "Keep",
+        "changes",
+        "loop",
+        "if",
+        "anything"
+      ]
+    }
+  },
+  {
+    "id": 112,
+    "phrase": "I'll leave it to you",
+    "context": "You know the client best. I'll leave it to you.",
+    "meaning": "Saya serahkan kepadamu",
+    "meaningEn": "Trusting someone else's judgment",
+    "usage": "Shows trust and delegation. Not laziness.",
+    "wrongOptions": [
+      "I'll give it to you",
+      "I'll pass it to you",
+      "I'll hand it to you"
+    ],
+    "fillBlank": "You're the expert on this. _____.",
+    "fillAnswer": "I'll leave it to you",
+    "rearrange": {
+      "sentence": "I'll leave it to you you know best",
+      "words": [
+        "you",
+        "leave",
+        "to",
+        "I'll",
+        "best",
+        "it",
+        "you",
+        "know"
+      ]
+    }
+  },
+  {
+    "id": 113,
+    "phrase": "It goes without saying",
+    "context": "It goes without saying that quality is our top priority.",
+    "meaning": "Sudah jelas / tidak perlu dikatakan lagi",
+    "meaningEn": "Something so obvious it doesn't need stating",
+    "usage": "Formal-ish. Ironically, you ARE saying it to emphasize.",
+    "wrongOptions": [
+      "It goes without telling",
+      "It goes without speaking",
+      "It goes without mentioning"
+    ],
+    "fillBlank": "_____ that data security is non-negotiable.",
+    "fillAnswer": "It goes without saying",
+    "rearrange": {
+      "sentence": "It goes without saying that quality comes first",
+      "words": [
+        "that",
+        "goes",
+        "saying",
+        "It",
+        "first",
+        "without",
+        "quality",
+        "comes"
+      ]
+    }
+  },
+  {
+    "id": 114,
+    "phrase": "When it comes to",
+    "context": "When it comes to debugging, patience is key.",
+    "meaning": "Kalau soal / dalam hal",
+    "meaningEn": "Regarding a specific topic",
+    "usage": "Smooth way to narrow focus to a specific area.",
+    "wrongOptions": [
+      "When it goes to",
+      "When it gets to",
+      "When it turns to"
+    ],
+    "fillBlank": "_____ customer service, they're the best in the industry.",
+    "fillAnswer": "When it comes to",
+    "rearrange": {
+      "sentence": "When it comes to debugging patience is key",
+      "words": [
+        "is",
+        "it",
+        "to",
+        "When",
+        "key",
+        "comes",
+        "debugging",
+        "patience"
+      ]
+    }
+  },
+  {
+    "id": 115,
+    "phrase": "More often than not",
+    "context": "More often than not, the simplest solution is the best one.",
+    "meaning": "Lebih sering dari tidak / biasanya",
+    "meaningEn": "Usually, in most cases",
+    "usage": "More sophisticated than 'usually'. Good for writing.",
+    "wrongOptions": [
+      "More times than not",
+      "More likely than not",
+      "More common than not"
+    ],
+    "fillBlank": "_____ the bug is in the most obvious place.",
+    "fillAnswer": "More often than not",
+    "rearrange": {
+      "sentence": "More often than not the simplest solution works",
+      "words": [
+        "than",
+        "often",
+        "the",
+        "More",
+        "works",
+        "not",
+        "simplest",
+        "solution"
+      ]
+    }
+  },
+  {
+    "id": 116,
+    "phrase": "As it turns out,",
+    "context": "As it turns out, the bug was in the config file all along.",
+    "meaning": "Ternyata (setelah diselidiki)",
+    "meaningEn": "Revealing a surprising discovery",
+    "usage": "Slightly more formal than 'It turns out'. Good for reports.",
+    "wrongOptions": [
+      "As it goes out,",
+      "As it comes out,",
+      "As it finds out,"
+    ],
+    "fillBlank": "_____ the client had already approved the design last week.",
+    "fillAnswer": "As it turns out,",
+    "rearrange": {
+      "sentence": "As it turns out the bug was in the config",
+      "words": [
+        "the",
+        "it",
+        "out",
+        "As",
+        "config",
+        "turns",
+        "bug",
+        "was",
+        "in"
+      ]
+    }
+  },
+  {
+    "id": 117,
+    "phrase": "All things considered,",
+    "context": "All things considered, I think we made the right decision.",
+    "meaning": "Dengan mempertimbangkan semuanya,",
+    "meaningEn": "Taking everything into account",
+    "usage": "Thoughtful conclusion. Shows you've weighed all factors.",
+    "wrongOptions": [
+      "All things thought,",
+      "All things viewed,",
+      "All things counted,"
+    ],
+    "fillBlank": "_____ the launch was a success despite the delays.",
+    "fillAnswer": "All things considered,",
+    "rearrange": {
+      "sentence": "All things considered I think we did well",
+      "words": [
+        "we",
+        "things",
+        "I",
+        "All",
+        "well",
+        "considered",
+        "think",
+        "did"
+      ]
+    }
+  },
+  {
+    "id": 118,
+    "phrase": "On top of that,",
+    "context": "The code is messy. On top of that, there are no tests.",
+    "meaning": "Selain itu / di atas itu,",
+    "meaningEn": "Adding another problem or point to what was said",
+    "usage": "Piles on. Used when listing multiple issues or benefits.",
+    "wrongOptions": [
+      "Above of that,",
+      "Over of that,",
+      "Beyond of that,"
+    ],
+    "fillBlank": "We're behind schedule. _____ two team members are on leave.",
+    "fillAnswer": "On top of that,",
+    "rearrange": {
+      "sentence": "On top of that there are no tests",
+      "words": [
+        "no",
+        "top",
+        "there",
+        "On",
+        "tests",
+        "of",
+        "that",
+        "are"
+      ]
+    }
+  },
+  {
+    "id": 119,
+    "phrase": "For the record,",
+    "context": "For the record, I raised this concern two months ago.",
+    "meaning": "Untuk catatan / agar tercatat,",
+    "meaningEn": "Making sure something is officially noted",
+    "usage": "Can sound assertive. Use when you want accountability.",
+    "wrongOptions": [
+      "For the note,",
+      "For the log,",
+      "For the file,"
+    ],
+    "fillBlank": "_____ I was against this approach from the beginning.",
+    "fillAnswer": "For the record,",
+    "rearrange": {
+      "sentence": "For the record I raised this concern earlier",
+      "words": [
+        "this",
+        "the",
+        "I",
+        "For",
+        "earlier",
+        "record",
+        "raised",
+        "concern"
+      ]
+    }
+  },
+  {
+    "id": 120,
+    "phrase": "At this point,",
+    "context": "At this point, we just need to ship it and iterate.",
+    "meaning": "Pada titik ini / saat ini,",
+    "meaningEn": "Given the current situation",
+    "usage": "Marks a decision moment. Time to act, not discuss.",
+    "wrongOptions": [
+      "At this time,",
+      "At this moment,",
+      "At this stage,"
+    ],
+    "fillBlank": "_____ I think we've discussed enough. Let's vote.",
+    "fillAnswer": "At this point,",
+    "rearrange": {
+      "sentence": "At this point we just need to ship it",
+      "words": [
+        "to",
+        "this",
+        "we",
+        "At",
+        "it",
+        "point",
+        "just",
+        "need",
+        "ship"
+      ]
+    }
+  },
+  {
+    "id": 121,
+    "phrase": "How do I put this",
+    "context": "How do I put this... the proposal needs significant rework.",
+    "meaning": "Bagaimana ya mengatakannya...",
+    "meaningEn": "Stalling while choosing words carefully",
+    "usage": "Signals you're about to say something sensitive. Creates suspense.",
+    "wrongOptions": [
+      "How do I say this",
+      "How do I tell this",
+      "How do I speak this"
+    ],
+    "fillBlank": "_____ — your code works, but it's really hard to read.",
+    "fillAnswer": "How do I put this",
+    "rearrange": {
+      "sentence": "How do I put this the proposal needs rework",
+      "words": [
+        "the",
+        "do",
+        "put",
+        "How",
+        "rework",
+        "I",
+        "this",
+        "proposal",
+        "needs"
+      ]
+    }
+  },
+  {
+    "id": 122,
+    "phrase": "Correct me if I'm wrong, but",
+    "context": "Correct me if I'm wrong, but didn't we agree on a different approach?",
+    "meaning": "Koreksi saya kalau salah, tapi",
+    "meaningEn": "Politely questioning something while leaving room to be wrong",
+    "usage": "Humble + assertive at the same time. Very effective.",
+    "wrongOptions": [
+      "Fix me if I'm wrong, but",
+      "Tell me if I'm wrong, but",
+      "Stop me if I'm wrong, but"
+    ],
+    "fillBlank": "_____ the deadline was supposed to be next Friday?",
+    "fillAnswer": "Correct me if I'm wrong, but",
+    "rearrange": {
+      "sentence": "Correct me if I'm wrong but we agreed on this",
+      "words": [
+        "on",
+        "me",
+        "I'm",
+        "Correct",
+        "this",
+        "if",
+        "wrong",
+        "but",
+        "we",
+        "agreed"
+      ]
+    }
+  },
+  {
+    "id": 123,
+    "phrase": "With all due respect,",
+    "context": "With all due respect, I think we're approaching this the wrong way.",
+    "meaning": "Dengan segala hormat,",
+    "meaningEn": "Softening a strong disagreement, especially with superiors",
+    "usage": "Formal. Use sparingly — overuse makes it sound passive-aggressive.",
+    "wrongOptions": [
+      "With all good respect,",
+      "With all full respect,",
+      "With all deep respect,"
+    ],
+    "fillBlank": "_____ that plan doesn't account for our biggest risk.",
+    "fillAnswer": "With all due respect,",
+    "rearrange": {
+      "sentence": "With all due respect I think we're wrong",
+      "words": [
+        "we're",
+        "all",
+        "respect",
+        "With",
+        "wrong",
+        "due",
+        "I",
+        "think"
+      ]
+    }
+  },
+  {
+    "id": 124,
+    "phrase": "The way I see it,",
+    "context": "The way I see it, we have two options.",
+    "meaning": "Menurut cara pandang saya,",
+    "meaningEn": "Sharing your personal perspective",
+    "usage": "Personal but not aggressive. Invites dialogue.",
+    "wrongOptions": [
+      "The way I view it,",
+      "The way I look it,",
+      "The way I think it,"
+    ],
+    "fillBlank": "_____ the risk is worth taking.",
+    "fillAnswer": "The way I see it,",
+    "rearrange": {
+      "sentence": "The way I see it we have two options",
+      "words": [
+        "two",
+        "way",
+        "see",
+        "The",
+        "options",
+        "I",
+        "it",
+        "we",
+        "have"
+      ]
+    }
+  },
+  {
+    "id": 125,
+    "phrase": "I stand corrected",
+    "context": "Oh, the meeting is Thursday, not Friday? I stand corrected.",
+    "meaning": "Saya terkoreksi / saya yang salah",
+    "meaningEn": "Gracefully admitting you were wrong",
+    "usage": "Shows maturity. People respect this more than doubling down.",
+    "wrongOptions": [
+      "I stay corrected",
+      "I am corrected",
+      "I get corrected"
+    ],
+    "fillBlank": "It was actually released in 2023? _____.",
+    "fillAnswer": "I stand corrected",
+    "rearrange": {
+      "sentence": "I stand corrected my mistake",
+      "words": [
+        "my",
+        "stand",
+        "corrected",
+        "I",
+        "mistake"
+      ]
+    }
+  },
+  {
+    "id": 126,
+    "phrase": "Not necessarily",
+    "context": "Is it a bad idea? Not necessarily — it depends on execution.",
+    "meaning": "Tidak harus begitu / belum tentu",
+    "meaningEn": "Partial disagreement — the answer isn't clear-cut",
+    "usage": "Nuanced. Shows you see gray areas, not just black/white.",
+    "wrongOptions": [
+      "Not certainly",
+      "Not definitely",
+      "Not absolutely"
+    ],
+    "fillBlank": "Will the new feature increase costs? _____ — if we do it right.",
+    "fillAnswer": "Not necessarily",
+    "rearrange": {
+      "sentence": "Not necessarily it depends on the execution",
+      "words": [
+        "the",
+        "necessarily",
+        "depends",
+        "Not",
+        "execution",
+        "it",
+        "on"
+      ]
+    }
+  },
+  {
+    "id": 127,
+    "phrase": "I'd rather",
+    "context": "I'd rather work from home tomorrow if that's okay.",
+    "meaning": "Saya lebih suka / lebih memilih",
+    "meaningEn": "Expressing preference politely",
+    "usage": "Followed by base verb (no 'to'). Natural preference statement.",
+    "wrongOptions": [
+      "I'd prefer",
+      "I'd better",
+      "I'd sooner"
+    ],
+    "fillBlank": "_____ finish this tonight than rush it tomorrow morning.",
+    "fillAnswer": "I'd rather",
+    "rearrange": {
+      "sentence": "I'd rather work from home tomorrow",
+      "words": [
+        "from",
+        "rather",
+        "work",
+        "I'd",
+        "tomorrow",
+        "home"
+      ]
+    }
+  },
+  {
+    "id": 128,
+    "phrase": "How about we",
+    "context": "How about we grab lunch and discuss it there?",
+    "meaning": "Bagaimana kalau kita",
+    "meaningEn": "Casual suggestion for doing something together",
+    "usage": "Friendly, collaborative. Less formal than 'Shall we'.",
+    "wrongOptions": [
+      "How if we",
+      "How do we",
+      "How can we"
+    ],
+    "fillBlank": "_____ take a 10-minute break and come back fresh?",
+    "fillAnswer": "How about we",
+    "rearrange": {
+      "sentence": "How about we grab lunch and discuss it",
+      "words": [
+        "and",
+        "about",
+        "grab",
+        "How",
+        "it",
+        "we",
+        "lunch",
+        "discuss"
+      ]
+    }
+  },
+  {
+    "id": 129,
+    "phrase": "I guess you could say",
+    "context": "I guess you could say I'm a perfectionist.",
+    "meaning": "Bisa dibilang...",
+    "meaningEn": "Framing something in a particular way, slightly self-aware",
+    "usage": "Adds a layer of self-awareness. Slightly humorous.",
+    "wrongOptions": [
+      "I think you could say",
+      "I believe you could say",
+      "I suppose you could say"
+    ],
+    "fillBlank": "_____ the project was a learning experience.",
+    "fillAnswer": "I guess you could say",
+    "rearrange": {
+      "sentence": "I guess you could say I'm a perfectionist",
+      "words": [
+        "a",
+        "guess",
+        "could",
+        "I",
+        "perfectionist",
+        "you",
+        "say",
+        "I'm"
+      ]
+    }
+  },
+  {
+    "id": 130,
+    "phrase": "It's about time",
+    "context": "They finally fixed the elevator. It's about time!",
+    "meaning": "Sudah waktunya / akhirnya!",
+    "meaningEn": "Expressing relief that something overdue finally happened",
+    "usage": "Slightly impatient tone. Shows you've been waiting.",
+    "wrongOptions": [
+      "It's around time",
+      "It's near time",
+      "It's close time"
+    ],
+    "fillBlank": "They approved the budget? _____.",
+    "fillAnswer": "It's about time",
+    "rearrange": {
+      "sentence": "It's about time they fixed the elevator",
+      "words": [
+        "the",
+        "about",
+        "they",
+        "It's",
+        "elevator",
+        "time",
+        "fixed"
+      ]
+    }
+  },
+  {
+    "id": 131,
+    "phrase": "Off the top of my head,",
+    "context": "Off the top of my head, I'd say we need about 3 weeks.",
+    "meaning": "Kalau dari ingatan langsung / tanpa mikir lama,",
+    "meaningEn": "Giving a quick, unrehearsed estimate or answer",
+    "usage": "Signals your answer isn't deeply researched. Manages expectations.",
+    "wrongOptions": [
+      "Out of the top of my head,",
+      "From the top of my head,",
+      "On the top of my head,"
+    ],
+    "fillBlank": "_____ I can think of at least five reasons why.",
+    "fillAnswer": "Off the top of my head,",
+    "rearrange": {
+      "sentence": "Off the top of my head I'd say three weeks",
+      "words": [
+        "my",
+        "the",
+        "of",
+        "Off",
+        "weeks",
+        "top",
+        "head",
+        "I'd",
+        "say",
+        "three"
+      ]
+    }
+  },
+  {
+    "id": 132,
+    "phrase": "As far as I'm concerned,",
+    "context": "As far as I'm concerned, the deal is off.",
+    "meaning": "Sejauh yang saya peduli / menurut saya,",
+    "meaningEn": "From my perspective (implying finality)",
+    "usage": "Stronger than 'I think'. Shows firmness.",
+    "wrongOptions": [
+      "As far as I'm worried,",
+      "As far as I'm involved,",
+      "As far as I'm related,"
+    ],
+    "fillBlank": "_____ we've done everything we can.",
+    "fillAnswer": "As far as I'm concerned,",
+    "rearrange": {
+      "sentence": "As far as I'm concerned the deal is off",
+      "words": [
+        "the",
+        "far",
+        "I'm",
+        "As",
+        "off",
+        "as",
+        "concerned",
+        "deal",
+        "is"
+      ]
+    }
+  },
+  {
+    "id": 133,
+    "phrase": "Having said that,",
+    "context": "The numbers look good. Having said that, we need to stay cautious.",
+    "meaning": "Setelah mengatakan itu, / Meskipun begitu,",
+    "meaningEn": "Acknowledging your own point before contrasting it",
+    "usage": "Sophisticated transition. Used in professional writing and speech.",
+    "wrongOptions": [
+      "After said that,",
+      "Being said that,",
+      "Telling said that,"
+    ],
+    "fillBlank": "The prototype is impressive. _____ it's not production-ready.",
+    "fillAnswer": "Having said that,",
+    "rearrange": {
+      "sentence": "Having said that we need to stay cautious",
+      "words": [
+        "to",
+        "said",
+        "we",
+        "Having",
+        "cautious",
+        "that",
+        "need",
+        "stay"
+      ]
+    }
+  },
+  {
+    "id": 134,
+    "phrase": "I take it",
+    "context": "I take it you've already spoken to the client?",
+    "meaning": "Saya anggap / saya asumsikan",
+    "meaningEn": "Inferring something from context",
+    "usage": "Shows you're reading between the lines. Perceptive.",
+    "wrongOptions": [
+      "I get it",
+      "I have it",
+      "I make it"
+    ],
+    "fillBlank": "_____ you're not interested in the offer then?",
+    "fillAnswer": "I take it",
+    "rearrange": {
+      "sentence": "I take it you've already spoken to the client",
+      "words": [
+        "the",
+        "take",
+        "you've",
+        "I",
+        "client",
+        "it",
+        "already",
+        "spoken",
+        "to"
+      ]
+    }
+  },
+  {
+    "id": 135,
+    "phrase": "To each their own",
+    "context": "You prefer tabs over spaces? To each their own.",
+    "meaning": "Setiap orang punya selera masing-masing",
+    "meaningEn": "Accepting someone's preference without judgment",
+    "usage": "Shows tolerance. Great for ending a debate respectfully.",
+    "wrongOptions": [
+      "To all their own",
+      "To each his own",
+      "To every their own"
+    ],
+    "fillBlank": "Pineapple on pizza? _____.",
+    "fillAnswer": "To each their own",
+    "rearrange": {
+      "sentence": "To each their own I prefer coffee",
+      "words": [
+        "I",
+        "each",
+        "own",
+        "To",
+        "coffee",
+        "their",
+        "prefer"
+      ]
+    }
+  },
+  {
+    "id": 136,
+    "phrase": "That's beside the point",
+    "context": "Whether I like the design is beside the point — the data matters.",
+    "meaning": "Itu di luar topik / bukan intinya",
+    "meaningEn": "Something is irrelevant to the main discussion",
+    "usage": "Refocuses the conversation. Direct but effective.",
+    "wrongOptions": [
+      "That's outside the point",
+      "That's beyond the point",
+      "That's apart the point"
+    ],
+    "fillBlank": "The cost is important, but right now _____.",
+    "fillAnswer": "that's beside the point",
+    "rearrange": {
+      "sentence": "That's beside the point the data matters",
+      "words": [
+        "the",
+        "beside",
+        "the",
+        "That's",
+        "matters",
+        "point",
+        "data"
+      ]
+    }
+  },
+  {
+    "id": 137,
+    "phrase": "In hindsight,",
+    "context": "In hindsight, we should have tested more before launch.",
+    "meaning": "Kalau dipikir-pikir ke belakang / retrospektifnya,",
+    "meaningEn": "Looking back at a past decision with new understanding",
+    "usage": "Shows reflection and growth. Not blame.",
+    "wrongOptions": [
+      "In retrospect,",
+      "In looking back,",
+      "In review,"
+    ],
+    "fillBlank": "_____ hiring that consultant was the right move.",
+    "fillAnswer": "In hindsight,",
+    "rearrange": {
+      "sentence": "In hindsight we should have tested more",
+      "words": [
+        "have",
+        "hindsight",
+        "we",
+        "In",
+        "more",
+        "should",
+        "tested"
+      ]
+    }
+  },
+  {
+    "id": 138,
+    "phrase": "Needless to say,",
+    "context": "Needless to say, the demo did not go well.",
+    "meaning": "Tak perlu dikatakan lagi,",
+    "meaningEn": "What follows is obvious from the context",
+    "usage": "Creates emphasis through understatement. Slightly dramatic.",
+    "wrongOptions": [
+      "Useless to say,",
+      "Pointless to say,",
+      "Worthless to say,"
+    ],
+    "fillBlank": "_____ the CEO was not pleased with the results.",
+    "fillAnswer": "Needless to say,",
+    "rearrange": {
+      "sentence": "Needless to say the demo did not go well",
+      "words": [
+        "not",
+        "to",
+        "the",
+        "Needless",
+        "well",
+        "say",
+        "demo",
+        "did",
+        "go"
+      ]
+    }
+  },
+  {
+    "id": 139,
+    "phrase": "Now that you mention it,",
+    "context": "Now that you mention it, I did notice something odd in the logs.",
+    "meaning": "Sekarang setelah kamu menyebutkannya,",
+    "meaningEn": "Something clicked because of what the other person said",
+    "usage": "Shows active listening. The other person triggered your memory.",
+    "wrongOptions": [
+      "Now that you say it,",
+      "Now that you tell it,",
+      "Now that you bring it,"
+    ],
+    "fillBlank": "_____ the server was acting weird yesterday too.",
+    "fillAnswer": "Now that you mention it,",
+    "rearrange": {
+      "sentence": "Now that you mention it I did notice something",
+      "words": [
+        "something",
+        "that",
+        "mention",
+        "Now",
+        "notice",
+        "you",
+        "it",
+        "I",
+        "did"
+      ]
+    }
+  },
+  {
+    "id": 140,
+    "phrase": "For lack of a better word,",
+    "context": "The UI is, for lack of a better word, clunky.",
+    "meaning": "Karena tidak ada kata yang lebih tepat,",
+    "meaningEn": "Acknowledging your word choice isn't perfect",
+    "usage": "Shows self-awareness about your vocabulary. Thoughtful.",
+    "wrongOptions": [
+      "For need of a better word,",
+      "For want of a better word,",
+      "For loss of a better word,"
+    ],
+    "fillBlank": "The system is, _____ broken.",
+    "fillAnswer": "for lack of a better word,",
+    "rearrange": {
+      "sentence": "For lack of a better word the UI is clunky",
+      "words": [
+        "the",
+        "lack",
+        "a",
+        "For",
+        "clunky",
+        "of",
+        "better",
+        "word",
+        "UI",
+        "is"
+      ]
+    }
+  },
+  {
+    "id": 141,
+    "phrase": "I'll take your word for it",
+    "context": "You say the tests pass? I'll take your word for it.",
+    "meaning": "Saya percaya kata-katamu",
+    "meaningEn": "Trusting someone's claim without verifying",
+    "usage": "Can be genuine trust or mild skepticism depending on tone.",
+    "wrongOptions": [
+      "I'll hold your word for it",
+      "I'll keep your word for it",
+      "I'll have your word for it"
+    ],
+    "fillBlank": "I haven't checked the numbers, but _____.",
+    "fillAnswer": "I'll take your word for it",
+    "rearrange": {
+      "sentence": "I'll take your word for it for now",
+      "words": [
+        "for",
+        "take",
+        "word",
+        "I'll",
+        "now",
+        "your",
+        "for",
+        "it"
+      ]
+    }
+  },
+  {
+    "id": 142,
+    "phrase": "Give or take",
+    "context": "The project will take about 3 months, give or take.",
+    "meaning": "Kurang lebih / plus minus",
+    "meaningEn": "An approximate estimate with some flexibility",
+    "usage": "Natural way to add margin to an estimate.",
+    "wrongOptions": [
+      "Take or give",
+      "More or less",
+      "Plus or minus"
+    ],
+    "fillBlank": "We'll need about 50 users for the beta, _____.",
+    "fillAnswer": "give or take",
+    "rearrange": {
+      "sentence": "The project will take three months give or take",
+      "words": [
+        "take",
+        "will",
+        "three",
+        "The",
+        "take",
+        "project",
+        "months",
+        "give",
+        "or"
+      ]
+    }
+  },
+  {
+    "id": 143,
+    "phrase": "You can say that again",
+    "context": "That meeting was painful. — You can say that again.",
+    "meaning": "Betul banget! / Setuju banget!",
+    "meaningEn": "Emphatic agreement — 'I totally agree with you'",
+    "usage": "Not a literal request to repeat. It means 'absolutely right'.",
+    "wrongOptions": [
+      "You can tell that again",
+      "You can speak that again",
+      "You can repeat that again"
+    ],
+    "fillBlank": "Monday mornings are the worst. — _____.",
+    "fillAnswer": "You can say that again",
+    "rearrange": {
+      "sentence": "You can say that again it was brutal",
+      "words": [
+        "was",
+        "can",
+        "that",
+        "You",
+        "brutal",
+        "say",
+        "again",
+        "it"
+      ]
+    }
+  },
+  {
+    "id": 144,
+    "phrase": "Believe it or not,",
+    "context": "Believe it or not, the fix was just one line of code.",
+    "meaning": "Percaya atau tidak,",
+    "meaningEn": "Prefacing something surprising",
+    "usage": "Creates interest. Makes the listener lean in.",
+    "wrongOptions": [
+      "Trust it or not,",
+      "Accept it or not,",
+      "Think it or not,"
+    ],
+    "fillBlank": "_____ I actually enjoyed the team-building exercise.",
+    "fillAnswer": "Believe it or not,",
+    "rearrange": {
+      "sentence": "Believe it or not the fix was one line",
+      "words": [
+        "one",
+        "it",
+        "not",
+        "Believe",
+        "line",
+        "or",
+        "the",
+        "fix",
+        "was"
+      ]
+    }
+  },
+  {
+    "id": 145,
+    "phrase": "So far so good",
+    "context": "How's the migration going? — So far so good.",
+    "meaning": "Sejauh ini baik-baik saja",
+    "meaningEn": "Things are going well up to this point",
+    "usage": "Cautiously optimistic. Implies you're watching for issues.",
+    "wrongOptions": [
+      "Until now so good",
+      "So long so good",
+      "So much so good"
+    ],
+    "fillBlank": "How's the new job? — _____. Still learning the ropes.",
+    "fillAnswer": "So far so good",
+    "rearrange": {
+      "sentence": "So far so good no issues yet",
+      "words": [
+        "no",
+        "far",
+        "good",
+        "So",
+        "yet",
+        "so",
+        "issues"
+      ]
+    }
+  },
+  {
+    "id": 146,
+    "phrase": "That works for me",
+    "context": "How about Thursday at 2? — That works for me.",
+    "meaning": "Itu cocok buat saya",
+    "meaningEn": "Confirming a suggestion suits you",
+    "usage": "Simple, natural confirmation. Better than just 'OK'.",
+    "wrongOptions": [
+      "That fits for me",
+      "That goes for me",
+      "That suits for me"
+    ],
+    "fillBlank": "Shall we push the meeting to next week? — _____.",
+    "fillAnswer": "That works for me",
+    "rearrange": {
+      "sentence": "That works for me let's go with Thursday",
+      "words": [
+        "with",
+        "works",
+        "me",
+        "That",
+        "Thursday",
+        "for",
+        "let's",
+        "go"
+      ]
+    }
+  },
+  {
+    "id": 147,
+    "phrase": "I'll figure it out",
+    "context": "It's complicated, but I'll figure it out.",
+    "meaning": "Saya akan cari solusinya",
+    "meaningEn": "Confidence in solving something despite uncertainty",
+    "usage": "Self-reliant. Shows problem-solving attitude.",
+    "wrongOptions": [
+      "I'll find it out",
+      "I'll work it out",
+      "I'll solve it out"
+    ],
+    "fillBlank": "The documentation is confusing, but _____.",
+    "fillAnswer": "I'll figure it out",
+    "rearrange": {
+      "sentence": "I'll figure it out don't worry about it",
+      "words": [
+        "it",
+        "figure",
+        "out",
+        "I'll",
+        "it",
+        "worry",
+        "don't",
+        "about"
+      ]
+    }
+  },
+  {
+    "id": 148,
+    "phrase": "Let's wrap this up",
+    "context": "We're running over time. Let's wrap this up.",
+    "meaning": "Mari kita selesaikan / akhiri",
+    "meaningEn": "Bringing a meeting or discussion to a close",
+    "usage": "Professional meeting closer. Shows time awareness.",
+    "wrongOptions": [
+      "Let's end this up",
+      "Let's close this up",
+      "Let's finish this up"
+    ],
+    "fillBlank": "We've covered everything. _____ — any final questions?",
+    "fillAnswer": "Let's wrap this up",
+    "rearrange": {
+      "sentence": "Let's wrap this up we're running over time",
+      "words": [
+        "over",
+        "wrap",
+        "up",
+        "Let's",
+        "time",
+        "this",
+        "we're",
+        "running"
+      ]
+    }
+  }
+]

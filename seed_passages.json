@@ -1,0 +1,382 @@
+[
+  {
+    "id": "passage_b1_001",
+    "level": "B1",
+    "topic": "First day at a new job",
+    "title": "The New Guy",
+    "text": "I started my new job last Monday. I was so nervous that I arrived thirty minutes early and just sat in the parking lot. When I finally walked in, the receptionist smiled and said, \"You must be Andi.\" She walked me to my desk and introduced me to my team. Everyone seemed nice, but I couldn't remember anyone's name. My manager came over and said, \"Don't worry about remembering everything today. Just get a feel for things.\" By lunchtime, I was wondering if I'd made the right decision leaving my old company. The work looked harder than I expected. But then a colleague invited me to lunch and we talked about everything — the team, the projects, the office coffee machine that nobody knows how to fix. It turns out we went to the same university, just different years. Small world. By the end of the day, I felt a lot better. Not perfect, but better.",
+    "word_count": 158,
+    "target_phrases": [
+      {"phrase": "I was wondering if", "card_id": 1, "sentence_index": 7},
+      {"phrase": "It turns out", "card_id": 16, "sentence_index": 10},
+      {"phrase": "Small world!", "card_id": 329, "sentence_index": 11}
+    ],
+    "bonus_phrases": ["get a feel for things"],
+    "comprehension": [
+      {
+        "question": "How did Andi feel at the beginning of the day?",
+        "options": ["Excited and confident", "Nervous and unsure", "Angry about the change", "Bored and uninterested"],
+        "correct": 1,
+        "type": "detail"
+      },
+      {
+        "question": "What made Andi feel better by the end of the day?",
+        "options": ["He got a promotion", "The work was easier than expected", "He connected with a colleague at lunch", "His manager gave him a day off"],
+        "correct": 2,
+        "type": "inference"
+      },
+      {
+        "question": "What did Andi and his colleague discover about each other?",
+        "options": ["They had the same birthday", "They lived in the same neighborhood", "They studied at the same university", "They worked at the same company before"],
+        "correct": 2,
+        "type": "phrase_dependent"
+      }
+    ],
+    "vocabulary": [
+      {"word": "receptionist", "meaning_id": "resepsionis", "meaning_en": "person at front desk", "sentence": "the receptionist smiled and said"},
+      {"word": "colleague", "meaning_id": "rekan kerja", "meaning_en": "person you work with", "sentence": "a colleague invited me to lunch"}
+    ]
+  },
+  {
+    "id": "passage_b1_002",
+    "level": "B1",
+    "topic": "Weekend plans that went wrong",
+    "title": "The Beach Trip",
+    "text": "My friends and I planned a beach trip for Saturday. We'd been talking about it for weeks. I was about to leave the house when my phone buzzed — a message from Dina: \"Sorry guys, something came up. Can't make it.\" Then Rio said he was feeling sick. Honestly, I felt like cancelling the whole thing. But Sari said, \"Come on, let's not put off our plans again. We always do this.\" She had a point. We always talk about doing things and then end up staying home. So the three of us went. The traffic was terrible — it took two hours instead of one. When we finally got to the beach, it started raining. We just sat in the car, eating snacks and laughing. Sari looked at me and said, \"This is actually more fun than the beach.\" To be honest, she was right. Sometimes the best trips are the ones that go completely wrong.",
+    "word_count": 156,
+    "target_phrases": [
+      {"phrase": "I was about to", "card_id": 14, "sentence_index": 2},
+      {"phrase": "something came up", "card_id": 84, "sentence_index": 3},
+      {"phrase": "end up with", "card_id": 158, "sentence_index": 7}
+    ],
+    "bonus_phrases": ["put off", "to be honest"],
+    "comprehension": [
+      {
+        "question": "Why did the group almost cancel the trip?",
+        "options": ["The car broke down", "Two friends couldn't come and the weather was bad", "They didn't have enough money", "They forgot to book a hotel"],
+        "correct": 1,
+        "type": "main_idea"
+      },
+      {
+        "question": "What does Sari mean when she says they 'always do this'?",
+        "options": ["They always go to the beach", "They always cancel plans at the last minute", "They always fight about trips", "They always invite too many people"],
+        "correct": 1,
+        "type": "inference"
+      },
+      {
+        "question": "Why couldn't Dina join the trip?",
+        "options": ["She was sick", "She had unexpected plans", "She didn't like the beach", "She was out of town"],
+        "correct": 1,
+        "type": "phrase_dependent"
+      }
+    ],
+    "vocabulary": [
+      {"word": "buzzed", "meaning_id": "bergetar/berbunyi", "meaning_en": "vibrated (phone notification)", "sentence": "my phone buzzed"},
+      {"word": "cancelling", "meaning_id": "membatalkan", "meaning_en": "deciding not to do something planned", "sentence": "I felt like cancelling the whole thing"}
+    ]
+  },
+  {
+    "id": "passage_b1_003",
+    "level": "B1",
+    "topic": "Ordering food when the menu is confusing",
+    "title": "Lost in the Menu",
+    "text": "I went to a new restaurant with my girlfriend last night. The menu was in English and Japanese, and I couldn't figure out half of it. There were things like \"deconstructed miso\" and \"umami foam.\" I had no idea what I was ordering. I was wondering if I should just point at something random. The waiter came over and I panicked. \"Could you tell me more about this one?\" I asked, pointing at something that cost 180,000 rupiah. The waiter explained it was basically grilled chicken with fancy sauce. I almost laughed — 180k for grilled chicken. My girlfriend ordered the pasta because, as she said, \"You can't go wrong with pasta.\" Fair enough. The food actually came and — not gonna lie — it was delicious. The fancy sauce was worth it. I guess sometimes you just have to trust the menu, even when it doesn't make sense.",
+    "word_count": 155,
+    "target_phrases": [
+      {"phrase": "figure out", "card_id": 149, "sentence_index": 1},
+      {"phrase": "Could you tell me more about", "card_id": 260, "sentence_index": 5},
+      {"phrase": "Fair enough", "card_id": 77, "sentence_index": 8}
+    ],
+    "bonus_phrases": ["not gonna lie"],
+    "comprehension": [
+      {
+        "question": "Why was the narrator confused at the restaurant?",
+        "options": ["The waiter was rude", "The menu had fancy names he didn't understand", "The restaurant was too crowded", "He forgot his wallet"],
+        "correct": 1,
+        "type": "main_idea"
+      },
+      {
+        "question": "How did the narrator feel about the price?",
+        "options": ["He thought it was cheap", "He thought it was fair", "He thought it was too expensive for what it was", "He didn't notice the price"],
+        "correct": 2,
+        "type": "inference"
+      },
+      {
+        "question": "Why did the narrator accept his girlfriend's choice of pasta?",
+        "options": ["He loved pasta too", "She always orders for both of them", "He agreed her logic was reasonable", "The waiter recommended it"],
+        "correct": 2,
+        "type": "phrase_dependent"
+      }
+    ],
+    "vocabulary": [
+      {"word": "panicked", "meaning_id": "panik", "meaning_en": "suddenly felt very anxious", "sentence": "The waiter came over and I panicked"},
+      {"word": "delicious", "meaning_id": "lezat", "meaning_en": "very tasty", "sentence": "it was delicious"}
+    ]
+  },
+  {
+    "id": "passage_b1_004",
+    "level": "B1",
+    "topic": "Explaining a tech problem to a friend",
+    "title": "The WiFi Problem",
+    "text": "My friend called me last night freaking out. \"My laptop won't connect to the internet!\" she said. \"I've tried everything.\" I asked her what she'd tried so far. \"I restarted it. Twice.\" That was it. That was 'everything.' I told her, \"The thing is, restarting doesn't always fix WiFi issues.\" I walked her through a few steps — checking the WiFi settings, forgetting the network and reconnecting, and restarting the router. Nothing worked. I was running out of ideas. Then I asked, \"Is the WiFi working on your phone?\" Long pause. \"Oh. No, it's not.\" So the problem wasn't her laptop at all — it was the router. I told her to unplug the router, wait thirty seconds, and plug it back in. Five minutes later she texted: \"IT WORKS. You're a genius.\" I'm not a genius. I just know how to Google things. But I'll take the compliment.",
+    "word_count": 160,
+    "target_phrases": [
+      {"phrase": "The thing is,", "card_id": 8, "sentence_index": 4},
+      {"phrase": "walk me through", "card_id": 263, "sentence_index": 5},
+      {"phrase": "running out of time", "card_id": 291, "sentence_index": 7}
+    ],
+    "bonus_phrases": ["so far", "freaking out"],
+    "comprehension": [
+      {
+        "question": "What was the real cause of the internet problem?",
+        "options": ["The laptop was broken", "The WiFi password was wrong", "The router wasn't working", "The internet provider was down"],
+        "correct": 2,
+        "type": "detail"
+      },
+      {
+        "question": "How does the narrator feel about being called a genius?",
+        "options": ["Proud and serious", "Amused — he knows it was basic troubleshooting", "Annoyed by the compliment", "Confused"],
+        "correct": 1,
+        "type": "inference"
+      },
+      {
+        "question": "What did the narrator explain before giving troubleshooting steps?",
+        "options": ["That he was busy", "That restarting alone doesn't always solve WiFi issues", "That she needed a new laptop", "That he didn't know how to help"],
+        "correct": 1,
+        "type": "phrase_dependent"
+      }
+    ],
+    "vocabulary": [
+      {"word": "unplug", "meaning_id": "mencabut (kabel)", "meaning_en": "to disconnect from power", "sentence": "unplug the router"},
+      {"word": "compliment", "meaning_id": "pujian", "meaning_en": "a nice thing someone says about you", "sentence": "I'll take the compliment"}
+    ]
+  },
+  {
+    "id": "passage_b1_005",
+    "level": "B1",
+    "topic": "A misunderstanding with a colleague",
+    "title": "The Wrong Meeting",
+    "text": "I showed up to the meeting room at 2 PM sharp. Nobody was there. I checked my calendar — it said \"Team sync, 2 PM, Room 3B.\" I waited ten minutes. Still nobody. I was starting to think I'd gotten the wrong day when my phone buzzed. A message from my team lead: \"Where are you? We're all in 4A.\" I rushed upstairs. Everyone was already mid-discussion. \"Sorry for the late reply — I mean, sorry I'm late,\" I said, mixing up my email language with real life. Everyone laughed. I think there's been a miscommunication about the room number. Someone booked 3B originally, but it got changed yesterday. Just a heads up for next time — always check Slack before heading to any meeting. Apparently the update was posted there. I didn't see it because, honestly, I have 47 unread channels. No one judges me for that, right?",
+    "word_count": 156,
+    "target_phrases": [
+      {"phrase": "Sorry for the late reply", "card_id": 51, "sentence_index": 7},
+      {"phrase": "I think there's been a miscommunication", "card_id": 201, "sentence_index": 9},
+      {"phrase": "Just a heads up,", "card_id": 49, "sentence_index": 10}
+    ],
+    "bonus_phrases": ["showed up", "mid-discussion"],
+    "comprehension": [
+      {
+        "question": "Why was the narrator alone in Room 3B?",
+        "options": ["The meeting was cancelled", "The room had been changed but he didn't know", "He came on the wrong day", "His team was in a different building"],
+        "correct": 1,
+        "type": "main_idea"
+      },
+      {
+        "question": "Why did everyone laugh when the narrator arrived?",
+        "options": ["He was wearing funny clothes", "He accidentally used email language in real life", "He tripped on the way in", "He told a joke"],
+        "correct": 1,
+        "type": "detail"
+      },
+      {
+        "question": "What does the narrator suggest people do before going to meetings?",
+        "options": ["Book the room early", "Arrive 30 minutes early", "Check Slack for updates", "Send an email confirmation"],
+        "correct": 2,
+        "type": "phrase_dependent"
+      }
+    ],
+    "vocabulary": [
+      {"word": "sharp", "meaning_id": "tepat (waktu)", "meaning_en": "exactly (when talking about time)", "sentence": "2 PM sharp"},
+      {"word": "apparently", "meaning_id": "ternyata / rupanya", "meaning_en": "based on what you heard or learned", "sentence": "Apparently the update was posted there"}
+    ]
+  },
+  {
+    "id": "passage_b1_006",
+    "level": "B1",
+    "topic": "Morning routine changes",
+    "title": "The 5 AM Experiment",
+    "text": "Everyone on the internet says waking up at 5 AM will change your life. So I tried it. Day one: alarm goes off, I hit snooze three times, finally get up at 5:47. Close enough. I made coffee and sat at my desk. It was quiet. Really quiet. I actually got more done in that one hour than I usually do in a whole morning at the office. By the way, the secret isn't waking up early — it's that nobody is messaging you on Slack at 5 AM. Day two: same thing, but this time I couldn't help but fall asleep on the couch at 9 PM. My girlfriend found me passed out with my laptop still open. Day three: I slept through the alarm completely. Looking forward to trying again next week, maybe. To be honest, I think the real lesson is that I'm not a morning person, and that's okay. Some people peak at 5 AM. I peak at 10 PM. It is what it is.",
+    "word_count": 170,
+    "target_phrases": [
+      {"phrase": "By the way,", "card_id": 72, "sentence_index": 6},
+      {"phrase": "can't help but", "card_id": 9, "sentence_index": 8},
+      {"phrase": "Looking forward to", "card_id": 3, "sentence_index": 11}
+    ],
+    "bonus_phrases": ["to be honest", "close enough"],
+    "comprehension": [
+      {
+        "question": "What was the narrator's overall experience with waking up at 5 AM?",
+        "options": ["It changed his life completely", "It worked great every day", "It worked briefly but wasn't sustainable for him", "He never actually tried it"],
+        "correct": 2,
+        "type": "main_idea"
+      },
+      {
+        "question": "According to the narrator, why was the early morning productive?",
+        "options": ["The coffee was better", "He had more energy early", "Nobody was distracting him with messages", "The internet was faster"],
+        "correct": 2,
+        "type": "inference"
+      },
+      {
+        "question": "What happened on Day 2 that the narrator couldn't control?",
+        "options": ["He overslept in the morning", "He fell asleep very early in the evening", "He forgot to set his alarm", "He got sick from the coffee"],
+        "correct": 1,
+        "type": "phrase_dependent"
+      }
+    ],
+    "vocabulary": [
+      {"word": "snooze", "meaning_id": "tunda alarm", "meaning_en": "to delay an alarm for a few more minutes", "sentence": "I hit snooze three times"},
+      {"word": "peak", "meaning_id": "berada di performa terbaik", "meaning_en": "to be at your best performance", "sentence": "Some people peak at 5 AM"}
+    ]
+  },
+  {
+    "id": "passage_b1_007",
+    "level": "B1",
+    "topic": "Shopping online and getting the wrong item",
+    "title": "Not What I Ordered",
+    "text": "I ordered a standing desk from an online store. The photos looked great — clean white surface, adjustable height, modern design. It was supposed to arrive in five days. I was so excited. When the box finally came, I opened it and just stared. It was a desk, technically. But it was tiny. Like, half the size I expected. I looked at the product page again. There it was, in small text I'd completely missed: \"Dimensions: 60cm x 40cm.\" That's not a desk. That's a tray. I should have read the description more carefully. My roommate walked in and said, \"Nice laptop stand.\" Very funny. I wanted to return it, but the shipping cost was almost the same as the desk itself. In the end, I kept it. It's now my coffee table. I'll make it up to myself by ordering a real desk next month — after I triple-check the measurements.",
+    "word_count": 160,
+    "target_phrases": [
+      {"phrase": "I should have", "card_id": 177, "sentence_index": 7},
+      {"phrase": "In the end,", "card_id": 400, "sentence_index": 10},
+      {"phrase": "I'll make it up to", "card_id": 85, "sentence_index": 11}
+    ],
+    "bonus_phrases": ["supposed to", "triple-check"],
+    "comprehension": [
+      {
+        "question": "What was wrong with the desk?",
+        "options": ["It was broken", "It was the wrong color", "It was much smaller than expected", "It arrived too late"],
+        "correct": 2,
+        "type": "detail"
+      },
+      {
+        "question": "Why didn't the narrator return the desk?",
+        "options": ["He liked it after all", "The return shipping was too expensive", "The store refused returns", "He lost the receipt"],
+        "correct": 1,
+        "type": "detail"
+      },
+      {
+        "question": "What does the narrator regret not doing?",
+        "options": ["Buying from a physical store", "Asking a friend for advice", "Reading the product dimensions carefully", "Choosing a different color"],
+        "correct": 2,
+        "type": "phrase_dependent"
+      }
+    ],
+    "vocabulary": [
+      {"word": "adjustable", "meaning_id": "bisa disetel", "meaning_en": "can be changed to different positions/sizes", "sentence": "adjustable height"},
+      {"word": "measurements", "meaning_id": "ukuran", "meaning_en": "the size of something in numbers", "sentence": "triple-check the measurements"}
+    ]
+  },
+  {
+    "id": "passage_b1_008",
+    "level": "B1",
+    "topic": "Trying a new restaurant",
+    "title": "The Ramen Place",
+    "text": "There's a new ramen place near my office. Everyone keeps talking about it. I've been meaning to try it for weeks, but the line is always insane — like 30 people waiting outside. Today I finally went. I showed up at 11 AM, thinking I'd beat the crowd. There were already twelve people ahead of me. I waited 40 minutes. The guy behind me in line started chatting. He'd been there four times already. \"Is it really that good?\" I asked. \"Not gonna lie,\" he said, \"it's the best ramen I've had in Jakarta.\" Bold claim. When I finally sat down and took my first bite, I understood. The broth was rich, the noodles were perfect, and the egg was soft in the middle. I can relate to the four-times-guy now. I'll probably be back next week. The line is annoying, but some things are worth waiting for.",
+    "word_count": 158,
+    "target_phrases": [
+      {"phrase": "I've been meaning to", "card_id": 68, "sentence_index": 2},
+      {"phrase": "Not gonna lie,", "card_id": 74, "sentence_index": 8},
+      {"phrase": "I can relate", "card_id": 73, "sentence_index": 11}
+    ],
+    "bonus_phrases": ["beat the crowd", "bold claim"],
+    "comprehension": [
+      {
+        "question": "Why hadn't the narrator tried the restaurant before?",
+        "options": ["It was too expensive", "He didn't like ramen", "The waiting line was always too long", "It was too far from his office"],
+        "correct": 2,
+        "type": "detail"
+      },
+      {
+        "question": "How did the narrator feel after eating the ramen?",
+        "options": ["Disappointed — it wasn't worth the wait", "Neutral — it was okay", "Impressed — he understood why people kept coming back", "Angry — it was too spicy"],
+        "correct": 2,
+        "type": "inference"
+      },
+      {
+        "question": "What did the narrator intend to do for weeks but didn't?",
+        "options": ["Cook ramen at home", "Visit the restaurant", "Talk to the guy in line", "Try a different restaurant"],
+        "correct": 1,
+        "type": "phrase_dependent"
+      }
+    ],
+    "vocabulary": [
+      {"word": "broth", "meaning_id": "kaldu", "meaning_en": "the liquid base of a soup", "sentence": "The broth was rich"},
+      {"word": "insane", "meaning_id": "gila (informal)", "meaning_en": "crazy, extreme (informal)", "sentence": "the line is always insane"}
+    ]
+  },
+  {
+    "id": "passage_b1_009",
+    "level": "B1",
+    "topic": "Asking for help at work",
+    "title": "The Deployment That Wouldn't Die",
+    "text": "I spent three hours trying to fix a deployment issue yesterday. The build kept failing with an error I'd never seen before. I Googled it. Stack Overflow had a thread from 2019 — not helpful. I tried five different things. Nothing worked. I was swamped with other tasks too, so the pressure was building. Finally, I did what I should have done from the start: I asked for help. I sent a message to the senior engineer: \"Hey, do you have a minute? I've been stuck on this for hours.\" She came over, looked at my screen for thirty seconds, and said, \"You're missing a semicolon in the config file.\" Three hours. One semicolon. I appreciated it, but also wanted to disappear. She laughed and said, \"It happens to everyone. I once spent a whole day on a typo.\" That made me feel better. Lesson learned — ask for help sooner.",
+    "word_count": 157,
+    "target_phrases": [
+      {"phrase": "I'm swamped", "card_id": 87, "sentence_index": 5},
+      {"phrase": "I should have", "card_id": 177, "sentence_index": 6},
+      {"phrase": "Lesson learned", "card_id": 180, "sentence_index": 13}
+    ],
+    "bonus_phrases": ["appreciate it", "do you have a minute"],
+    "comprehension": [
+      {
+        "question": "What caused the deployment to fail?",
+        "options": ["A server crash", "A missing semicolon in the config", "An outdated library", "A network timeout"],
+        "correct": 1,
+        "type": "detail"
+      },
+      {
+        "question": "Why did the narrator wait so long before asking for help?",
+        "options": ["He was embarrassed", "He didn't think anyone could help", "He tried to solve it himself first", "His colleagues were all busy"],
+        "correct": 2,
+        "type": "inference"
+      },
+      {
+        "question": "What was the narrator's main takeaway from this experience?",
+        "options": ["Config files are dangerous", "Senior engineers are smarter", "You should ask for help earlier instead of struggling alone", "Stack Overflow is outdated"],
+        "correct": 2,
+        "type": "phrase_dependent"
+      }
+    ],
+    "vocabulary": [
+      {"word": "deployment", "meaning_id": "proses deploy/rilis", "meaning_en": "releasing code to a server", "sentence": "a deployment issue"},
+      {"word": "disappear", "meaning_id": "menghilang", "meaning_en": "to go away, become invisible", "sentence": "wanted to disappear"}
+    ]
+  },
+  {
+    "id": "passage_b1_010",
+    "level": "B1",
+    "topic": "A commute gone wrong",
+    "title": "The Long Way Home",
+    "text": "Jakarta traffic is bad. Everyone knows this. But yesterday was something else. I left the office at 5 PM thinking I'd be home by 7. Normal. Then it started raining. Not regular rain — the kind where you can't see the car in front of you. Google Maps said 3 hours to get home. Three hours. I was stuck on the highway with no exit in sight. I called my wife: \"I'm running behind, like, really behind.\" She said, \"No rush, I'll save you dinner.\" I spent the next two hours listening to a podcast about productivity. Ironic — learning about being productive while sitting in traffic doing absolutely nothing. By the way, I discovered a great podcast though, so it's not all bad. I finally got home at 9:30. My wife had already eaten. The cat was asleep on my chair. Nobody missed me. But the leftover nasi goreng was still warm. That works for me.",
+    "word_count": 163,
+    "target_phrases": [
+      {"phrase": "I'm running behind", "card_id": 83, "sentence_index": 7},
+      {"phrase": "No rush", "card_id": 110, "sentence_index": 8},
+      {"phrase": "That works for me", "card_id": 146, "sentence_index": 15}
+    ],
+    "bonus_phrases": ["by the way", "something else"],
+    "comprehension": [
+      {
+        "question": "What made the traffic worse than usual?",
+        "options": ["An accident on the highway", "Heavy rain", "Road construction", "A public holiday"],
+        "correct": 1,
+        "type": "detail"
+      },
+      {
+        "question": "How does the narrator feel about the overall experience?",
+        "options": ["Furious and frustrated", "Accepting — he found a silver lining", "Sad and depressed", "He wants to quit his job"],
+        "correct": 1,
+        "type": "inference"
+      },
+      {
+        "question": "How did the narrator's wife respond to him being late?",
+        "options": ["She was angry and complained", "She told him to take his time and kept food for him", "She went to sleep immediately", "She didn't answer his call"],
+        "correct": 1,
+        "type": "phrase_dependent"
+      }
+    ],
+    "vocabulary": [
+      {"word": "ironic", "meaning_id": "ironis", "meaning_en": "funny because it's the opposite of what you'd expect", "sentence": "Ironic — learning about being productive while sitting in traffic"},
+      {"word": "leftover", "meaning_id": "sisa makanan", "meaning_en": "food remaining from a previous meal", "sentence": "the leftover nasi goreng was still warm"}
+    ]
+  }
+]

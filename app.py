@@ -26,6 +26,8 @@ CORS(app, origins=[frontend_url] if frontend_url != "*" else "*")
 
 db = SQLAlchemy(app)
 
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
+
 # ── Models (prefixed to avoid conflicts with other apps on same DB) ──
 class User(db.Model):
     __tablename__ = "unstuck_users"
@@ -76,6 +78,25 @@ class ListeningExercise(db.Model):
     level = db.Column(db.String(5), nullable=False, index=True)
     exercise_type = db.Column(db.String(30), nullable=False)
     data = db.Column(db.JSON, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+class WritingPrompt(db.Model):
+    __tablename__ = "unstuck_writing_prompts"
+    id = db.Column(db.Integer, primary_key=True)
+    prompt_id = db.Column(db.String(50), unique=True, nullable=False, index=True)
+    level = db.Column(db.String(5), nullable=False, index=True)
+    prompt_type = db.Column(db.String(30), nullable=False)
+    data = db.Column(db.JSON, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+class WritingSubmission(db.Model):
+    __tablename__ = "unstuck_writing_submissions"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("unstuck_users.id"), nullable=False, index=True)
+    prompt_id = db.Column(db.String(50), nullable=False)
+    user_text = db.Column(db.Text, nullable=False)
+    ai_feedback = db.Column(db.JSON)
+    score = db.Column(db.Integer)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
 class EncounterLog(db.Model):
@@ -438,12 +459,20 @@ def compose_session(user):
         "data": passage.data,
     }
 
-    # Check if user qualifies for listening (3+ reading sessions completed)
+    # Count completed reading sessions for unlock checks
     reading_session_count = db.session.query(EncounterLog.passage_id).filter(
         EncounterLog.user_id == user.id,
         EncounterLog.passage_id.isnot(None)
     ).distinct().count()
 
+    result = {
+        "type": "mixed",
+        "passage": passage_out,
+        "exercises": exercises,
+        "target_phrases": targets,
+    }
+
+    # Mix in listening after 3+ reading sessions
     if reading_session_count >= 3 and ListeningExercise.query.count() > 0:
         seen_listening_ids = [r[0] for r in db.session.query(EncounterLog.exercise_id).filter(
             EncounterLog.user_id == user.id,
@@ -459,25 +488,40 @@ def compose_session(user):
                 ~ListeningExercise.exercise_id.in_(seen_listening_ids) if seen_listening_ids else db.true()
             ).order_by(ListeningExercise.id).first()
         if listening_ex:
-            return {
-                "type": "mixed_with_listening",
-                "passage": passage_out,
-                "exercises": exercises,
-                "target_phrases": targets,
-                "listening_exercise": {
-                    "exercise_id": listening_ex.exercise_id,
-                    "level": listening_ex.level,
-                    "exercise_type": listening_ex.exercise_type,
-                    "data": listening_ex.data,
-                },
+            result["type"] = "mixed_with_listening"
+            result["listening_exercise"] = {
+                "exercise_id": listening_ex.exercise_id,
+                "level": listening_ex.level,
+                "exercise_type": listening_ex.exercise_type,
+                "data": listening_ex.data,
             }
 
-    return {
-        "type": "mixed",
-        "passage": passage_out,
-        "exercises": exercises,
-        "target_phrases": targets,
-    }
+    # Mix in a short writing prompt after 5+ reading sessions (email_completion or rewrite only)
+    if reading_session_count >= 5 and WritingPrompt.query.count() > 0:
+        submitted_ids = [r[0] for r in db.session.query(WritingSubmission.prompt_id).filter(
+            WritingSubmission.user_id == user.id
+        ).distinct().all()]
+        q = WritingPrompt.query.filter(
+            WritingPrompt.level == user_level.upper(),
+            WritingPrompt.prompt_type.in_(["email_completion", "rewrite"])
+        )
+        if submitted_ids:
+            q = q.filter(~WritingPrompt.prompt_id.in_(submitted_ids))
+        writing_prompt = q.order_by(WritingPrompt.id).first()
+        if not writing_prompt:
+            writing_prompt = WritingPrompt.query.filter(
+                WritingPrompt.prompt_type.in_(["email_completion", "rewrite"]),
+                ~WritingPrompt.prompt_id.in_(submitted_ids) if submitted_ids else db.true()
+            ).order_by(WritingPrompt.id).first()
+        if writing_prompt:
+            result["writing_prompt"] = {
+                "prompt_id": writing_prompt.prompt_id,
+                "level": writing_prompt.level,
+                "prompt_type": writing_prompt.prompt_type,
+                "data": writing_prompt.data,
+            }
+
+    return result
 
 def exercise_type_for_mastery(mastery):
     if mastery <= 1:
@@ -677,6 +721,152 @@ def listening_next(user):
         return jsonify({"exercise": None})
     return jsonify({"exercise": {"exercise_id": ex.exercise_id, "level": ex.level, "exercise_type": ex.exercise_type, "data": ex.data}})
 
+# ── Admin: Writing Prompts ──
+@app.route("/api/admin/writing/upload", methods=["POST"])
+@admin_required
+def admin_upload_writing(user):
+    body = request.get_json()
+    prompts_data = body.get("prompts", [])
+    if not isinstance(prompts_data, list) or not prompts_data:
+        return jsonify({"error": "Expected non-empty 'prompts' array"}), 400
+    valid_types = {"email_completion", "rewrite", "free_write", "summary", "argument"}
+    required = ["prompt_id", "level", "prompt_type"]
+    errors = []
+    for i, p in enumerate(prompts_data):
+        missing = [f for f in required if f not in p or p[f] is None]
+        if missing:
+            errors.append(f"Prompt {i} (id={p.get('prompt_id','?')}): missing {', '.join(missing)}")
+        elif p.get("prompt_type") not in valid_types:
+            errors.append(f"Prompt {i} (id={p.get('prompt_id','?')}): invalid prompt_type '{p.get('prompt_type')}'")
+    if errors:
+        return jsonify({"error": "Validation failed", "details": errors[:10]}), 400
+    inserted = updated = 0
+    for p in prompts_data:
+        pid = p["prompt_id"]
+        blob = {k: v for k, v in p.items() if k not in ("prompt_id", "level", "prompt_type")}
+        existing = WritingPrompt.query.filter_by(prompt_id=pid).first()
+        if existing:
+            existing.level = p["level"]
+            existing.prompt_type = p["prompt_type"]
+            existing.data = blob
+            db.session.execute(
+                db.text("UPDATE unstuck_writing_prompts SET level = :level, prompt_type = :ptype, data = :data WHERE prompt_id = :pid"),
+                {"level": p["level"], "ptype": p["prompt_type"], "data": json.dumps(blob), "pid": pid}
+            )
+            updated += 1
+        else:
+            db.session.add(WritingPrompt(prompt_id=pid, level=p["level"], prompt_type=p["prompt_type"], data=blob))
+            inserted += 1
+    db.session.commit()
+    return jsonify({"ok": True, "inserted": inserted, "updated": updated, "total": WritingPrompt.query.count()})
+
+@app.route("/api/admin/writing", methods=["GET"])
+@admin_required
+def admin_list_writing(user):
+    prompts = WritingPrompt.query.order_by(WritingPrompt.id).all()
+    return jsonify({
+        "prompts": [{"prompt_id": p.prompt_id, "level": p.level, "prompt_type": p.prompt_type, "title": (p.data or {}).get("title", ""), "created_at": p.created_at.isoformat() if p.created_at else None} for p in prompts],
+        "count": len(prompts)
+    })
+
+# ── Writing: user endpoints ──
+@app.route("/api/writing/next", methods=["GET"])
+@token_required
+def writing_next(user):
+    progress_data = user.progress.data if user.progress and user.progress.data else {}
+    user_level = progress_data.get("userLevel", "B1")
+    submitted_ids = [r[0] for r in db.session.query(WritingSubmission.prompt_id).filter(
+        WritingSubmission.user_id == user.id
+    ).distinct().all()]
+    q = WritingPrompt.query.filter_by(level=user_level.upper())
+    if submitted_ids:
+        q = q.filter(~WritingPrompt.prompt_id.in_(submitted_ids))
+    prompt = q.order_by(WritingPrompt.id).first()
+    if not prompt:
+        prompt = WritingPrompt.query.filter(
+            ~WritingPrompt.prompt_id.in_(submitted_ids) if submitted_ids else db.true()
+        ).order_by(WritingPrompt.id).first()
+    if not prompt:
+        return jsonify({"prompt": None})
+    return jsonify({"prompt": {"prompt_id": prompt.prompt_id, "level": prompt.level, "prompt_type": prompt.prompt_type, "data": prompt.data}})
+
+@app.route("/api/writing/submit", methods=["POST"])
+@token_required
+def writing_submit(user):
+    body = request.get_json() or {}
+    prompt_id = body.get("prompt_id")
+    user_text = (body.get("user_text") or "").strip()
+    if not prompt_id or not user_text:
+        return jsonify({"error": "prompt_id and user_text required"}), 400
+    prompt = WritingPrompt.query.filter_by(prompt_id=prompt_id).first()
+    if not prompt:
+        return jsonify({"error": f"Prompt {prompt_id} not found"}), 404
+    if not ANTHROPIC_API_KEY:
+        return jsonify({"error": "Writing evaluation not configured (missing API key)"}), 503
+    prompt_description = (prompt.data or {}).get("title", prompt.prompt_type)
+    situation = (prompt.data or {}).get("situation", "")
+    starter = (prompt.data or {}).get("starter_text", "")
+    prompt_context = f"Type: {prompt.prompt_type}. Title: {prompt_description}."
+    if situation:
+        prompt_context += f" Situation: {situation}."
+    if starter:
+        prompt_context += f" Starter text: {starter}."
+    progress_data = user.progress.data if user.progress and user.progress.data else {}
+    user_level = progress_data.get("userLevel", "B1")
+    system_prompt = (
+        f"Evaluate this English writing by a {user_level} learner. "
+        f"The prompt was: {prompt_context} The user wrote: {user_text}. "
+        "Rate 1-10 on: grammar, naturalness, vocabulary_range, coherence. "
+        "List specific errors with corrections. "
+        "Give one positive comment and one improvement suggestion. "
+        'Respond in JSON only: { "scores": {"grammar": N, "naturalness": N, "vocabulary": N, "coherence": N}, '
+        '"overall": N, "errors": [{"original": "...", "corrected": "...", "explanation": "..."}], '
+        '"positive": "...", "suggestion": "..." }'
+    )
+    try:
+        import anthropic
+        client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+        response = client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=1024,
+            system=system_prompt,
+            messages=[{"role": "user", "content": user_text}],
+        )
+        raw = response.content[0].text
+        ai_feedback = json.loads(raw)
+    except json.JSONDecodeError:
+        ai_feedback = {"raw_response": raw, "error": "Failed to parse AI response as JSON"}
+    except Exception as e:
+        return jsonify({"error": f"AI evaluation failed: {str(e)}"}), 502
+    overall_score = ai_feedback.get("overall")
+    if isinstance(overall_score, (int, float)):
+        overall_score = int(overall_score)
+    else:
+        overall_score = None
+    submission = WritingSubmission(
+        user_id=user.id,
+        prompt_id=prompt_id,
+        user_text=user_text,
+        ai_feedback=ai_feedback,
+        score=overall_score,
+    )
+    db.session.add(submission)
+    db.session.commit()
+    return jsonify({"ok": True, "submission_id": submission.id, "feedback": ai_feedback, "score": overall_score}), 201
+
+@app.route("/api/writing/history", methods=["GET"])
+@token_required
+def writing_history(user):
+    submissions = WritingSubmission.query.filter_by(user_id=user.id).order_by(WritingSubmission.created_at.desc()).all()
+    return jsonify({"submissions": [{
+        "id": s.id,
+        "prompt_id": s.prompt_id,
+        "user_text": s.user_text,
+        "ai_feedback": s.ai_feedback,
+        "score": s.score,
+        "created_at": s.created_at.isoformat() if s.created_at else None,
+    } for s in submissions], "count": len(submissions)})
+
 # ── Admin: Content Stats ──
 @app.route("/api/admin/content-stats", methods=["GET"])
 @admin_required
@@ -685,9 +875,12 @@ def admin_content_stats(user):
         "total_passages": Passage.query.count(),
         "total_exercises": ExercisePool.query.count(),
         "total_listening": ListeningExercise.query.count(),
+        "total_writing_prompts": WritingPrompt.query.count(),
+        "total_writing_submissions": WritingSubmission.query.count(),
         "total_encounters": EncounterLog.query.count(),
         "passages_by_level": {level: count for level, count in db.session.query(Passage.level, db.func.count(Passage.id)).group_by(Passage.level).all()},
         "listening_by_level": {level: count for level, count in db.session.query(ListeningExercise.level, db.func.count(ListeningExercise.id)).group_by(ListeningExercise.level).all()},
+        "writing_by_level": {level: count for level, count in db.session.query(WritingPrompt.level, db.func.count(WritingPrompt.id)).group_by(WritingPrompt.level).all()},
     })
 
 # ── Seed ──

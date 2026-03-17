@@ -117,6 +117,21 @@ class ConversationLog(db.Model):
     analysis = db.Column(db.JSON)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
+GRAMMAR_ERROR_CATEGORIES = [
+    "articles", "prepositions", "verb_tense", "word_order",
+    "subject_verb_agreement", "conditionals", "passive_voice", "reported_speech"
+]
+
+class GrammarLesson(db.Model):
+    __tablename__ = "unstuck_grammar"
+    id = db.Column(db.Integer, primary_key=True)
+    lesson_id = db.Column(db.String(50), unique=True, nullable=False, index=True)
+    level = db.Column(db.String(5), nullable=False, index=True)
+    title = db.Column(db.String(200))
+    grammar_point = db.Column(db.String(100), nullable=False, index=True)
+    data = db.Column(db.JSON, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
 class EncounterLog(db.Model):
     __tablename__ = "unstuck_encounter_log"
     id = db.Column(db.Integer, primary_key=True)
@@ -177,6 +192,60 @@ def admin_required(f):
             return jsonify({"error": "Invalid or expired token"}), 401
         return f(user, *args, **kwargs)
     return decorated
+
+# ── Grammar error tracking helpers ──
+def categorize_grammar_error(error_text):
+    """Map an error description to a grammar category using keyword matching."""
+    text = error_text.lower()
+    if any(w in text for w in ["article", " a ", " an ", " the ", "determiner"]):
+        return "articles"
+    if any(w in text for w in ["preposition", " in ", " on ", " at ", " to ", " for ", " with ", " by "]):
+        return "prepositions"
+    if any(w in text for w in ["tense", "past ", "present ", "future ", "verb form", "irregular verb"]):
+        return "verb_tense"
+    if any(w in text for w in ["word order", "order of words", "inversion", "position"]):
+        return "word_order"
+    if any(w in text for w in ["subject-verb", "subject verb", "agreement", "singular", "plural"]):
+        return "subject_verb_agreement"
+    if any(w in text for w in ["conditional", "if clause", "would have", "hypothetical"]):
+        return "conditionals"
+    if any(w in text for w in ["passive", "active voice", "by agent"]):
+        return "passive_voice"
+    if any(w in text for w in ["reported", "indirect speech", "said that", "told"]):
+        return "reported_speech"
+    return None
+
+def update_grammar_error_counts(user, errors):
+    """Increment grammar error category counts in user progress data."""
+    if not errors:
+        return
+    progress_data = user.progress.data if user.progress and user.progress.data else {}
+    error_counts = progress_data.get("grammarErrorCounts", {})
+    for err in errors:
+        explanation = err.get("explanation", "") or err.get("error", "") or ""
+        category = categorize_grammar_error(explanation)
+        if category:
+            error_counts[category] = error_counts.get(category, 0) + 1
+    progress_data["grammarErrorCounts"] = error_counts
+    db.session.execute(
+        db.text("UPDATE unstuck_progress SET data = :data, updated_at = NOW() WHERE user_id = :uid"),
+        {"data": json.dumps(progress_data), "uid": user.id}
+    )
+
+def get_due_grammar_point(user):
+    """Return the grammar_point with 3+ errors that hasn't been completed yet, or None."""
+    progress_data = user.progress.data if user.progress and user.progress.data else {}
+    error_counts = progress_data.get("grammarErrorCounts", {})
+    completed = progress_data.get("completedGrammar", [])
+    user_level = progress_data.get("userLevel", "B1")
+    for category, count in sorted(error_counts.items(), key=lambda x: -x[1]):
+        if count >= 3 and category not in completed:
+            lesson = GrammarLesson.query.filter_by(grammar_point=category, level=user_level.upper()).first()
+            if not lesson:
+                lesson = GrammarLesson.query.filter_by(grammar_point=category).first()
+            if lesson:
+                return lesson
+    return None
 
 # ── Auth routes ──
 @app.route("/api/health")
@@ -514,6 +583,17 @@ def compose_session(user):
                 "data": listening_ex.data,
             }
 
+    # Check if a grammar lesson is due (user has 3+ errors in a category)
+    grammar_lesson = get_due_grammar_point(user)
+    if grammar_lesson:
+        result["grammar_lesson"] = {
+            "lesson_id": grammar_lesson.lesson_id,
+            "level": grammar_lesson.level,
+            "title": grammar_lesson.title,
+            "grammar_point": grammar_lesson.grammar_point,
+            "data": grammar_lesson.data,
+        }
+
     # Mix in a short writing prompt after 5+ reading sessions (email_completion or rewrite only)
     if reading_session_count >= 5 and WritingPrompt.query.count() > 0:
         submitted_ids = [r[0] for r in db.session.query(WritingSubmission.prompt_id).filter(
@@ -838,7 +918,7 @@ def writing_submit(user):
         "List specific errors with corrections. "
         "Give one positive comment and one improvement suggestion. "
         'Respond in JSON only: { "scores": {"grammar": N, "naturalness": N, "vocabulary": N, "coherence": N}, '
-        '"overall": N, "errors": [{"original": "...", "corrected": "...", "explanation": "..."}], '
+        '"overall": N, "errors": [{"original": "...", "corrected": "...", "explanation": "... (mention category: articles/prepositions/verb_tense/word_order/subject_verb_agreement/conditionals/passive_voice/reported_speech if applicable)"}], '
         '"positive": "...", "suggestion": "..." }'
     )
     try:
@@ -869,6 +949,7 @@ def writing_submit(user):
         score=overall_score,
     )
     db.session.add(submission)
+    update_grammar_error_counts(user, ai_feedback.get("errors", []))
     db.session.commit()
     return jsonify({"ok": True, "submission_id": submission.id, "feedback": ai_feedback, "score": overall_score}), 201
 
@@ -1109,7 +1190,7 @@ def conversation_end(user):
         "Respond in JSON only: {\n"
         '  "fluency_score": 1-10,\n'
         '  "vocabulary_used": ["list", "of", "notable", "words/phrases"],\n'
-        '  "grammar_errors": [{"error": "...", "correction": "...", "explanation": "..."}],\n'
+        '  "grammar_errors": [{"error": "...", "correction": "...", "explanation": "... (mention category: articles/prepositions/verb_tense/word_order/subject_verb_agreement/conditionals/passive_voice/reported_speech if applicable)"}],\n'
         '  "phrases_from_app": ["phrases from target list that were used"],\n'
         '  "strengths": "one sentence about what they did well",\n'
         '  "improvement": "one sentence about what to work on"\n'
@@ -1133,6 +1214,7 @@ def conversation_end(user):
         db.text("UPDATE unstuck_conversations SET analysis = :analysis WHERE id = :cid"),
         {"analysis": json.dumps(analysis), "cid": conv.id}
     )
+    update_grammar_error_counts(user, analysis.get("grammar_errors", []))
     db.session.commit()
     return jsonify({"analysis": analysis})
 
@@ -1148,6 +1230,96 @@ def conversation_history(user):
         "created_at": c.created_at.isoformat() if c.created_at else None,
     } for c in convs], "count": len(convs)})
 
+# ── Admin: Grammar ──
+@app.route("/api/admin/grammar/upload", methods=["POST"])
+@admin_required
+def admin_upload_grammar(user):
+    body = request.get_json()
+    lessons_data = body.get("lessons", [])
+    if not isinstance(lessons_data, list) or not lessons_data:
+        return jsonify({"error": "Expected non-empty 'lessons' array"}), 400
+    required = ["lesson_id", "level", "grammar_point"]
+    errors = []
+    for i, l in enumerate(lessons_data):
+        missing = [f for f in required if f not in l or l[f] is None]
+        if missing:
+            errors.append(f"Lesson {i} (id={l.get('lesson_id','?')}): missing {', '.join(missing)}")
+        elif l.get("grammar_point") not in GRAMMAR_ERROR_CATEGORIES:
+            errors.append(f"Lesson {i} (id={l.get('lesson_id','?')}): invalid grammar_point '{l.get('grammar_point')}'. Must be one of: {', '.join(GRAMMAR_ERROR_CATEGORIES)}")
+    if errors:
+        return jsonify({"error": "Validation failed", "details": errors[:10]}), 400
+    inserted = updated = 0
+    for l in lessons_data:
+        lid = l["lesson_id"]
+        blob = {k: v for k, v in l.items() if k not in ("lesson_id", "level", "title", "grammar_point")}
+        existing = GrammarLesson.query.filter_by(lesson_id=lid).first()
+        if existing:
+            existing.level = l["level"]
+            existing.title = l.get("title", existing.title)
+            existing.grammar_point = l["grammar_point"]
+            existing.data = blob
+            db.session.execute(
+                db.text("UPDATE unstuck_grammar SET level = :level, title = :title, grammar_point = :gp, data = :data WHERE lesson_id = :lid"),
+                {"level": l["level"], "title": l.get("title", ""), "gp": l["grammar_point"], "data": json.dumps(blob), "lid": lid}
+            )
+            updated += 1
+        else:
+            db.session.add(GrammarLesson(lesson_id=lid, level=l["level"], title=l.get("title"), grammar_point=l["grammar_point"], data=blob))
+            inserted += 1
+    db.session.commit()
+    return jsonify({"ok": True, "inserted": inserted, "updated": updated, "total": GrammarLesson.query.count()})
+
+# ── Grammar: user endpoints ──
+@app.route("/api/grammar/next", methods=["GET"])
+@token_required
+def grammar_next(user):
+    lesson = get_due_grammar_point(user)
+    if not lesson:
+        return jsonify({"lesson": None})
+    return jsonify({"lesson": {
+        "lesson_id": lesson.lesson_id,
+        "level": lesson.level,
+        "title": lesson.title,
+        "grammar_point": lesson.grammar_point,
+        "data": lesson.data,
+    }})
+
+@app.route("/api/grammar/complete", methods=["POST"])
+@token_required
+def grammar_complete(user):
+    body = request.get_json() or {}
+    lesson_id = body.get("lesson_id")
+    if not lesson_id:
+        return jsonify({"error": "lesson_id required"}), 400
+    lesson = GrammarLesson.query.filter_by(lesson_id=lesson_id).first()
+    if not lesson:
+        return jsonify({"error": f"Lesson {lesson_id} not found"}), 404
+    progress_data = user.progress.data if user.progress and user.progress.data else {}
+    completed = progress_data.get("completedGrammar", [])
+    if lesson.grammar_point not in completed:
+        completed.append(lesson.grammar_point)
+    progress_data["completedGrammar"] = completed
+    performance = body.get("performance")
+    if performance:
+        grammar_history = progress_data.get("grammarHistory", [])
+        grammar_history.append({
+            "lesson_id": lesson_id,
+            "grammar_point": lesson.grammar_point,
+            "performance": performance,
+            "completed_at": datetime.datetime.utcnow().isoformat(),
+        })
+        progress_data["grammarHistory"] = grammar_history
+    error_counts = progress_data.get("grammarErrorCounts", {})
+    if lesson.grammar_point in error_counts:
+        error_counts[lesson.grammar_point] = 0
+    progress_data["grammarErrorCounts"] = error_counts
+    db.session.execute(
+        db.text("UPDATE unstuck_progress SET data = :data, updated_at = NOW() WHERE user_id = :uid"),
+        {"data": json.dumps(progress_data), "uid": user.id}
+    )
+    db.session.commit()
+    return jsonify({"ok": True, "grammar_point": lesson.grammar_point})
+
 # ── Admin: Content Stats ──
 @app.route("/api/admin/content-stats", methods=["GET"])
 @admin_required
@@ -1158,12 +1330,14 @@ def admin_content_stats(user):
         "total_listening": ListeningExercise.query.count(),
         "total_writing_prompts": WritingPrompt.query.count(),
         "total_writing_submissions": WritingSubmission.query.count(),
+        "total_grammar_lessons": GrammarLesson.query.count(),
         "total_scenarios": ConversationScenario.query.count(),
         "total_conversations": ConversationLog.query.count(),
         "total_encounters": EncounterLog.query.count(),
         "passages_by_level": {level: count for level, count in db.session.query(Passage.level, db.func.count(Passage.id)).group_by(Passage.level).all()},
         "listening_by_level": {level: count for level, count in db.session.query(ListeningExercise.level, db.func.count(ListeningExercise.id)).group_by(ListeningExercise.level).all()},
         "writing_by_level": {level: count for level, count in db.session.query(WritingPrompt.level, db.func.count(WritingPrompt.id)).group_by(WritingPrompt.level).all()},
+        "grammar_by_level": {level: count for level, count in db.session.query(GrammarLesson.level, db.func.count(GrammarLesson.id)).group_by(GrammarLesson.level).all()},
         "scenarios_by_level": {level: count for level, count in db.session.query(ConversationScenario.level, db.func.count(ConversationScenario.id)).group_by(ConversationScenario.level).all()},
     })
 

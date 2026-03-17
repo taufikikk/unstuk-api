@@ -132,6 +132,27 @@ class GrammarLesson(db.Model):
     data = db.Column(db.JSON, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
+ASSESSMENT_SKILLS = ["vocabulary", "grammar", "reading", "listening", "writing"]
+CEFR_LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"]
+
+class AssessmentQuestion(db.Model):
+    __tablename__ = "unstuck_assessments"
+    id = db.Column(db.Integer, primary_key=True)
+    question_id = db.Column(db.String(50), unique=True, nullable=False, index=True)
+    skill = db.Column(db.String(30), nullable=False, index=True)
+    level = db.Column(db.String(5), nullable=False, index=True)
+    data = db.Column(db.JSON, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+class AssessmentResult(db.Model):
+    __tablename__ = "unstuck_assessment_results"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("unstuck_users.id"), nullable=False, index=True)
+    assessment_type = db.Column(db.String(30))
+    scores = db.Column(db.JSON, nullable=False)
+    overall_level = db.Column(db.String(5))
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
 class EncounterLog(db.Model):
     __tablename__ = "unstuck_encounter_log"
     id = db.Column(db.Integer, primary_key=True)
@@ -247,6 +268,89 @@ def get_due_grammar_point(user):
                 return lesson
     return None
 
+# ── Assessment helpers ──
+ASSESSMENT_INTERVAL_DAYS = 14
+
+def is_assessment_due(user):
+    """Check if 14+ days since last assessment."""
+    progress_data = user.progress.data if user.progress and user.progress.data else {}
+    last_assessment = progress_data.get("lastAssessmentDate")
+    if not last_assessment:
+        return True
+    try:
+        last_dt = datetime.datetime.fromisoformat(last_assessment.replace("Z", "+00:00")).replace(tzinfo=None)
+        return (datetime.datetime.utcnow() - last_dt).days >= ASSESSMENT_INTERVAL_DAYS
+    except (ValueError, TypeError):
+        return True
+
+def build_adaptive_assessment(user_level, count=20):
+    """Build an adaptive question set starting at user's estimated level."""
+    level_idx = CEFR_LEVELS.index(user_level.upper()) if user_level.upper() in CEFR_LEVELS else 2
+    questions = []
+    used_ids = set()
+    per_skill = max(1, count // len(ASSESSMENT_SKILLS))
+    for skill in ASSESSMENT_SKILLS:
+        skill_questions = []
+        for offset in [0, -1, 1, -2, 2]:
+            idx = level_idx + offset
+            if idx < 0 or idx >= len(CEFR_LEVELS):
+                continue
+            level = CEFR_LEVELS[idx]
+            available = AssessmentQuestion.query.filter(
+                AssessmentQuestion.skill == skill,
+                AssessmentQuestion.level == level,
+                ~AssessmentQuestion.question_id.in_(used_ids) if used_ids else db.true()
+            ).order_by(db.func.random()).limit(per_skill - len(skill_questions)).all()
+            for q in available:
+                skill_questions.append(q)
+                used_ids.add(q.question_id)
+            if len(skill_questions) >= per_skill:
+                break
+        questions.extend(skill_questions)
+    remaining = count - len(questions)
+    if remaining > 0:
+        extra = AssessmentQuestion.query.filter(
+            ~AssessmentQuestion.question_id.in_(used_ids) if used_ids else db.true()
+        ).order_by(db.func.random()).limit(remaining).all()
+        questions.extend(extra)
+    return questions
+
+def score_assessment(questions_with_answers):
+    """Score answers and determine per-skill and overall CEFR level."""
+    skill_results = {}
+    for item in questions_with_answers:
+        skill = item["skill"]
+        level = item["level"]
+        correct = item.get("correct", False)
+        if skill not in skill_results:
+            skill_results[skill] = {"correct": 0, "total": 0, "levels": {}}
+        skill_results[skill]["total"] += 1
+        if correct:
+            skill_results[skill]["correct"] += 1
+        if level not in skill_results[skill]["levels"]:
+            skill_results[skill]["levels"][level] = {"correct": 0, "total": 0}
+        skill_results[skill]["levels"][level]["total"] += 1
+        if correct:
+            skill_results[skill]["levels"][level]["correct"] += 1
+    scores = {}
+    level_scores = []
+    for skill, data in skill_results.items():
+        best_level = "A1"
+        for level in CEFR_LEVELS:
+            if level in data["levels"]:
+                lvl_data = data["levels"][level]
+                if lvl_data["total"] > 0 and lvl_data["correct"] / lvl_data["total"] >= 0.5:
+                    best_level = level
+        scores[skill] = best_level
+        level_scores.append(CEFR_LEVELS.index(best_level))
+    if level_scores:
+        avg_idx = round(sum(level_scores) / len(level_scores))
+        avg_idx = max(0, min(avg_idx, len(CEFR_LEVELS) - 1))
+        scores["overall"] = CEFR_LEVELS[avg_idx]
+    else:
+        scores["overall"] = "B1"
+    return scores
+
 # ── Auth routes ──
 @app.route("/api/health")
 def health():
@@ -286,8 +390,11 @@ def login():
 @token_required
 def get_progress(user):
     if not user.progress or not user.progress.data:
-        return jsonify({"data": None})
-    return jsonify({"data": user.progress.data})
+        return jsonify({"data": None, "assessment_due": True, "skill_levels": None})
+    data = user.progress.data
+    latest_result = AssessmentResult.query.filter_by(user_id=user.id).order_by(AssessmentResult.created_at.desc()).first()
+    skill_levels = latest_result.scores if latest_result else None
+    return jsonify({"data": data, "assessment_due": is_assessment_due(user), "skill_levels": skill_levels})
 
 @app.route("/api/progress", methods=["POST"])
 @token_required
@@ -618,6 +725,9 @@ def compose_session(user):
                 "prompt_type": writing_prompt.prompt_type,
                 "data": writing_prompt.data,
             }
+
+    # Flag if assessment is due (every 14 days)
+    result["assessment_due"] = is_assessment_due(user)
 
     return result
 
@@ -1320,6 +1430,133 @@ def grammar_complete(user):
     db.session.commit()
     return jsonify({"ok": True, "grammar_point": lesson.grammar_point})
 
+# ── Admin: Assessments ──
+@app.route("/api/admin/assessments/upload", methods=["POST"])
+@admin_required
+def admin_upload_assessments(user):
+    body = request.get_json()
+    questions_data = body.get("questions", [])
+    if not isinstance(questions_data, list) or not questions_data:
+        return jsonify({"error": "Expected non-empty 'questions' array"}), 400
+    required = ["question_id", "skill", "level"]
+    errors = []
+    for i, q in enumerate(questions_data):
+        missing = [f for f in required if f not in q or q[f] is None]
+        if missing:
+            errors.append(f"Question {i} (id={q.get('question_id','?')}): missing {', '.join(missing)}")
+        elif q.get("skill") not in ASSESSMENT_SKILLS:
+            errors.append(f"Question {i} (id={q.get('question_id','?')}): invalid skill '{q.get('skill')}'. Must be one of: {', '.join(ASSESSMENT_SKILLS)}")
+        elif q.get("level") not in CEFR_LEVELS:
+            errors.append(f"Question {i} (id={q.get('question_id','?')}): invalid level '{q.get('level')}'. Must be one of: {', '.join(CEFR_LEVELS)}")
+    if errors:
+        return jsonify({"error": "Validation failed", "details": errors[:10]}), 400
+    inserted = updated = 0
+    for q in questions_data:
+        qid = q["question_id"]
+        blob = {k: v for k, v in q.items() if k not in ("question_id", "skill", "level")}
+        existing = AssessmentQuestion.query.filter_by(question_id=qid).first()
+        if existing:
+            existing.skill = q["skill"]
+            existing.level = q["level"]
+            existing.data = blob
+            db.session.execute(
+                db.text("UPDATE unstuck_assessments SET skill = :skill, level = :level, data = :data WHERE question_id = :qid"),
+                {"skill": q["skill"], "level": q["level"], "data": json.dumps(blob), "qid": qid}
+            )
+            updated += 1
+        else:
+            db.session.add(AssessmentQuestion(question_id=qid, skill=q["skill"], level=q["level"], data=blob))
+            inserted += 1
+    db.session.commit()
+    return jsonify({"ok": True, "inserted": inserted, "updated": updated, "total": AssessmentQuestion.query.count()})
+
+# ── Assessment: user endpoints ──
+@app.route("/api/assessment/start", methods=["GET"])
+@token_required
+def assessment_start(user):
+    progress_data = user.progress.data if user.progress and user.progress.data else {}
+    user_level = progress_data.get("userLevel", "B1")
+    total_questions = AssessmentQuestion.query.count()
+    if total_questions == 0:
+        return jsonify({"error": "No assessment questions available"}), 404
+    questions = build_adaptive_assessment(user_level, count=20)
+    if not questions:
+        return jsonify({"error": "Could not build assessment"}), 404
+    return jsonify({"questions": [{
+        "question_id": q.question_id,
+        "skill": q.skill,
+        "level": q.level,
+        "data": q.data,
+    } for q in questions], "count": len(questions)})
+
+@app.route("/api/assessment/submit", methods=["POST"])
+@token_required
+def assessment_submit(user):
+    body = request.get_json() or {}
+    answers = body.get("answers", [])
+    if not isinstance(answers, list) or not answers:
+        return jsonify({"error": "Expected non-empty 'answers' array"}), 400
+    questions_with_answers = []
+    for ans in answers:
+        qid = ans.get("question_id")
+        if not qid:
+            continue
+        q = AssessmentQuestion.query.filter_by(question_id=qid).first()
+        if not q:
+            continue
+        correct_answer = (q.data or {}).get("correct")
+        user_answer = ans.get("answer")
+        is_correct = user_answer == correct_answer if correct_answer is not None else False
+        questions_with_answers.append({
+            "question_id": qid,
+            "skill": q.skill,
+            "level": q.level,
+            "correct": is_correct,
+            "user_answer": user_answer,
+        })
+    if not questions_with_answers:
+        return jsonify({"error": "No valid answers to score"}), 400
+    scores = score_assessment(questions_with_answers)
+    result = AssessmentResult(
+        user_id=user.id,
+        assessment_type="adaptive",
+        scores=scores,
+        overall_level=scores.get("overall"),
+    )
+    db.session.add(result)
+    progress_data = user.progress.data if user.progress and user.progress.data else {}
+    progress_data["lastAssessmentDate"] = datetime.datetime.utcnow().isoformat()
+    progress_data["skillLevels"] = scores
+    if scores.get("overall"):
+        progress_data["userLevel"] = scores["overall"]
+    db.session.execute(
+        db.text("UPDATE unstuck_progress SET data = :data, updated_at = NOW() WHERE user_id = :uid"),
+        {"data": json.dumps(progress_data), "uid": user.id}
+    )
+    db.session.commit()
+    total_correct = sum(1 for q in questions_with_answers if q["correct"])
+    return jsonify({
+        "ok": True,
+        "result_id": result.id,
+        "scores": scores,
+        "overall_level": scores.get("overall"),
+        "total_questions": len(questions_with_answers),
+        "total_correct": total_correct,
+        "details": questions_with_answers,
+    }), 201
+
+@app.route("/api/assessment/history", methods=["GET"])
+@token_required
+def assessment_history(user):
+    results = AssessmentResult.query.filter_by(user_id=user.id).order_by(AssessmentResult.created_at.desc()).all()
+    return jsonify({"results": [{
+        "id": r.id,
+        "assessment_type": r.assessment_type,
+        "scores": r.scores,
+        "overall_level": r.overall_level,
+        "created_at": r.created_at.isoformat() if r.created_at else None,
+    } for r in results], "count": len(results)})
+
 # ── Admin: Content Stats ──
 @app.route("/api/admin/content-stats", methods=["GET"])
 @admin_required
@@ -1333,6 +1570,8 @@ def admin_content_stats(user):
         "total_grammar_lessons": GrammarLesson.query.count(),
         "total_scenarios": ConversationScenario.query.count(),
         "total_conversations": ConversationLog.query.count(),
+        "total_assessment_questions": AssessmentQuestion.query.count(),
+        "total_assessment_results": AssessmentResult.query.count(),
         "total_encounters": EncounterLog.query.count(),
         "passages_by_level": {level: count for level, count in db.session.query(Passage.level, db.func.count(Passage.id)).group_by(Passage.level).all()},
         "listening_by_level": {level: count for level, count in db.session.query(ListeningExercise.level, db.func.count(ListeningExercise.id)).group_by(ListeningExercise.level).all()},

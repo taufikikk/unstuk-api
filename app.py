@@ -156,6 +156,29 @@ class AssessmentResult(db.Model):
     overall_level = db.Column(db.String(5))
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
+TOEFL_SECTION_TYPES = ["reading", "listening", "writing", "speaking"]
+TOEFL_TIME_LIMITS = {"reading": 1200, "listening": 600, "writing": 1800, "speaking": 600}
+
+class TOEFLSection(db.Model):
+    __tablename__ = "unstuck_toefl"
+    id = db.Column(db.Integer, primary_key=True)
+    section_id = db.Column(db.String(50), unique=True, nullable=False, index=True)
+    section_type = db.Column(db.String(30), nullable=False, index=True)
+    data = db.Column(db.JSON, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+class TOEFLResult(db.Model):
+    __tablename__ = "unstuck_toefl_results"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("unstuck_users.id"), nullable=False, index=True)
+    section_id = db.Column(db.String(50), nullable=False)
+    section_type = db.Column(db.String(30), nullable=False)
+    score = db.Column(db.Integer, nullable=False)
+    max_score = db.Column(db.Integer, nullable=False, default=30)
+    details = db.Column(db.JSON)
+    time_spent_seconds = db.Column(db.Integer)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
 class EncounterLog(db.Model):
     __tablename__ = "unstuck_encounter_log"
     id = db.Column(db.Integer, primary_key=True)
@@ -1623,6 +1646,211 @@ def assessment_history(user):
         "created_at": r.created_at.isoformat() if r.created_at else None,
     } for r in results], "count": len(results)})
 
+# ── Admin: TOEFL ──
+@app.route("/api/admin/toefl/upload", methods=["POST"])
+@admin_required
+def admin_upload_toefl(user):
+    body = request.get_json()
+    sections_data = body.get("sections", [])
+    if not isinstance(sections_data, list) or not sections_data:
+        return jsonify({"error": "Expected non-empty 'sections' array"}), 400
+    required = ["section_id", "section_type"]
+    errors = []
+    for i, s in enumerate(sections_data):
+        missing = [f for f in required if f not in s or s[f] is None]
+        if missing:
+            errors.append(f"Section {i} (id={s.get('section_id','?')}): missing {', '.join(missing)}")
+        elif s.get("section_type") not in TOEFL_SECTION_TYPES:
+            errors.append(f"Section {i} (id={s.get('section_id','?')}): invalid section_type '{s.get('section_type')}'. Must be one of: {', '.join(TOEFL_SECTION_TYPES)}")
+    if errors:
+        return jsonify({"error": "Validation failed", "details": errors[:10]}), 400
+    inserted = updated = 0
+    for s in sections_data:
+        sid = s["section_id"]
+        blob = {k: v for k, v in s.items() if k not in ("section_id", "section_type")}
+        existing = TOEFLSection.query.filter_by(section_id=sid).first()
+        if existing:
+            existing.section_type = s["section_type"]
+            existing.data = blob
+            db.session.execute(
+                db.text("UPDATE unstuck_toefl SET section_type = :stype, data = :data WHERE section_id = :sid"),
+                {"stype": s["section_type"], "data": json.dumps(blob), "sid": sid}
+            )
+            updated += 1
+        else:
+            db.session.add(TOEFLSection(section_id=sid, section_type=s["section_type"], data=blob))
+            inserted += 1
+    db.session.commit()
+    return jsonify({"ok": True, "inserted": inserted, "updated": updated, "total": TOEFLSection.query.count()})
+
+# ── TOEFL: user endpoints ──
+@app.route("/api/toefl/sections", methods=["GET"])
+@token_required
+def toefl_sections(user):
+    sections = TOEFLSection.query.order_by(TOEFLSection.section_type, TOEFLSection.id).all()
+    completed_ids = [r[0] for r in db.session.query(TOEFLResult.section_id).filter(
+        TOEFLResult.user_id == user.id
+    ).distinct().all()]
+    return jsonify({"sections": [{
+        "section_id": s.section_id,
+        "section_type": s.section_type,
+        "title": (s.data or {}).get("title", s.section_id),
+        "time_limit_seconds": TOEFL_TIME_LIMITS.get(s.section_type, 1200),
+        "question_count": len((s.data or {}).get("questions", [])),
+        "completed": s.section_id in completed_ids,
+    } for s in sections], "count": len(sections)})
+
+@app.route("/api/toefl/start/<section_id>", methods=["POST"])
+@token_required
+def toefl_start(user, section_id):
+    section = TOEFLSection.query.filter_by(section_id=section_id).first()
+    if not section:
+        return jsonify({"error": f"TOEFL section {section_id} not found"}), 404
+    time_limit = TOEFL_TIME_LIMITS.get(section.section_type, 1200)
+    response_data = {
+        "section_id": section.section_id,
+        "section_type": section.section_type,
+        "time_limit_seconds": time_limit,
+        "data": section.data,
+    }
+    return jsonify(response_data)
+
+@app.route("/api/toefl/submit/<section_id>", methods=["POST"])
+@token_required
+def toefl_submit(user, section_id):
+    section = TOEFLSection.query.filter_by(section_id=section_id).first()
+    if not section:
+        return jsonify({"error": f"TOEFL section {section_id} not found"}), 404
+    body = request.get_json() or {}
+    answers = body.get("answers", [])
+    time_spent = body.get("time_spent_seconds")
+    user_text = body.get("user_text", "")
+    section_data = section.data or {}
+    section_type = section.section_type
+
+    if section_type in ("reading", "listening"):
+        # Score multiple-choice questions
+        questions = section_data.get("questions", [])
+        correct = 0
+        total = len(questions)
+        details_list = []
+        answer_map = {a.get("question_index", a.get("question_id", i)): a.get("answer") for i, a in enumerate(answers)}
+        for i, q in enumerate(questions):
+            correct_answer = q.get("correct")
+            user_answer = answer_map.get(i, answer_map.get(q.get("question_id")))
+            is_correct = user_answer == correct_answer
+            if is_correct:
+                correct += 1
+            details_list.append({
+                "question_index": i,
+                "user_answer": user_answer,
+                "correct_answer": correct_answer,
+                "correct": is_correct,
+            })
+        raw_pct = correct / total if total > 0 else 0
+        score = round(raw_pct * 30)
+        details = {"correct": correct, "total": total, "questions": details_list}
+
+    elif section_type in ("writing", "speaking"):
+        # AI evaluation for writing/speaking responses
+        if not user_text.strip():
+            return jsonify({"error": "user_text required for writing/speaking sections"}), 400
+        if not ANTHROPIC_API_KEY:
+            return jsonify({"error": "AI evaluation not configured (missing API key)"}), 503
+        prompt_info = section_data.get("prompt", section_data.get("title", section_type))
+        if section_type == "writing":
+            word_count = len(user_text.split())
+            eval_prompt = (
+                f"Evaluate this TOEFL {section_type} response.\n"
+                f"Prompt: {prompt_info}\n"
+                f"Response ({word_count} words): {user_text}\n\n"
+                "Score on TOEFL scale (0-30). Evaluate: task completion, organization, "
+                "language use, vocabulary range, grammar accuracy.\n"
+                'Respond in JSON only: {"score": N, "task_completion": 1-5, '
+                '"organization": 1-5, "language_use": 1-5, "vocabulary": 1-5, '
+                '"grammar": 1-5, "feedback": "...", "strengths": "...", "improvements": "..."}'
+            )
+        else:
+            eval_prompt = (
+                f"Evaluate this TOEFL speaking response (typed simulation).\n"
+                f"Prompt: {prompt_info}\n"
+                f"Response: {user_text}\n\n"
+                "Score on TOEFL scale (0-30). Evaluate: delivery/clarity, "
+                "language use, topic development.\n"
+                'Respond in JSON only: {"score": N, "delivery": 1-5, '
+                '"language_use": 1-5, "topic_development": 1-5, '
+                '"feedback": "...", "strengths": "...", "improvements": "..."}'
+            )
+        try:
+            import anthropic
+            client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+            response = client.messages.create(
+                model="claude-sonnet-4-20250514",
+                max_tokens=1024,
+                messages=[{"role": "user", "content": eval_prompt}],
+            )
+            raw = response.content[0].text
+            details = json.loads(raw)
+        except json.JSONDecodeError:
+            details = {"raw_response": raw, "error": "Failed to parse AI response"}
+        except Exception as e:
+            return jsonify({"error": f"AI evaluation failed: {str(e)}"}), 502
+        score = details.get("score", 0)
+        if isinstance(score, (int, float)):
+            score = max(0, min(30, int(score)))
+        else:
+            score = 0
+    else:
+        return jsonify({"error": f"Unknown section type: {section_type}"}), 400
+
+    result = TOEFLResult(
+        user_id=user.id,
+        section_id=section_id,
+        section_type=section_type,
+        score=score,
+        max_score=30,
+        details=details,
+        time_spent_seconds=time_spent,
+    )
+    db.session.add(result)
+    db.session.commit()
+    return jsonify({
+        "ok": True,
+        "result_id": result.id,
+        "section_type": section_type,
+        "score": score,
+        "max_score": 30,
+        "details": details,
+        "time_spent_seconds": time_spent,
+    }), 201
+
+@app.route("/api/toefl/history", methods=["GET"])
+@token_required
+def toefl_history(user):
+    results = TOEFLResult.query.filter_by(user_id=user.id).order_by(TOEFLResult.created_at.desc()).all()
+    # Calculate latest per-section scores for total
+    latest_by_type = {}
+    for r in results:
+        if r.section_type not in latest_by_type:
+            latest_by_type[r.section_type] = r.score
+    total_score = sum(latest_by_type.values())
+    max_total = len(latest_by_type) * 30
+    return jsonify({
+        "results": [{
+            "id": r.id,
+            "section_id": r.section_id,
+            "section_type": r.section_type,
+            "score": r.score,
+            "max_score": r.max_score,
+            "time_spent_seconds": r.time_spent_seconds,
+            "created_at": r.created_at.isoformat() if r.created_at else None,
+        } for r in results],
+        "latest_scores": latest_by_type,
+        "total_score": total_score,
+        "max_total": 120,
+        "count": len(results),
+    })
+
 # ── Admin: Content Stats ──
 @app.route("/api/admin/content-stats", methods=["GET"])
 @admin_required
@@ -1638,12 +1866,15 @@ def admin_content_stats(user):
         "total_conversations": ConversationLog.query.count(),
         "total_assessment_questions": AssessmentQuestion.query.count(),
         "total_assessment_results": AssessmentResult.query.count(),
+        "total_toefl_sections": TOEFLSection.query.count(),
+        "total_toefl_results": TOEFLResult.query.count(),
         "total_encounters": EncounterLog.query.count(),
         "passages_by_level": {level: count for level, count in db.session.query(Passage.level, db.func.count(Passage.id)).group_by(Passage.level).all()},
         "listening_by_level": {level: count for level, count in db.session.query(ListeningExercise.level, db.func.count(ListeningExercise.id)).group_by(ListeningExercise.level).all()},
         "writing_by_level": {level: count for level, count in db.session.query(WritingPrompt.level, db.func.count(WritingPrompt.id)).group_by(WritingPrompt.level).all()},
         "grammar_by_level": {level: count for level, count in db.session.query(GrammarLesson.level, db.func.count(GrammarLesson.id)).group_by(GrammarLesson.level).all()},
         "scenarios_by_level": {level: count for level, count in db.session.query(ConversationScenario.level, db.func.count(ConversationScenario.id)).group_by(ConversationScenario.level).all()},
+        "toefl_by_type": {stype: count for stype, count in db.session.query(TOEFLSection.section_type, db.func.count(TOEFLSection.id)).group_by(TOEFLSection.section_type).all()},
     })
 
 # ── Seed ──

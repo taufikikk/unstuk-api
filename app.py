@@ -2543,6 +2543,18 @@ def seed_passages():
     print(f"Seeded {len(passages)} passages")
 
 with app.app_context():
+    # Drop orphaned composite types that conflict with new table creation
+    new_tables = ["unstuck_subtext", "unstuck_register", "unstuck_slang", "unstuck_sarcasm", "unstuck_connected_speech"]
+    for tbl in new_tables:
+        try:
+            db.session.execute(db.text(
+                f"DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = '{tbl}') "
+                f"AND EXISTS (SELECT 1 FROM pg_type WHERE typname = '{tbl}') "
+                f"THEN EXECUTE 'DROP TYPE IF EXISTS {tbl} CASCADE'; END IF; END $$;"
+            ))
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
     db.create_all()
     seed_cards()
     seed_passages()

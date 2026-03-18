@@ -179,6 +179,46 @@ class TOEFLResult(db.Model):
     time_spent_seconds = db.Column(db.Integer)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
+class SubtextExercise(db.Model):
+    __tablename__ = "unstuck_subtext"
+    id = db.Column(db.Integer, primary_key=True)
+    exercise_id = db.Column(db.String(50), unique=True, nullable=False, index=True)
+    level = db.Column(db.String(5), nullable=False, index=True)
+    data = db.Column(db.JSON, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+class RegisterExercise(db.Model):
+    __tablename__ = "unstuck_register"
+    id = db.Column(db.Integer, primary_key=True)
+    exercise_id = db.Column(db.String(50), unique=True, nullable=False, index=True)
+    level = db.Column(db.String(5), nullable=False, index=True)
+    data = db.Column(db.JSON, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+class SlangExercise(db.Model):
+    __tablename__ = "unstuck_slang"
+    id = db.Column(db.Integer, primary_key=True)
+    exercise_id = db.Column(db.String(50), unique=True, nullable=False, index=True)
+    level = db.Column(db.String(5), nullable=False, index=True)
+    data = db.Column(db.JSON, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+class SarcasmExercise(db.Model):
+    __tablename__ = "unstuck_sarcasm"
+    id = db.Column(db.Integer, primary_key=True)
+    exercise_id = db.Column(db.String(50), unique=True, nullable=False, index=True)
+    level = db.Column(db.String(5), nullable=False, index=True)
+    data = db.Column(db.JSON, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+class ConnectedSpeechLesson(db.Model):
+    __tablename__ = "unstuck_connected_speech"
+    id = db.Column(db.Integer, primary_key=True)
+    lesson_id = db.Column(db.String(50), unique=True, nullable=False, index=True)
+    level = db.Column(db.String(5), nullable=False, index=True)
+    data = db.Column(db.JSON, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
 class EncounterLog(db.Model):
     __tablename__ = "unstuck_encounter_log"
     id = db.Column(db.Integer, primary_key=True)
@@ -2086,6 +2126,364 @@ def toefl_history(user):
         "max_total": 120,
         "count": len(results),
     })
+
+# ── Admin: Scenarios (list + delete) ──
+@app.route("/api/admin/scenarios", methods=["GET"])
+@admin_required
+def admin_list_scenarios(user):
+    items = ConversationScenario.query.order_by(ConversationScenario.id).all()
+    return jsonify({"scenarios": [{"scenario_id": s.scenario_id, "level": s.level, "title": s.title, "data": s.data, "created_at": s.created_at.isoformat() if s.created_at else None} for s in items], "count": len(items)})
+
+@app.route("/api/admin/scenarios/<scenario_id>", methods=["DELETE"])
+@admin_required
+def admin_delete_scenario(user, scenario_id):
+    s = ConversationScenario.query.filter_by(scenario_id=scenario_id).first()
+    if not s:
+        return jsonify({"error": "Not found"}), 404
+    db.session.delete(s)
+    db.session.commit()
+    return jsonify({"ok": True, "deleted": scenario_id})
+
+# ── Admin: Grammar (list + delete) ──
+@app.route("/api/admin/grammar", methods=["GET"])
+@admin_required
+def admin_list_grammar(user):
+    items = GrammarLesson.query.order_by(GrammarLesson.id).all()
+    return jsonify({"lessons": [{"lesson_id": g.lesson_id, "level": g.level, "title": g.title, "grammar_point": g.grammar_point, "created_at": g.created_at.isoformat() if g.created_at else None} for g in items], "count": len(items)})
+
+@app.route("/api/admin/grammar/<lesson_id>", methods=["DELETE"])
+@admin_required
+def admin_delete_grammar(user, lesson_id):
+    g = GrammarLesson.query.filter_by(lesson_id=lesson_id).first()
+    if not g:
+        return jsonify({"error": "Not found"}), 404
+    db.session.delete(g)
+    db.session.commit()
+    return jsonify({"ok": True, "deleted": lesson_id})
+
+# ── Admin: Assessments (list + delete) ──
+@app.route("/api/admin/assessments", methods=["GET"])
+@admin_required
+def admin_list_assessments(user):
+    items = AssessmentQuestion.query.order_by(AssessmentQuestion.id).all()
+    return jsonify({"questions": [{"question_id": q.question_id, "skill": q.skill, "level": q.level, "data": q.data, "created_at": q.created_at.isoformat() if q.created_at else None} for q in items], "count": len(items)})
+
+@app.route("/api/admin/assessments/<question_id>", methods=["DELETE"])
+@admin_required
+def admin_delete_assessment(user, question_id):
+    q = AssessmentQuestion.query.filter_by(question_id=question_id).first()
+    if not q:
+        return jsonify({"error": "Not found"}), 404
+    db.session.delete(q)
+    db.session.commit()
+    return jsonify({"ok": True, "deleted": question_id})
+
+# ── Admin: TOEFL (list + delete) ──
+@app.route("/api/admin/toefl", methods=["GET"])
+@admin_required
+def admin_list_toefl(user):
+    items = TOEFLSection.query.order_by(TOEFLSection.id).all()
+    return jsonify({"sections": [{"section_id": s.section_id, "section_type": s.section_type, "data": s.data, "created_at": s.created_at.isoformat() if s.created_at else None} for s in items], "count": len(items)})
+
+@app.route("/api/admin/toefl/<section_id>", methods=["DELETE"])
+@admin_required
+def admin_delete_toefl(user, section_id):
+    s = TOEFLSection.query.filter_by(section_id=section_id).first()
+    if not s:
+        return jsonify({"error": "Not found"}), 404
+    db.session.delete(s)
+    db.session.commit()
+    return jsonify({"ok": True, "deleted": section_id})
+
+# ── Admin: Subtext (upload + list + delete + next) ──
+@app.route("/api/admin/subtext/upload", methods=["POST"])
+@admin_required
+def admin_upload_subtext(user):
+    body = request.get_json()
+    exercises = body.get("exercises", [])
+    if not exercises:
+        return jsonify({"error": "Expected non-empty 'exercises' array"}), 400
+    inserted = updated = 0
+    for e in exercises:
+        eid = e.get("exercise_id")
+        if not eid:
+            continue
+        lvl = e.get("level", "B1")
+        blob = {k: v for k, v in e.items() if k not in ("exercise_id", "level")}
+        existing = SubtextExercise.query.filter_by(exercise_id=eid).first()
+        if existing:
+            existing.level = lvl
+            existing.data = blob
+            updated += 1
+        else:
+            db.session.add(SubtextExercise(exercise_id=eid, level=lvl, data=blob))
+            inserted += 1
+    db.session.commit()
+    return jsonify({"ok": True, "inserted": inserted, "updated": updated, "total": SubtextExercise.query.count()})
+
+@app.route("/api/admin/subtext", methods=["GET"])
+@admin_required
+def admin_list_subtext(user):
+    items = SubtextExercise.query.order_by(SubtextExercise.id).all()
+    return jsonify({"exercises": [{"exercise_id": e.exercise_id, "level": e.level, "data": e.data, "created_at": e.created_at.isoformat() if e.created_at else None} for e in items], "count": len(items)})
+
+@app.route("/api/admin/subtext/<exercise_id>", methods=["DELETE"])
+@admin_required
+def admin_delete_subtext(user, exercise_id):
+    e = SubtextExercise.query.filter_by(exercise_id=exercise_id).first()
+    if not e:
+        return jsonify({"error": "Not found"}), 404
+    db.session.delete(e)
+    db.session.commit()
+    return jsonify({"ok": True, "deleted": exercise_id})
+
+@app.route("/api/subtext/next", methods=["GET"])
+@token_required
+def subtext_next(user):
+    progress_data = user.progress.data if user.progress and user.progress.data else {}
+    user_level = progress_data.get("userLevel", "B1")
+    seen_ids = [r[0] for r in db.session.query(EncounterLog.exercise_id).filter(EncounterLog.user_id == user.id, EncounterLog.encounter_type == "subtext", EncounterLog.exercise_id.isnot(None)).distinct().all()]
+    q = SubtextExercise.query.filter_by(level=user_level.upper())
+    if seen_ids:
+        q = q.filter(~SubtextExercise.exercise_id.in_(seen_ids))
+    ex = q.order_by(SubtextExercise.id).first()
+    if not ex:
+        ex = SubtextExercise.query.filter(~SubtextExercise.exercise_id.in_(seen_ids) if seen_ids else db.true()).order_by(SubtextExercise.id).first()
+    if not ex:
+        return jsonify(None)
+    return jsonify({"exercise_id": ex.exercise_id, "level": ex.level, "data": ex.data})
+
+# ── Admin: Register (upload + list + delete + next) ──
+@app.route("/api/admin/register/upload", methods=["POST"])
+@admin_required
+def admin_upload_register(user):
+    body = request.get_json()
+    exercises = body.get("exercises", [])
+    if not exercises:
+        return jsonify({"error": "Expected non-empty 'exercises' array"}), 400
+    inserted = updated = 0
+    for e in exercises:
+        eid = e.get("exercise_id")
+        if not eid:
+            continue
+        lvl = e.get("level", "B1")
+        blob = {k: v for k, v in e.items() if k not in ("exercise_id", "level")}
+        existing = RegisterExercise.query.filter_by(exercise_id=eid).first()
+        if existing:
+            existing.level = lvl
+            existing.data = blob
+            updated += 1
+        else:
+            db.session.add(RegisterExercise(exercise_id=eid, level=lvl, data=blob))
+            inserted += 1
+    db.session.commit()
+    return jsonify({"ok": True, "inserted": inserted, "updated": updated, "total": RegisterExercise.query.count()})
+
+@app.route("/api/admin/register", methods=["GET"])
+@admin_required
+def admin_list_register(user):
+    items = RegisterExercise.query.order_by(RegisterExercise.id).all()
+    return jsonify({"exercises": [{"exercise_id": e.exercise_id, "level": e.level, "data": e.data, "created_at": e.created_at.isoformat() if e.created_at else None} for e in items], "count": len(items)})
+
+@app.route("/api/admin/register/<exercise_id>", methods=["DELETE"])
+@admin_required
+def admin_delete_register(user, exercise_id):
+    e = RegisterExercise.query.filter_by(exercise_id=exercise_id).first()
+    if not e:
+        return jsonify({"error": "Not found"}), 404
+    db.session.delete(e)
+    db.session.commit()
+    return jsonify({"ok": True, "deleted": exercise_id})
+
+@app.route("/api/register/next", methods=["GET"])
+@token_required
+def register_next(user):
+    progress_data = user.progress.data if user.progress and user.progress.data else {}
+    user_level = progress_data.get("userLevel", "B1")
+    seen_ids = [r[0] for r in db.session.query(EncounterLog.exercise_id).filter(EncounterLog.user_id == user.id, EncounterLog.encounter_type == "register", EncounterLog.exercise_id.isnot(None)).distinct().all()]
+    q = RegisterExercise.query.filter_by(level=user_level.upper())
+    if seen_ids:
+        q = q.filter(~RegisterExercise.exercise_id.in_(seen_ids))
+    ex = q.order_by(RegisterExercise.id).first()
+    if not ex:
+        ex = RegisterExercise.query.filter(~RegisterExercise.exercise_id.in_(seen_ids) if seen_ids else db.true()).order_by(RegisterExercise.id).first()
+    if not ex:
+        return jsonify(None)
+    return jsonify({"exercise_id": ex.exercise_id, "level": ex.level, "data": ex.data})
+
+# ── Admin: Slang (upload + list + delete + next) ──
+@app.route("/api/admin/slang/upload", methods=["POST"])
+@admin_required
+def admin_upload_slang(user):
+    body = request.get_json()
+    exercises = body.get("exercises", [])
+    if not exercises:
+        return jsonify({"error": "Expected non-empty 'exercises' array"}), 400
+    inserted = updated = 0
+    for e in exercises:
+        eid = e.get("exercise_id")
+        if not eid:
+            continue
+        lvl = e.get("level", "B1")
+        blob = {k: v for k, v in e.items() if k not in ("exercise_id", "level")}
+        existing = SlangExercise.query.filter_by(exercise_id=eid).first()
+        if existing:
+            existing.level = lvl
+            existing.data = blob
+            updated += 1
+        else:
+            db.session.add(SlangExercise(exercise_id=eid, level=lvl, data=blob))
+            inserted += 1
+    db.session.commit()
+    return jsonify({"ok": True, "inserted": inserted, "updated": updated, "total": SlangExercise.query.count()})
+
+@app.route("/api/admin/slang", methods=["GET"])
+@admin_required
+def admin_list_slang(user):
+    items = SlangExercise.query.order_by(SlangExercise.id).all()
+    return jsonify({"exercises": [{"exercise_id": e.exercise_id, "level": e.level, "data": e.data, "created_at": e.created_at.isoformat() if e.created_at else None} for e in items], "count": len(items)})
+
+@app.route("/api/admin/slang/<exercise_id>", methods=["DELETE"])
+@admin_required
+def admin_delete_slang(user, exercise_id):
+    e = SlangExercise.query.filter_by(exercise_id=exercise_id).first()
+    if not e:
+        return jsonify({"error": "Not found"}), 404
+    db.session.delete(e)
+    db.session.commit()
+    return jsonify({"ok": True, "deleted": exercise_id})
+
+@app.route("/api/slang/next", methods=["GET"])
+@token_required
+def slang_next(user):
+    progress_data = user.progress.data if user.progress and user.progress.data else {}
+    user_level = progress_data.get("userLevel", "B1")
+    seen_ids = [r[0] for r in db.session.query(EncounterLog.exercise_id).filter(EncounterLog.user_id == user.id, EncounterLog.encounter_type == "slang", EncounterLog.exercise_id.isnot(None)).distinct().all()]
+    q = SlangExercise.query.filter_by(level=user_level.upper())
+    if seen_ids:
+        q = q.filter(~SlangExercise.exercise_id.in_(seen_ids))
+    ex = q.order_by(SlangExercise.id).first()
+    if not ex:
+        ex = SlangExercise.query.filter(~SlangExercise.exercise_id.in_(seen_ids) if seen_ids else db.true()).order_by(SlangExercise.id).first()
+    if not ex:
+        return jsonify(None)
+    return jsonify({"exercise_id": ex.exercise_id, "level": ex.level, "data": ex.data})
+
+# ── Admin: Sarcasm (upload + list + delete + next) ──
+@app.route("/api/admin/sarcasm/upload", methods=["POST"])
+@admin_required
+def admin_upload_sarcasm(user):
+    body = request.get_json()
+    exercises = body.get("exercises", [])
+    if not exercises:
+        return jsonify({"error": "Expected non-empty 'exercises' array"}), 400
+    inserted = updated = 0
+    for e in exercises:
+        eid = e.get("exercise_id")
+        if not eid:
+            continue
+        lvl = e.get("level", "B1")
+        blob = {k: v for k, v in e.items() if k not in ("exercise_id", "level")}
+        existing = SarcasmExercise.query.filter_by(exercise_id=eid).first()
+        if existing:
+            existing.level = lvl
+            existing.data = blob
+            updated += 1
+        else:
+            db.session.add(SarcasmExercise(exercise_id=eid, level=lvl, data=blob))
+            inserted += 1
+    db.session.commit()
+    return jsonify({"ok": True, "inserted": inserted, "updated": updated, "total": SarcasmExercise.query.count()})
+
+@app.route("/api/admin/sarcasm", methods=["GET"])
+@admin_required
+def admin_list_sarcasm(user):
+    items = SarcasmExercise.query.order_by(SarcasmExercise.id).all()
+    return jsonify({"exercises": [{"exercise_id": e.exercise_id, "level": e.level, "data": e.data, "created_at": e.created_at.isoformat() if e.created_at else None} for e in items], "count": len(items)})
+
+@app.route("/api/admin/sarcasm/<exercise_id>", methods=["DELETE"])
+@admin_required
+def admin_delete_sarcasm(user, exercise_id):
+    e = SarcasmExercise.query.filter_by(exercise_id=exercise_id).first()
+    if not e:
+        return jsonify({"error": "Not found"}), 404
+    db.session.delete(e)
+    db.session.commit()
+    return jsonify({"ok": True, "deleted": exercise_id})
+
+@app.route("/api/sarcasm/next", methods=["GET"])
+@token_required
+def sarcasm_next(user):
+    progress_data = user.progress.data if user.progress and user.progress.data else {}
+    user_level = progress_data.get("userLevel", "B1")
+    seen_ids = [r[0] for r in db.session.query(EncounterLog.exercise_id).filter(EncounterLog.user_id == user.id, EncounterLog.encounter_type == "sarcasm", EncounterLog.exercise_id.isnot(None)).distinct().all()]
+    q = SarcasmExercise.query.filter_by(level=user_level.upper())
+    if seen_ids:
+        q = q.filter(~SarcasmExercise.exercise_id.in_(seen_ids))
+    ex = q.order_by(SarcasmExercise.id).first()
+    if not ex:
+        ex = SarcasmExercise.query.filter(~SarcasmExercise.exercise_id.in_(seen_ids) if seen_ids else db.true()).order_by(SarcasmExercise.id).first()
+    if not ex:
+        return jsonify(None)
+    return jsonify({"exercise_id": ex.exercise_id, "level": ex.level, "data": ex.data})
+
+# ── Admin: Connected Speech (upload + list + delete + next) ──
+@app.route("/api/admin/connected-speech/upload", methods=["POST"])
+@admin_required
+def admin_upload_connected_speech(user):
+    body = request.get_json()
+    lessons = body.get("lessons", [])
+    if not lessons:
+        return jsonify({"error": "Expected non-empty 'lessons' array"}), 400
+    inserted = updated = 0
+    for le in lessons:
+        lid = le.get("lesson_id")
+        if not lid:
+            continue
+        lvl = le.get("level", "B1")
+        blob = {k: v for k, v in le.items() if k not in ("lesson_id", "level")}
+        existing = ConnectedSpeechLesson.query.filter_by(lesson_id=lid).first()
+        if existing:
+            existing.level = lvl
+            existing.data = blob
+            updated += 1
+        else:
+            db.session.add(ConnectedSpeechLesson(lesson_id=lid, level=lvl, data=blob))
+            inserted += 1
+    db.session.commit()
+    return jsonify({"ok": True, "inserted": inserted, "updated": updated, "total": ConnectedSpeechLesson.query.count()})
+
+@app.route("/api/admin/connected-speech", methods=["GET"])
+@admin_required
+def admin_list_connected_speech(user):
+    items = ConnectedSpeechLesson.query.order_by(ConnectedSpeechLesson.id).all()
+    return jsonify({"lessons": [{"lesson_id": le.lesson_id, "level": le.level, "data": le.data, "created_at": le.created_at.isoformat() if le.created_at else None} for le in items], "count": len(items)})
+
+@app.route("/api/admin/connected-speech/<lesson_id>", methods=["DELETE"])
+@admin_required
+def admin_delete_connected_speech(user, lesson_id):
+    le = ConnectedSpeechLesson.query.filter_by(lesson_id=lesson_id).first()
+    if not le:
+        return jsonify({"error": "Not found"}), 404
+    db.session.delete(le)
+    db.session.commit()
+    return jsonify({"ok": True, "deleted": lesson_id})
+
+@app.route("/api/connected-speech/next", methods=["GET"])
+@token_required
+def connected_speech_next(user):
+    progress_data = user.progress.data if user.progress and user.progress.data else {}
+    user_level = progress_data.get("userLevel", "B1")
+    seen_ids = [r[0] for r in db.session.query(EncounterLog.exercise_id).filter(EncounterLog.user_id == user.id, EncounterLog.encounter_type == "connected_speech", EncounterLog.exercise_id.isnot(None)).distinct().all()]
+    q = ConnectedSpeechLesson.query.filter_by(level=user_level.upper())
+    if seen_ids:
+        q = q.filter(~ConnectedSpeechLesson.lesson_id.in_(seen_ids))
+    ex = q.order_by(ConnectedSpeechLesson.id).first()
+    if not ex:
+        ex = ConnectedSpeechLesson.query.filter(~ConnectedSpeechLesson.lesson_id.in_(seen_ids) if seen_ids else db.true()).order_by(ConnectedSpeechLesson.id).first()
+    if not ex:
+        return jsonify(None)
+    return jsonify({"lesson_id": ex.lesson_id, "level": ex.level, "data": ex.data})
 
 # ── Admin: Content Stats ──
 @app.route("/api/admin/content-stats", methods=["GET"])

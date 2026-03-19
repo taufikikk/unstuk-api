@@ -715,7 +715,12 @@ def admin_list_cards(user):
 @admin_required
 def admin_upload_cards(user):
     body = request.get_json()
-    cards_data = body.get("cards", [])
+    if isinstance(body, list):
+        cards_data = body
+    elif isinstance(body, dict):
+        cards_data = body.get("cards", [])
+    else:
+        cards_data = []
     if not isinstance(cards_data, list) or not cards_data:
         return jsonify({"error": "Expected non-empty 'cards' array"}), 400
     required = ["id", "phrase", "context", "meaning", "meaningEn", "usage", "wrongOptions", "fillBlank", "fillAnswer", "rearrange"]
@@ -1118,7 +1123,12 @@ def session_compose(user):
 @admin_required
 def admin_upload_passages(user):
     body = request.get_json()
-    passages_data = body.get("passages", [])
+    if isinstance(body, list):
+        passages_data = body
+    elif isinstance(body, dict):
+        passages_data = body.get("passages", [])
+    else:
+        passages_data = []
     if not isinstance(passages_data, list) or not passages_data:
         return jsonify({"error": "Expected non-empty 'passages' array"}), 400
     required = ["id", "level", "title", "text"]
@@ -1175,7 +1185,12 @@ def admin_delete_passage(user, passage_id):
 @admin_required
 def admin_upload_exercises(user):
     body = request.get_json()
-    exercises_data = body.get("exercises", [])
+    if isinstance(body, list):
+        exercises_data = body
+    elif isinstance(body, dict):
+        exercises_data = body.get("exercises", [])
+    else:
+        exercises_data = []
     if not isinstance(exercises_data, list) or not exercises_data:
         return jsonify({"error": "Expected non-empty 'exercises' array"}), 400
     required = ["exercise_id", "card_id", "exercise_type"]
@@ -1220,7 +1235,12 @@ def admin_list_exercises(user):
 @admin_required
 def admin_upload_listening(user):
     body = request.get_json()
-    exercises_data = body.get("exercises", [])
+    if isinstance(body, list):
+        exercises_data = body
+    elif isinstance(body, dict):
+        exercises_data = body.get("exercises", [])
+    else:
+        exercises_data = []
     if not isinstance(exercises_data, list) or not exercises_data:
         return jsonify({"error": "Expected non-empty 'exercises' array"}), 400
     valid_types = {"dictation", "listen_comprehension", "connected_speech", "speed_drill"}
@@ -1299,7 +1319,12 @@ def listening_next(user):
 @admin_required
 def admin_upload_writing(user):
     body = request.get_json()
-    prompts_data = body.get("prompts", [])
+    if isinstance(body, list):
+        prompts_data = body
+    elif isinstance(body, dict):
+        prompts_data = body.get("prompts", [])
+    else:
+        prompts_data = []
     if not isinstance(prompts_data, list) or not prompts_data:
         return jsonify({"error": "Expected non-empty 'prompts' array"}), 400
     valid_types = {"email_completion", "rewrite", "free_write", "summary", "argument"}
@@ -1446,7 +1471,12 @@ def writing_history(user):
 @admin_required
 def admin_upload_scenarios(user):
     body = request.get_json()
-    scenarios_data = body.get("scenarios", [])
+    if isinstance(body, list):
+        scenarios_data = body
+    elif isinstance(body, dict):
+        scenarios_data = body.get("scenarios", [])
+    else:
+        scenarios_data = []
     if not isinstance(scenarios_data, list) or not scenarios_data:
         return jsonify({"error": "Expected non-empty 'scenarios' array"}), 400
     required = ["scenario_id", "level"]
@@ -1710,7 +1740,12 @@ def conversation_history(user):
 @admin_required
 def admin_upload_grammar(user):
     body = request.get_json()
-    lessons_data = body.get("lessons", [])
+    if isinstance(body, list):
+        lessons_data = body
+    elif isinstance(body, dict):
+        lessons_data = body.get("lessons", [])
+    else:
+        lessons_data = []
     if not isinstance(lessons_data, list) or not lessons_data:
         return jsonify({"error": "Expected non-empty 'lessons' array"}), 400
     required = ["lesson_id", "level", "grammar_point"]
@@ -1800,7 +1835,12 @@ def grammar_complete(user):
 @admin_required
 def admin_upload_assessments(user):
     body = request.get_json()
-    questions_data = body.get("questions", [])
+    if isinstance(body, list):
+        questions_data = body
+    elif isinstance(body, dict):
+        questions_data = body.get("questions", [])
+    else:
+        questions_data = []
     if not isinstance(questions_data, list) or not questions_data:
         return jsonify({"error": "Expected non-empty 'questions' array"}), 400
     required = ["question_id", "skill", "level"]
@@ -1927,7 +1967,12 @@ def assessment_history(user):
 @admin_required
 def admin_upload_toefl(user):
     body = request.get_json()
-    sections_data = body.get("sections", [])
+    if isinstance(body, list):
+        sections_data = body
+    elif isinstance(body, dict):
+        sections_data = body.get("sections", [])
+    else:
+        sections_data = []
     if not isinstance(sections_data, list) or not sections_data:
         return jsonify({"error": "Expected non-empty 'sections' array"}), 400
     required = ["section_id", "section_type"]
@@ -2200,7 +2245,12 @@ def admin_delete_toefl(user, section_id):
 @admin_required
 def admin_upload_subtext(user):
     body = request.get_json()
-    exercises = body.get("exercises", [])
+    if isinstance(body, list):
+        exercises = body
+    elif isinstance(body, dict):
+        exercises = body.get("exercises", [])
+    else:
+        exercises = []
     if not exercises:
         return jsonify({"error": "Expected non-empty 'exercises' array"}), 400
     inserted = updated = 0
@@ -2258,7 +2308,12 @@ def subtext_next(user):
 @admin_required
 def admin_upload_register(user):
     body = request.get_json()
-    exercises = body.get("exercises", [])
+    if isinstance(body, list):
+        exercises = body
+    elif isinstance(body, dict):
+        exercises = body.get("exercises", [])
+    else:
+        exercises = []
     if not exercises:
         return jsonify({"error": "Expected non-empty 'exercises' array"}), 400
     inserted = updated = 0
@@ -2316,7 +2371,12 @@ def register_next(user):
 @admin_required
 def admin_upload_slang(user):
     body = request.get_json()
-    exercises = body.get("exercises", [])
+    if isinstance(body, list):
+        exercises = body
+    elif isinstance(body, dict):
+        exercises = body.get("exercises", [])
+    else:
+        exercises = []
     if not exercises:
         return jsonify({"error": "Expected non-empty 'exercises' array"}), 400
     inserted = updated = 0
@@ -2374,7 +2434,12 @@ def slang_next(user):
 @admin_required
 def admin_upload_sarcasm(user):
     body = request.get_json()
-    exercises = body.get("exercises", [])
+    if isinstance(body, list):
+        exercises = body
+    elif isinstance(body, dict):
+        exercises = body.get("exercises", [])
+    else:
+        exercises = []
     if not exercises:
         return jsonify({"error": "Expected non-empty 'exercises' array"}), 400
     inserted = updated = 0
@@ -2432,7 +2497,12 @@ def sarcasm_next(user):
 @admin_required
 def admin_upload_connected_speech(user):
     body = request.get_json()
-    lessons = body.get("lessons", [])
+    if isinstance(body, list):
+        lessons = body
+    elif isinstance(body, dict):
+        lessons = body.get("lessons", [])
+    else:
+        lessons = []
     if not lessons:
         return jsonify({"error": "Expected non-empty 'lessons' array"}), 400
     inserted = updated = 0

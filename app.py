@@ -156,8 +156,8 @@ class AssessmentResult(db.Model):
     overall_level = db.Column(db.String(5))
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
-TOEFL_SECTION_TYPES = ["reading", "listening", "writing", "speaking"]
-TOEFL_TIME_LIMITS = {"reading": 1200, "listening": 600, "writing": 1800, "speaking": 600}
+TOEFL_SECTION_TYPES = ["reading", "listening", "writing", "speaking", "integrated_writing", "integrated_speaking"]
+TOEFL_TIME_LIMITS = {"reading": 1200, "listening": 600, "writing": 1800, "speaking": 600, "integrated_writing": 1380, "integrated_speaking": 165}
 
 class TOEFLSection(db.Model):
     __tablename__ = "unstuck_toefl"
@@ -2121,6 +2121,22 @@ def toefl_submit(user, section_id):
             score = max(0, min(30, int(score)))
         else:
             score = 0
+    elif section_type in ("integrated_writing", "integrated_speaking"):
+        # Integrated task — store user response with placeholder scoring
+        if not user_text.strip():
+            return jsonify({"error": "user_text required for integrated sections"}), 400
+        word_count = len(user_text.split())
+        reading_passage = section_data.get("reading_passage", "")
+        lecture_text = section_data.get("lecture_text", "")
+        score = 0  # placeholder — AI evaluation not yet connected
+        details = {
+            "status": "pending_evaluation",
+            "word_count": word_count,
+            "user_text": user_text,
+            "reading_title": section_data.get("reading_title", ""),
+            "lecture_title": section_data.get("lecture_title", ""),
+            "task_type": section_type,
+        }
     else:
         return jsonify({"error": f"Unknown section type: {section_type}"}), 400
 

@@ -2008,14 +2008,32 @@ def admin_upload_toefl(user):
 @app.route("/api/toefl/sections", methods=["GET"])
 @token_required
 def toefl_sections(user):
-    sections = TOEFLSection.query.order_by(TOEFLSection.section_type, TOEFLSection.id).all()
+    type_filter = request.args.get("type")
     completed_ids = [r[0] for r in db.session.query(TOEFLResult.section_id).filter(
         TOEFLResult.user_id == user.id
     ).distinct().all()]
+
+    # If ?type= is provided, return a single next-unseen section with full data
+    if type_filter:
+        query = TOEFLSection.query.filter_by(section_type=type_filter)
+        # Prefer unseen sections first
+        unseen = [s for s in query.all() if s.section_id not in completed_ids]
+        section = unseen[0] if unseen else query.first()
+        if not section:
+            return jsonify({"section": None}), 200
+        return jsonify({"section": {
+            "section_id": section.section_id,
+            "section_type": section.section_type,
+            "time_limit_seconds": TOEFL_TIME_LIMITS.get(section.section_type, 1200),
+            "data": section.data,
+        }})
+
+    # Default: list all sections (summary only, no full data)
+    sections = TOEFLSection.query.order_by(TOEFLSection.section_type, TOEFLSection.id).all()
     return jsonify({"sections": [{
         "section_id": s.section_id,
         "section_type": s.section_type,
-        "title": (s.data or {}).get("title", s.section_id),
+        "title": (s.data or {}).get("title", (s.data or {}).get("reading_title", s.section_id)),
         "time_limit_seconds": TOEFL_TIME_LIMITS.get(s.section_type, 1200),
         "question_count": len((s.data or {}).get("questions", [])),
         "completed": s.section_id in completed_ids,

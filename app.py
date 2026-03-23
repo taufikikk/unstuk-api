@@ -2140,30 +2140,75 @@ def toefl_submit(user, section_id):
         else:
             score = 0
     elif section_type in ("integrated_writing", "integrated_speaking"):
-        # Integrated task — store user response with placeholder scoring
         if not user_text.strip():
             return jsonify({"error": "user_text required for integrated sections"}), 400
         word_count = len(user_text.split())
         reading_passage = section_data.get("reading_passage", "")
         lecture_text = section_data.get("lecture_text", "")
-        score = 0  # placeholder — AI evaluation not yet connected
-        details = {
-            "status": "pending_evaluation",
-            "word_count": word_count,
-            "user_text": user_text,
-            "reading_title": section_data.get("reading_title", ""),
-            "lecture_title": section_data.get("lecture_title", ""),
-            "task_type": section_type,
-        }
+        writing_prompt = section_data.get("writing_prompt", section_data.get("speaking_prompt", ""))
+
+        if ANTHROPIC_API_KEY and section_type == "integrated_writing":
+            eval_prompt = (
+                "You are a TOEFL iBT Integrated Writing evaluator.\n\n"
+                "RUBRIC (0-5 scale):\n"
+                "5: Accurately summarizes all 3 lecture points and clearly explains how each contradicts the reading. Well organized, minor language errors only.\n"
+                "4: Covers all 3 points but may have slight inaccuracy or vagueness in one. Generally well organized, some noticeable language errors.\n"
+                "3: Covers 2-3 points but with some misrepresentation or missing connections. Adequate organization, frequent language errors.\n"
+                "2: Significant omission or misunderstanding of lecture points. Poor organization, language errors obscure meaning.\n"
+                "1: Fails to meaningfully connect lecture to reading. Major comprehension issues.\n"
+                "0: Off-topic, copied from passage, or blank.\n\n"
+                f"READING PASSAGE:\n{reading_passage}\n\n"
+                f"LECTURE TEXT:\n{lecture_text}\n\n"
+                f"WRITING PROMPT:\n{writing_prompt}\n\n"
+                f"STUDENT ESSAY ({word_count} words):\n{user_text}\n\n"
+                "Evaluate the essay. Respond in JSON only, no markdown:\n"
+                '{"score": <0-5>, "feedback": "<2-3 sentences overall assessment>", '
+                '"point_analysis": [{"point": 1, "covered": <bool>, "comment": "<1 sentence>"}, '
+                '{"point": 2, "covered": <bool>, "comment": "<1 sentence>"}, '
+                '{"point": 3, "covered": <bool>, "comment": "<1 sentence>"}], '
+                '"improved_sentences": ["<rewrite 1>", "<rewrite 2>"]}'
+            )
+            try:
+                import anthropic
+                client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+                response = client.messages.create(
+                    model="claude-sonnet-4-20250514",
+                    max_tokens=1024,
+                    messages=[{"role": "user", "content": eval_prompt}],
+                )
+                raw = response.content[0].text
+                details = json.loads(raw)
+                score = details.get("score", 0)
+                if isinstance(score, (int, float)):
+                    score = max(0, min(5, int(score)))
+                else:
+                    score = 0
+                details["word_count"] = word_count
+                details["status"] = "evaluated"
+            except json.JSONDecodeError:
+                details = {"raw_response": raw, "error": "Failed to parse AI response", "word_count": word_count, "status": "error"}
+                score = 0
+            except Exception as e:
+                details = {"status": "pending_evaluation", "word_count": word_count, "error": str(e)}
+                score = 0
+        else:
+            # No API key or integrated_speaking — placeholder
+            score = 0
+            details = {
+                "status": "pending_evaluation",
+                "word_count": word_count,
+                "task_type": section_type,
+            }
     else:
         return jsonify({"error": f"Unknown section type: {section_type}"}), 400
 
+    ms = 5 if section_type in ("integrated_writing", "integrated_speaking") else 30
     result = TOEFLResult(
         user_id=user.id,
         section_id=section_id,
         section_type=section_type,
         score=score,
-        max_score=30,
+        max_score=ms,
         details=details,
         time_spent_seconds=time_spent,
     )
@@ -2174,7 +2219,7 @@ def toefl_submit(user, section_id):
         "result_id": result.id,
         "section_type": section_type,
         "score": score,
-        "max_score": 30,
+        "max_score": ms,
         "details": details,
         "time_spent_seconds": time_spent,
     }), 201
